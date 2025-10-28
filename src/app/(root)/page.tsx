@@ -1,10 +1,15 @@
 import React from "react";
 import { Card } from "@/components";
-import { getAllProducts } from "@/lib/actions/product";
+import { getAllProducts } from "@/lib/actions/product"; 
+import Hero from "@/components/Hero";
 const Home = async () => {
-	const { products, totalCount } = await getAllProducts({ limti: 6 });
+	const { products, totalCount } = await getAllProducts({ limit: 6 });
 
 	return (
+		<>
+		<div className="pb-4 ">
+		<Hero/>
+		</div>
 		<main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 			<section aria-labelledby="latest" className="pb-12">
 				<h2 id="latest" className="mb-6 text-heading-3 text-dark-900">
@@ -14,8 +19,8 @@ const Home = async () => {
 					{products.map((p) => {
 						const price =
 							p.minPrice !== null &&
-							p.maxPrice !== null &&
-							p.minPrice !== p.maxPrice
+								p.maxPrice !== null &&
+								p.minPrice !== p.maxPrice
 								? `$${p.minPrice.toFixed(2)} - $${p.maxPrice.toFixed(2)}`
 								: p.minPrice !== null
 									? p.minPrice
@@ -34,6 +39,7 @@ const Home = async () => {
 				</div>
 			</section>
 		</main>
+		</>
 	);
 };
 
