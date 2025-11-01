@@ -262,13 +262,26 @@ export default function Hero() {
           </span>
         </motion.h2>
 
+        {/* Value Proposition Description */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+          className="relative z-50 mt-4 text-center"
+        >
+          <p className="text-lg sm:text-base md:text-lg lg:text-xl leading-relaxed text-gray-600 dark:text-gray-300">
+            Discover handcrafted luxury hair bows<br />
+            made with premium materials for everyday elegance.
+          </p>
+        </motion.div>
+
         {/* Full-Width Carousel Section */}
         <motion.div
           ref={containerRef}
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
-          className="relative z-50 mt-8 mx-auto max-w-7xl rounded-3xl border border-white/20 bg-white/20 backdrop-blur-xl shadow-[0_8px_32px_rgba(248,113,113,0.25)] transition-all duration-500 hover:shadow-[0_8px_32px_rgba(248,113,113,0.4)] hover:border-pink-300/30 dark:border-white/10 dark:bg-white/5"
+          className="relative z-50 mt-6 mx-auto max-w-7xl rounded-3xl border border-gray-200/50 dark:border-gray-700/50 bg-white/20 backdrop-blur-xl shadow-[0_8px_32px_rgba(248,113,113,0.25)] transition-all duration-500 hover:shadow-[0_8px_32px_rgba(248,113,113,0.4)] hover:border-pink-300/30"
         >
           <Carousel
             opts={{
@@ -315,20 +328,13 @@ export default function Hero() {
           </Carousel>
         </motion.div>
 
-        {/* Combined Description & Trust Badges Section */}
+        {/* Trust Badges & Social Proof Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
           className="relative z-50 mt-8 rounded-2xl border border-white/20 bg-white/10 p-6 backdrop-blur-xl shadow-2xl dark:border-white/10 dark:bg-black/20"
         >
-          {/* Description */}
-          <p className="text-center text-lg sm:text-base md:text-lg lg:text-xl leading-relaxed text-gray-600 mb-6 dark:text-gray-200">
-            Discover timeless elegance with our handcrafted hair bows.
-            Each piece designed to add a touch of sophistication.
-            Because true style begins with the smallest details.
-          </p>
-
           {/* Rating with Pink/Purple Stars */}
           <div className="flex items-center justify-center gap-2 mb-4">
             <div className="flex">
