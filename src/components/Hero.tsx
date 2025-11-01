@@ -281,7 +281,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
-          className="relative z-50 mt-6 mx-auto max-w-7xl rounded-3xl border border-gray-200/50 dark:border-gray-700/50 bg-white/20 backdrop-blur-xl shadow-[0_8px_32px_rgba(248,113,113,0.25)] transition-all duration-500 hover:shadow-[0_8px_32px_rgba(248,113,113,0.4)] hover:border-pink-300/30"
+          className="relative z-50 mt-6 mx-auto max-w-7xl rounded-3xl border border-gray-200/50 dark:border-gray-700/50 bg-white/20 p-3 backdrop-blur-xl shadow-[0_8px_32px_rgba(248,113,113,0.25)] transition-all duration-500 hover:shadow-[0_8px_32px_rgba(248,113,113,0.4)] hover:border-pink-300/30"
         >
           <Carousel
             opts={{
@@ -294,14 +294,14 @@ export default function Hero() {
             <CarouselContent>
               {images.map((imageUrl, index) => (
                 <CarouselItem key={index}>
-                  <div className="relative overflow-hidden rounded-xl transition-transform duration-500 hover:scale-105">
+                  <div className="relative overflow-hidden rounded-2xl transition-transform duration-500 hover:scale-105">
                     <img
                       alt={`Slide ${index + 1}`}
                       loading="lazy"
                       width={1920}
                       height={1080}
                       decoding="async"
-                      className="rounded-xl text-transparent transition-transform duration-500 w-full object-contain"
+                      className="rounded-2xl text-transparent transition-transform duration-500 w-full object-contain"
                       src={imageUrl}
                     />
                     {/* Image Overlay on Hover */}
@@ -335,6 +335,11 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
           className="relative z-50 mt-8 rounded-2xl border border-white/20 bg-white/10 p-6 backdrop-blur-xl shadow-2xl dark:border-white/10 dark:bg-black/20"
         >
+          {/* Description */}
+          <p className="text-center text-base sm:text-sm text-gray-600 mb-6 dark:text-gray-300">
+            Experience timeless elegance that turns heads and boosts confidence with every wear.
+          </p>
+
           {/* Rating with Pink/Purple Stars */}
           <div className="flex items-center justify-center gap-2 mb-4">
             <div className="flex">
