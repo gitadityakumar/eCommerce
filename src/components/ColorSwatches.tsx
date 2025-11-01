@@ -33,14 +33,14 @@ export default function ColorSwatches({ productId, variants, className = "" }: C
             aria-label={`Color ${v.color}`}
             aria-selected={isActive}
             role="option"
-            className={`relative h-[72px] w-[120px] overflow-hidden rounded-lg ring-1 ring-light-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-dark-500] ${
-              isActive ? "ring-[--color-dark-500]" : "hover:ring-dark-500"
+            className={`relative h-[72px] w-[120px] overflow-hidden rounded-lg ring-1 ring-light-300 dark:ring-dark-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-dark-500] dark:focus-visible:ring-[--color-light-500] ${
+              isActive ? "ring-[--color-dark-500] dark:ring-[--color-light-500]" : "hover:ring-dark-500 dark:hover:ring-light-500"
             }`}
           >
             <Image src={src} alt={v.color} fill sizes="120px" className="object-cover" />
             {isActive && (
-              <span className="absolute right-1 top-1 rounded-full bg-light-100 p-1">
-                <Check className="h-4 w-4 text-dark-900" />
+              <span className="absolute right-1 top-1 rounded-full bg-light-100 dark:bg-dark-800 p-1">
+                <Check className="h-4 w-4 text-dark-900 dark:text-light-900" />
               </span>
             )}
           </button>

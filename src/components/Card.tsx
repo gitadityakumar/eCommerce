@@ -38,9 +38,9 @@ export default function Card({
     price === undefined ? undefined : typeof price === "number" ? `$${price.toFixed(2)}` : price;
   const content = (
     <article
-      className={`group rounded-xl bg-light-100 ring-1 ring-light-300 transition-colors hover:ring-dark-500 ${className}`}
+      className={`group rounded-xl bg-light-100 dark:bg-dark-800 ring-1 ring-light-300 dark:ring-dark-300 transition-colors hover:ring-dark-500 dark:hover:ring-light-500 ${className}`}
     >
-      <div className="relative aspect-square overflow-hidden rounded-t-xl bg-light-200">
+      <div className="relative aspect-square overflow-hidden rounded-t-xl bg-light-200 dark:bg-dark-700">
         <Image
           src={imageSrc}
           alt={imageAlt}
@@ -51,13 +51,13 @@ export default function Card({
       </div>
       <div className="p-4">
         <div className="mb-1 flex items-baseline justify-between gap-3">
-          <h3 className="text-heading-3 text-dark-900">{title}</h3>
-          {displayPrice && <span className="text-body-medium text-dark-900">{displayPrice}</span>}
+          <h3 className="text-heading-3 text-dark-900 dark:text-light-900">{title}</h3>
+          {displayPrice && <span className="text-body-medium text-dark-900 dark:text-light-900">{displayPrice}</span>}
         </div>
-        {description && <p className="text-body text-dark-700">{description}</p>}
-        {subtitle && <p className="text-body text-dark-700">{subtitle}</p>}
+        {description && <p className="text-body text-dark-700 dark:text-light-700">{description}</p>}
+        {subtitle && <p className="text-body text-dark-700 dark:text-light-700">{subtitle}</p>}
         {meta && (
-          <p className="mt-1 text-caption text-dark-700">
+          <p className="mt-1 text-caption text-dark-700 dark:text-light-700">
             {Array.isArray(meta) ? meta.join(" • ") : meta}
           </p>
         )}
@@ -69,7 +69,7 @@ export default function Card({
     <Link
       href={href}
       aria-label={title}
-      className="block rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-dark-500]"
+      className="block rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-dark-500] dark:focus-visible:ring-[--color-light-500]"
     >
       {content}
     </Link>

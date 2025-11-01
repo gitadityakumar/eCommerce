@@ -17,15 +17,15 @@
 
   /* Supporting colors */
   --color-green: #007d48;
-  --color-red: #d33918;
-  --color-orange: #d37918;
+  --color-primary-accent: #ec4899;
+  --color-secondary-accent: #8b5cf6;
 
   /* Font family */
   --font-jost: "Jost", sans-serif;
 
   /* Heading sizes */
-  --text-heading-1: 72px;
-  --text-heading-1--line-height: 78px;
+  --text-heading-1: 60px;
+  --text-heading-1--line-height: 68px;
   --text-heading-1--font-weight: 700;
 
   --text-heading-2: 56px;
@@ -99,6 +99,9 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+@theme {
+  --bg-hero: url(https://ik.imagekit.io/nq9atqhjb/upscaled-bg.jpg?updatedAt=1761907462485);
+}
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -176,4 +179,36 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Hero background as the first layer via pseudo-element */
+.hero-bg {
+  position: relative;
+}
+
+.hero-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--bg-hero);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+}
+
+/* Gradient animation keyframes */
+@keyframes gradient-x {
+  0%, 100% {
+    background-size: 200% 200%;
+    background-position: left center;
+  }
+  50% {
+    background-size: 200% 200%;
+    background-position: right center;
+  }
+}
+
+.animate-gradient-x {
+  animation: gradient-x 8s ease infinite;
 }

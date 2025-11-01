@@ -33,7 +33,7 @@ export default async function ProductsPage({
   return (
     <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <header className="flex items-center justify-between py-6">
-        <h1 className="text-heading-3 text-dark-900">New ({totalCount})</h1>
+        <h1 className="text-heading-3 text-dark-900 dark:text-white">New ({totalCount})</h1>
         <Sort />
       </header>
 
@@ -42,7 +42,7 @@ export default async function ProductsPage({
           {activeBadges.map((b, i) => (
             <span
               key={`${b}-${i}`}
-              className="rounded-full border border-light-300 px-3 py-1 text-caption text-dark-900"
+              className="rounded-full border border-light-300 px-3 py-1 text-caption text-grey-900 dark:text-white"
             >
               {b}
             </span>
