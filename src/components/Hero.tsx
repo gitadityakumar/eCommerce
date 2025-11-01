@@ -118,7 +118,7 @@ export default function Hero() {
   return (
     <div
       ref={parentRef}
-      className="relative hero-bg flex min-h-[90vh] w-full items-center justify-center overflow-hidden"
+      className="relative hero-bg flex min-h-[70vh] sm:min-h-[80vh] lg:min-h-[90vh] w-full items-center justify-center overflow-hidden"
     >
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/30 dark:from-black/40 dark:to-black/50 z-10" />
@@ -138,7 +138,7 @@ export default function Hero() {
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute left-10 top-20 h-32 w-32 rounded-full bg-gradient-to-br from-pink-400/20 to-purple-400/20 blur-xl dark:from-pink-600/10 dark:to-purple-600/10"
+          className="absolute left-4 sm:left-10 top-20 h-24 w-24 sm:h-32 sm:w-32 rounded-full bg-gradient-to-br from-pink-400/20 to-purple-400/20 blur-xl dark:from-pink-600/10 dark:to-purple-600/10"
         />
 
         {/* Floating Shape 2 - Top Right */}
@@ -155,7 +155,7 @@ export default function Hero() {
             ease: "easeInOut",
             delay: 1
           }}
-          className="absolute right-20 top-40 h-40 w-40 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-400/20 blur-xl dark:from-amber-600/10 dark:to-orange-600/10"
+          className="absolute right-4 sm:right-20 top-40 h-28 w-28 sm:h-40 sm:w-40 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-400/20 blur-xl dark:from-amber-600/10 dark:to-orange-600/10"
         />
 
         {/* Floating Shape 3 - Bottom Left */}
@@ -172,7 +172,7 @@ export default function Hero() {
             ease: "easeInOut",
             delay: 2
           }}
-          className="absolute left-1/4 bottom-20 h-24 w-24 rounded-full bg-gradient-to-br from-purple-400/20 to-pink-400/20 blur-xl dark:from-purple-600/10 dark:to-pink-600/10"
+          className="absolute left-[10%] sm:left-1/4 bottom-20 h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-gradient-to-br from-purple-400/20 to-pink-400/20 blur-xl dark:from-purple-600/10 dark:to-pink-600/10"
         />
       </div>
 
@@ -231,7 +231,7 @@ export default function Hero() {
       ))}
 
       {/* Hero Content */}
-      <div className="relative z-20 flex flex-col items-center justify-center px-4 py-20 md:px-8 md:py-32">
+      <div className="relative z-20 flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 lg:px-12 py-20 md:py-32">
         {/* Special Offer - Now at Top */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -239,7 +239,7 @@ export default function Hero() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="relative z-50 -mt-4 mb-6 group"
         >
-          <div className="relative rounded-full bg-gradient-to-r from-amber-500 to-orange-600 px-6 py-2 text-sm font-bold uppercase tracking-wide text-white shadow-lg transition-all duration-300 hover:from-amber-600 hover:to-orange-700 hover:shadow-xl hover:shadow-orange-500/30 hover:-translate-y-0.5 overflow-hidden">
+          <div className="relative rounded-full bg-gradient-to-r from-amber-500 to-orange-600 px-4 sm:px-6 py-2 text-xs sm:text-sm font-bold uppercase tracking-wide text-white shadow-lg transition-all duration-300 hover:from-amber-600 hover:to-orange-700 hover:shadow-xl hover:shadow-orange-500/30 hover:-translate-y-0.5 overflow-hidden">
             {/* Glare Effect */}
             <div className="absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full transition-transform duration-1000 ease-out group-hover:translate-x-full" />
             <span className="relative z-10">Limited Time: 20% Off Today Only!</span>
@@ -250,7 +250,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
-          className="relative z-50 mx-auto mb-6 mt-2 max-w-4xl text-center text-4xl font-bold tracking-tight text-gray-900 md:text-6xl lg:text-7xl dark:text-white"
+          className="relative z-50 mx-auto mb-6 mt-2 max-w-3xl sm:max-w-4xl lg:max-w-5xl text-center text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl dark:text-white"
         >
           <span ref={wrapRef} data-brr="1" className="inline-block align-top [text-wrap:balance]">
             Find Your Perfect Premium Hair Bow in Minutes
@@ -266,7 +266,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          className="relative z-50 mx-auto mt-4 max-w-2xl px-4 text-center text-base leading-relaxed text-gray-600 md:text-lg dark:text-gray-200"
+          className="relative z-50 mx-auto mt-4 max-w-xl sm:max-w-2xl lg:max-w-3xl px-4 text-center text-lg sm:text-base md:text-lg lg:text-xl leading-relaxed text-gray-600 dark:text-gray-200"
         >
           Discover timeless elegance with our handcrafted hair bows.
           Each piece designed to add a touch of sophistication.
@@ -289,13 +289,13 @@ export default function Hero() {
                 </svg>
               ))}
             </div>
-            <span className="text-xs font-semibold text-gray-700 md:text-sm dark:text-gray-300 whitespace-nowrap">
+            <span className="text-sm sm:text-xs font-semibold text-gray-700 md:text-sm dark:text-gray-300 whitespace-nowrap">
               Rated 4.9/5 by 2,000+ customers
             </span>
           </div>
 
           {/* Benefits */}
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs text-gray-600 md:text-sm dark:text-gray-400">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm sm:text-xs md:text-sm lg:text-base text-gray-600 dark:text-gray-400">
             <div className="flex items-center gap-2 rounded-full bg-white/20 px-3 py-1.5 backdrop-blur-sm dark:bg-black/30">
               <svg className="h-4 w-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -321,10 +321,10 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-          className="mb-10 mt-12 flex w-full flex-col items-center justify-center gap-4 px-8 sm:flex-row md:mb-20"
+          className="mb-10 mt-12 flex w-full flex-col items-center justify-center gap-6 sm:gap-5 md:gap-4 lg:gap-6 px-4 sm:px-8 sm:flex-row md:mb-20"
         >
           <a
-            className="group relative z-20 flex h-12 w-full items-center justify-center space-x-2 rounded-xl bg-black px-8 py-3 text-sm font-bold leading-6 text-white transition-all duration-300 before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-r before:from-red-500 before:to-red-600 before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100 hover:shadow-2xl hover:shadow-red-400/40 hover:-translate-y-1 active:scale-95 sm:w-52 overflow-hidden"
+            className="group relative z-20 flex h-12 w-full max-w-[280px] items-center justify-center space-x-2 rounded-xl bg-black px-8 py-3 text-sm font-bold leading-6 text-white transition-all duration-300 before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-r before:from-red-500 before:to-red-600 before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100 hover:shadow-2xl hover:shadow-red-400/40 hover:-translate-y-1 active:scale-95 sm:w-52 overflow-hidden"
             href="#"
           >
             {/* Glare Effect */}
@@ -337,7 +337,7 @@ export default function Hero() {
             </div>
           </a>
           <a
-            className="group relative z-20 flex h-12 w-full items-center justify-center space-x-2 rounded-xl bg-white px-6 py-3 text-sm font-bold leading-6 text-black border-2 border-gray-300 transition-all duration-300 hover:border-red-400/60 hover:shadow-2xl hover:shadow-red-400/30 hover:-translate-y-1 hover:bg-red-50 active:scale-95 before:absolute before:inset-0 before:rounded-xl before:bg-red-500/10 before:scale-0 before:transition-transform before:duration-300 hover:before:scale-100 dark:bg-neutral-800 dark:text-white dark:border-neutral-700 dark:hover:border-red-400/60 dark:hover:bg-neutral-700 sm:w-52 overflow-hidden"
+            className="group relative z-20 flex h-12 w-full max-w-[280px] items-center justify-center space-x-2 rounded-xl bg-white px-6 py-3 text-sm font-bold leading-6 text-black border-2 border-gray-300 transition-all duration-300 hover:border-red-400/60 hover:shadow-2xl hover:shadow-red-400/30 hover:-translate-y-1 hover:bg-red-50 active:scale-95 before:absolute before:inset-0 before:rounded-xl before:bg-red-500/10 before:scale-0 before:transition-transform before:duration-300 hover:before:scale-100 dark:bg-neutral-800 dark:text-white dark:border-neutral-700 dark:hover:border-red-400/60 dark:hover:bg-neutral-700 sm:w-52 overflow-hidden"
             href="/pricing"
           >
             <svg className="h-5 w-5 transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -352,7 +352,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
-          className="relative mx-auto mt-16 max-w-5xl rounded-3xl border border-white/20 bg-white/20 p-3 backdrop-blur-xl shadow-[0_8px_32px_rgba(248,113,113,0.25)] transition-all duration-500 hover:shadow-[0_8px_32px_rgba(248,113,113,0.4)] hover:border-pink-300/30 dark:border-white/10 dark:bg-white/5 md:p-5"
+          className="relative mx-auto mt-16 max-w-5xl rounded-3xl border border-white/20 bg-white/20 p-4 sm:p-5 md:p-6 backdrop-blur-xl shadow-[0_8px_32px_rgba(248,113,113,0.25)] transition-all duration-500 hover:shadow-[0_8px_32px_rgba(248,113,113,0.4)] hover:border-pink-300/30 dark:border-white/10 dark:bg-white/5"
         >
           <Carousel
             opts={{
@@ -372,7 +372,7 @@ export default function Hero() {
                       width={1920}
                       height={1080}
                       decoding="async"
-                      className="rounded-xl text-transparent transition-transform duration-500"
+                      className="rounded-xl text-transparent transition-transform duration-500 h-48 sm:h-64 md:h-80 lg:h-96 object-cover"
                       src={imageUrl}
                     />
                     {/* Image Overlay on Hover */}
