@@ -262,87 +262,73 @@ export default function Hero() {
           </span>
         </motion.h2>
 
+        {/* Full-Width Carousel Section */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          ref={containerRef}
+          initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          className="relative z-50 mt-8 w-full max-w-7xl"
+          transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
+          className="relative z-50 mt-8 mx-auto max-w-7xl rounded-3xl border border-white/20 bg-white/20 backdrop-blur-xl shadow-[0_8px_32px_rgba(248,113,113,0.25)] transition-all duration-500 hover:shadow-[0_8px_32px_rgba(248,113,113,0.4)] hover:border-pink-300/30 dark:border-white/10 dark:bg-white/5"
         >
-          {/* Two Column Layout: Description and Carousel */}
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
-            {/* Description Column */}
-            <div className="flex-1 w-full">
-              <p className="text-lg sm:text-base md:text-lg lg:text-xl leading-relaxed text-gray-600 dark:text-gray-200">
-                Discover timeless elegance with our handcrafted hair bows.
-                Each piece designed to add a touch of sophistication.
-                Because true style begins with the smallest details.
-              </p>
-            </div>
-
-            {/* Carousel Column */}
-            <div className="flex-1 w-full">
-              <motion.div
-                ref={containerRef}
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
-                className="relative rounded-3xl border border-white/20 bg-white/20 backdrop-blur-xl shadow-[0_8px_32px_rgba(248,113,113,0.25)] transition-all duration-500 hover:shadow-[0_8px_32px_rgba(248,113,113,0.4)] hover:border-pink-300/30 dark:border-white/10 dark:bg-white/5"
-              >
-                <Carousel
-                  opts={{
-                    align: "start",
-                    loop: true,
-                  }}
-                  setApi={setApi}
-                  className="w-full group"
-                >
-                  <CarouselContent>
-                    {images.map((imageUrl, index) => (
-                      <CarouselItem key={index}>
-                        <div className="relative overflow-hidden rounded-xl transition-transform duration-500 hover:scale-105">
-                          <img
-                            alt={`Slide ${index + 1}`}
-                            loading="lazy"
-                            width={1920}
-                            height={1080}
-                            decoding="async"
-                            className="rounded-xl text-transparent transition-transform duration-500 w-full object-contain"
-                            src={imageUrl}
-                          />
-                          {/* Image Overlay on Hover */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 transition-opacity duration-300 hover:opacity-100" />
-                          {/* Hover Label */}
-                          <div className="absolute bottom-4 left-4 translate-y-4 opacity-0 transition-all duration-300 hover:translate-y-0 hover:opacity-100">
-                            <div className="rounded-full bg-white/90 px-4 py-2 text-sm font-bold text-gray-900 backdrop-blur-sm">
-                              Premium Collection
-                            </div>
-                          </div>
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  {/* Custom Dots Indicator */}
-                  <div className="flex justify-center gap-2 mt-4">
-                    {images.map((_, index) => (
-                      <div
-                        key={index}
-                        className="h-2 w-2 rounded-full bg-gray-300 transition-all duration-300 hover:bg-pink-500 dark:bg-gray-600"
-                      />
-                    ))}
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            setApi={setApi}
+            className="w-full group"
+          >
+            <CarouselContent>
+              {images.map((imageUrl, index) => (
+                <CarouselItem key={index}>
+                  <div className="relative overflow-hidden rounded-xl transition-transform duration-500 hover:scale-105">
+                    <img
+                      alt={`Slide ${index + 1}`}
+                      loading="lazy"
+                      width={1920}
+                      height={1080}
+                      decoding="async"
+                      className="rounded-xl text-transparent transition-transform duration-500 w-full object-contain"
+                      src={imageUrl}
+                    />
+                    {/* Image Overlay on Hover */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 transition-opacity duration-300 hover:opacity-100" />
+                    {/* Hover Label */}
+                    <div className="absolute bottom-4 left-4 translate-y-4 opacity-0 transition-all duration-300 hover:translate-y-0 hover:opacity-100">
+                      <div className="rounded-full bg-white/90 px-4 py-2 text-sm font-bold text-gray-900 backdrop-blur-sm">
+                        Premium Collection
+                      </div>
+                    </div>
                   </div>
-                </Carousel>
-              </motion.div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            {/* Custom Dots Indicator */}
+            <div className="flex justify-center gap-2 mt-4">
+              {images.map((_, index) => (
+                <div
+                  key={index}
+                  className="h-2 w-2 rounded-full bg-gray-300 transition-all duration-300 hover:bg-pink-500 dark:bg-gray-600"
+                />
+              ))}
             </div>
-          </div>
+          </Carousel>
         </motion.div>
 
-        {/* Trust Badges & Social Proof with Glassmorphism */}
+        {/* Combined Description & Trust Badges Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+          transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
           className="relative z-50 mt-8 rounded-2xl border border-white/20 bg-white/10 p-6 backdrop-blur-xl shadow-2xl dark:border-white/10 dark:bg-black/20"
         >
+          {/* Description */}
+          <p className="text-center text-lg sm:text-base md:text-lg lg:text-xl leading-relaxed text-gray-600 mb-6 dark:text-gray-200">
+            Discover timeless elegance with our handcrafted hair bows.
+            Each piece designed to add a touch of sophistication.
+            Because true style begins with the smallest details.
+          </p>
+
           {/* Rating with Pink/Purple Stars */}
           <div className="flex items-center justify-center gap-2 mb-4">
             <div className="flex">
@@ -383,7 +369,7 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+          transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
           className="mb-10 mt-12 flex w-full flex-col items-center justify-center gap-6 sm:gap-5 md:gap-4 lg:gap-6 px-4 sm:px-8 sm:flex-row md:mb-20"
         >
           <a
