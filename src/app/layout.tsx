@@ -18,7 +18,7 @@ export default function RootShell({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>   
       <body className={`${jost.className} antialiased`}>
         <ThemeProvider
             attribute="class"

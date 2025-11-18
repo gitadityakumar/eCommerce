@@ -1,14 +1,15 @@
 import React from "react";
 import { Card } from "@/components";
 import { getAllProducts } from "@/lib/actions/product";
-import Hero from "@/components/Hero";
+import NoirHauteCoutureHero from "@/components/hero-section";
 const Home = async () => {
 	const { products, totalCount } = await getAllProducts({ limit: 6 });
 
 	return (
 		<>
 			<div className="pb-4">
-				<Hero  />
+				{/* <Hero  /> */}
+				<NoirHauteCoutureHero/>
 			</div>
 			<main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 bg-background">
 				<section aria-labelledby="latest" className="pb-12">
