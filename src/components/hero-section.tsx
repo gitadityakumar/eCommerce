@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 1, ease: "easeOut" },
+  transition: { duration: 1 },
 };
 
 const fadeIn = {
@@ -26,7 +26,6 @@ const scrollIndicatorBounce = {
     transition: {
         duration: 2,
         repeat: Infinity,
-        ease: "easeInOut",
     },
 };
 
@@ -45,7 +44,7 @@ export default function NoirHauteCoutureHero() {
           className="absolute inset-0 bg-center bg-cover"
           style={{ 
             backgroundImage: `url('https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/30a171b9-41c8-48fe-8ea6-deec71d988ec_3840w.webp')`,
-            filter: 'grayscale(30%) contrast(120%) brightness(0.7)',
+            
           }}
         />
         {/* 2. Gradient Overlay */}
@@ -56,25 +55,17 @@ export default function NoirHauteCoutureHero() {
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center max-w-7xl px-6 text-center md:px-12 lg:px-20">
-        <motion.p
-          variants={fadeIn}
-          initial="initial"
-          animate="animate"
-          transition={{ ...fadeIn.transition, delay: 0.2 }}
-          className="mb-4 font-montserrat text-xs font-normal uppercase tracking-[0.2em] text-[#D4AF37] opacity-90"
-        >
-          Timeless Sophistication
-        </motion.p>
-        
+    
         <motion.h1
           variants={fadeInUp}
           initial="initial"
           animate="animate"
           transition={{ ...fadeInUp.transition, delay: 0.4 }}
-          className="font-playfair-display text-[clamp(3rem,8vw,7rem)] font-light leading-tight tracking-tighter uppercase text-white"
+          className="mt-12 font-[var(--font-playfair)] text-[clamp(2.5rem,8vw,8rem)] font-normal leading-[1.1] tracking-[-0.02em]"
           style={{ textShadow: '0 4px 20px rgba(0,0,0,0.8)' }}
         >
-          Elegance Redefined
+          <span className="block text-white">Refined</span>
+          <span className="block bg-gradient-to-b from-white via-white to-neutral-400 bg-clip-text text-transparent">Elegance</span>
         </motion.h1>
 
         <motion.div 
@@ -90,7 +81,7 @@ export default function NoirHauteCoutureHero() {
           initial="initial"
           animate="animate"
           transition={{ ...fadeIn.transition, delay: 1 }}
-          className="max-w-[600px] mx-auto mb-12 font-inter text-[clamp(1rem,2vw,1.25rem)] font-light leading-relaxed tracking-wider text-gray-200 opacity-90"
+          className="max-w-[600px] mx-auto mb-12 font-[var(--font-inter)] text-[clamp(0.875rem,2vw,1.25rem)] font-light leading-[1.6] tracking-[0.05em] text-[#E5E5E5] opacity-90"
         >
           Experience the pinnacle of haute couture craftsmanship in our curated collections.
         </motion.p>
@@ -103,16 +94,24 @@ export default function NoirHauteCoutureHero() {
           className="flex flex-col items-center gap-4 sm:flex-row"
         >
           <Button
-            className="w-full sm:w-auto bg-[#D4AF37] text-black rounded-none px-12 py-7 text-[13px] font-semibold tracking-[0.15em] uppercase transition-all duration-300 ease-in-out hover:bg-white hover:text-black hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(212,175,55,0.4)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4AF37]"
-            style={{ boxShadow: '0 4px 20px rgba(212,175,55,0.3)' }}
+            className="group relative z-20 flex h-14 w-full sm:w-auto items-center justify-center space-x-2  bg-gradient-to-r from-red-400 to-red-500 px-8 py-3 text-sm font-bold leading-6 text-white transition-all duration-300 before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-r before:from-red-500 before:to-red-600 before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100 hover:shadow-2xl hover:shadow-red-500/40 hover:-translate-y-1 active:scale-95 overflow-hidden"
           >
-            Discover
+            {/* Glare Effect */}
+            <div className="absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full transition-transform duration-1000 ease-out group-hover:translate-x-full" />
+            <span className="relative z-10 transition-transform duration-300 group-hover:scale-110 whitespace-nowrap font-[var(--font-montserrat)] tracking-[0.15em] uppercase">Discover</span>
+            {/* Ripple Effect */}
+            <div className="absolute inset-0 -z-10">
+              <div className="absolute inset-0 rounded-xl bg-white/20 scale-0 group-active:scale-100 transition-transform duration-300" />
+            </div>
           </Button>
           <Button
             variant="outline"
-            className="w-full sm:w-auto bg-transparent text-white border-white rounded-none px-12 py-7 text-[13px] font-semibold tracking-[0.15em] uppercase transition-all duration-300 ease-in-out hover:bg-white hover:text-black focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4AF37]"
+            className="group relative z-20 flex h-14 w-full sm:w-auto items-center justify-center space-x-2  border-2 border-white/30 bg-transparent px-6 py-3 text-sm font-bold leading-6 text-white backdrop-blur-sm transition-all duration-300 hover:border-white/60 hover:bg-white/10 hover:text-white hover:shadow-2xl hover:shadow-white/20 hover:-translate-y-1 active:scale-95"
           >
-            Learn More
+            <svg className="h-5 w-5 transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+            <span className="transition-transform duration-300 group-hover:scale-105 whitespace-nowrap font-[var(--font-montserrat)] tracking-[0.15em] uppercase">Learn More</span>
           </Button>
         </motion.div>
       </div>
@@ -122,12 +121,17 @@ export default function NoirHauteCoutureHero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.6 }}
             transition={{ delay: 2, duration: 1 }}
-            className="absolute bottom-10 left-1/2 -translate-x-1/2 w-[1px] h-[60px]"
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
         >
             <motion.div 
-                className="w-full h-full bg-gradient-to-b from-transparent via-white to-transparent"
+                className="flex flex-col items-center gap-2"
                 animate={scrollIndicatorBounce}
-            />
+            >
+                <span className="font-[var(--font-montserrat)] text-[0.625rem] uppercase tracking-[0.2em] text-white opacity-80 whitespace-nowrap">
+                   SCROLL DOWN
+                </span>
+                <div className="w-[1px] h-[60px] bg-gradient-to-b from-transparent via-white to-transparent" />
+            </motion.div>
         </motion.div>
     </section>
   );

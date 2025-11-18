@@ -3,9 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useTheme } from "next-themes"
-import { Button } from "@/components/ui/button"
-import { IconSun, IconMoonStars } from '@tabler/icons-react';
+import { useTheme } from "next-themes";
+import { Button } from "@/components/ui/button";
+import { IconSun, IconMoonStars, IconMenu2, IconX } from '@tabler/icons-react';
+import { Menu, MenuItem, HoveredLink } from "@/components/ui/navbar-menu";
+import { FloatingNav } from "@/components/ui/floating-navbar";
+import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
   { label: "Men", href: "/products?gender=men" },
@@ -16,125 +19,114 @@ const NAV_LINKS = [
 ] as const;
 
 export default function Navbar() {
+  const [active, setActive] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  // Avoid hydration mismatch — only render theme-dependent UI after mount
   useEffect(() => setMounted(true), []);
 
   return (
-    <header className="bg-red-500/50 supports-[backdrop-filter]:bg-red-400/30 sticky top-0 z-50 w-full border-b backdrop-blur">
-      <nav
-        className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8"
-        aria-label="Primary"
-      >
-        <Link href="/" aria-label="Nike Home" className="flex items-center">
-          <Image
-            src="/logo.svg"
-            alt="Nike"
-            width={28}
-            height={28}
-            priority
-            className="invert"
-          />
-        </Link>
+    <div className="relative w-full flex items-center justify-center">
+      <FloatingNav className="justify-between items-center w-full max-w-5xl mx-auto backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl px-6 lg:px-8 py-4 shadow-2xl shadow-black/20">
+        <Menu setActive={setActive} className="border-none shadow-none bg-transparent dark:bg-transparent px-0 py-0 w-full justify-between">
+          {/* Logo */}
+          <Link href="/" aria-label="Nike Home" className="flex items-center">
+            <Image
+              src="/logo.svg"
+              alt="Nike"
+              width={24}
+              height={24}
+              priority
+              className="invert dark:invert-0"
+            />
+          </Link>
 
-        <ul className="hidden items-center gap-8 md:flex">
-          {NAV_LINKS.map((l) => (
-            <li key={l.href}>
+          {/* Desktop Links */}
+          <div className="hidden md:flex items-center gap-6">
+            {NAV_LINKS.map((l) => (
               <Link
+                key={l.href}
                 href={l.href}
-                className="text-body text-white transition-colors hover:text-gray-200"
+                className="text-sm font-medium text-white dark:text-neutral-200 hover:text-black dark:hover:text-white transition-colors"
               >
                 {l.label}
               </Link>
-            </li>
-          ))}
-        </ul>
+            ))}
+          </div>
 
-        <div className="hidden items-center gap-6 md:flex">
-          <button className="text-body text-white transition-colors hover:text-gray-200">
-            Search
-          </button>
-          <button className="text-body text-white transition-colors hover:text-gray-200">
-            My Cart (2)
-          </button>
-
-          {/* Theme toggle: single button (no dropdown). Default follows system (configured in ThemeProvider). */}
-          <Button
-            variant="ghost"
-            onClick={() => {
-              // If currently dark (resolved), switch to light; otherwise switch to dark.
-              // resolvedTheme takes into account system preference when defaultTheme='system'.
-              const current = resolvedTheme === "dark" ? "light" : "dark";
-              setTheme(current);
-            }}
-            aria-label="Toggle theme"
-            className="!text-white "
-          >
-            {mounted && resolvedTheme === "dark" ? (
-              <IconSun size={18} />
-            ) : (
-              <IconMoonStars size={18} />
-            )}
-          </Button>
-        </div>
-
-        <button
-          type="button"
-          className="inline-flex items-center justify-center rounded-md p-2 md:hidden"
-          aria-controls="mobile-menu"
-          aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
-        >
-          <span className="sr-only">Toggle navigation</span>
-          <span className="mb-1 block h-0.5 w-6 bg-white"></span>
-          <span className="mb-1 block h-0.5 w-6 bg-white"></span>
-          <span className="block h-0.5 w-6 bg-white"></span>
-        </button>
-      </nav>
-
-      <div
-        id="mobile-menu"
-        className={`border-t border-light-300 md:hidden ${open ? "block" : "hidden"}`}
-      >
-        <ul className="space-y-2 px-4 py-3">
-          {NAV_LINKS.map((l) => (
-            <li key={l.href}>
-              <Link
-                href={l.href}
-                className="block py-2 text-body text-white hover:text-gray-200"
-                onClick={() => setOpen(false)}
-              >
-                {l.label}
-              </Link>
-            </li>
-          ))}
-          <li className="flex items-center justify-between pt-2">
-            <button className="text-body text-white">Search</button>
-            <button className="text-body text-white">My Cart (2)</button>
-          </li>
-          <li className="flex items-center justify-center pt-2">
-            {/* Mobile theme toggle. */}
-            <button
+          {/* Actions */}
+          <div className="hidden md:flex items-center gap-4">
+            <button className="text-sm font-medium text-white dark:text-neutral-200 hover:text-black dark:hover:text-white transition-colors">
+              Search
+            </button>
+            <button className="text-sm font-medium text-white dark:text-neutral-200 hover:text-black dark:hover:text-white transition-colors">
+              Cart (2)
+            </button>
+            
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => {
                 const current = resolvedTheme === "dark" ? "light" : "dark";
                 setTheme(current);
               }}
-              className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-body text-white hover:text-gray-200"
               aria-label="Toggle theme"
+              className="h-8 w-8 rounded-full   backdrop-blur-md shadow-sm hover:bg-white/10 transition-colors"
             >
               {mounted && resolvedTheme === "dark" ? (
-                <IconSun size={18} />
+                <IconSun size={18} className="text-white" />
               ) : (
-                <IconMoonStars size={18} />
+                <IconMoonStars size={18} className="text-white" />
               )}
-              <span className="sr-only">Toggle theme</span>
+            </Button>
+          </div>
+
+          {/* Mobile Toggle */}
+          <button
+            type="button"
+            className="md:hidden text-white dark:text-neutral-200"
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <IconX size={24} /> : <IconMenu2 size={24} />}
+          </button>
+        </Menu>
+      </FloatingNav>
+
+      {/* Mobile Menu Overlay */}
+      {open && (
+        <div className="fixed inset-0 z-40 bg-white dark:bg-black pt-24 px-6 md:hidden">
+          <div className="flex flex-col space-y-4">
+            {NAV_LINKS.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="text-lg font-medium text-white dark:text-neutral-200"
+                onClick={() => setOpen(false)}
+              >
+                {l.label}
+              </Link>
+            ))}
+            <div className="h-px bg-neutral-200 dark:bg-neutral-800 my-4" />
+            <button className="text-left text-lg font-medium text-white dark:text-neutral-200">
+              Search
             </button>
-          </li>
-        </ul>
-      </div>
-    </header>
+            <button className="text-left text-lg font-medium text-white     dark:text-neutral-200">
+              My Cart (2)
+            </button>
+            <div className="flex items-center gap-2 pt-4">
+              <span className="text-white dark:text-neutral-200">Theme:</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+              >
+                {mounted && resolvedTheme === "dark" ? <IconSun size={18} /> : <IconMoonStars size={18} />}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
