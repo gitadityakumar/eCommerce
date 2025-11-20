@@ -81,7 +81,7 @@ export default function HeroSection() {
           initial="initial"
           animate="animate"
           transition={{ ...fadeIn.transition, delay: 1 }}
-          className="max-w-[90%] sm:max-w-[600px] mx-auto mb-8 sm:mb-10 md:mb-12 px-2 font-[var(--font-inter)] text-[clamp(1rem,4vw,1.25rem)] sm:text-[clamp(1.0625rem,3vw,1.25rem)] md:text-[clamp(1.125rem,2vw,1.25rem)] font-light leading-[1.6] tracking-[0.05em] text-[#E5E5E5] opacity-90"
+          className="max-w-[90%] sm:max-w-[600px] mx-auto mb-8 sm:mb-10 md:mb-12 px-2 font-[var(--font-inter)] text-[clamp(1rem,4vw,1.25rem)] sm:text-[clamp(1.0625rem,3vw,1.25rem)] md:text-[clamp(1.125rem,2vw,1.25rem)]  leading-[1.6] tracking-[0.05em] text-[#E5E5E5] opacity-90"
         >
           Experience the pinnacle of haute couture craftsmanship in our curated collections.
         </motion.p>
