@@ -7,7 +7,6 @@ import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { IconSun, IconMoonStars, IconMenu2, IconX } from '@tabler/icons-react';
 import { Menu, MenuItem, HoveredLink } from "@/components/ui/navbar-menu";
-import { FloatingNav } from "@/components/ui/floating-navbar";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
@@ -28,8 +27,8 @@ export default function Navbar() {
 
   return (
     <div className="relative w-full flex items-center justify-center">
-      <FloatingNav className="justify-between items-center w-full max-w-5xl mx-auto backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl px-6 lg:px-8 py-4 shadow-2xl shadow-black/20">
-        <Menu setActive={setActive} className="border-none shadow-none bg-transparent dark:bg-transparent px-0 py-0 w-full justify-between">
+      
+        <Menu setActive={setActive} className="border-none shadow-none bg-transparent   bg-black dark:bg-transparent px-0 py-0 w-full justify-between">
           {/* Logo */}
           <Link href="/" aria-label="Nike Home" className="flex items-center">
             <Image
@@ -91,7 +90,7 @@ export default function Navbar() {
             {open ? <IconX size={24} /> : <IconMenu2 size={24} />}
           </button>
         </Menu>
-      </FloatingNav>
+      
 
       {/* Mobile Menu Overlay */}
       {open && (

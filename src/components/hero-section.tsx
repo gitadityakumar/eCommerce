@@ -30,20 +30,20 @@ const scrollIndicatorBounce = {
 };
 
 
-export default function NoirHauteCoutureHero() {
+export default function HeroSection() {
   return (
     <section 
         aria-label="Hero section"
         role="banner"
-        className="relative flex items-center justify-center w-full h-screen min-h-[600px] max-h-[1080px] overflow-hidden"
+        className="relative flex items-center justify-center  w-full h-screen min-h-[600px] max-h-[1080px] overflow-hidden"
     >
       {/* Background Layers */}
       <div className="absolute inset-0 z-0">
         {/* 1. Image */}
         <div
-          className="absolute inset-0 bg-center bg-cover"
+          className="absolute inset-0 bg-center bg-cover "
           style={{ 
-            backgroundImage: `url('https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/30a171b9-41c8-48fe-8ea6-deec71d988ec_3840w.webp')`,
+            backgroundImage: `url('https://ik.imagekit.io/nq9atqhjb/Generated%20Image%20November%2019,%202025%20-%2011_56AM.png?tr=w-2912,h-1632,f-webp')`,
             
           }}
         />

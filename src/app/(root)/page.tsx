@@ -1,17 +1,21 @@
 import React from "react";
-import { Card } from "@/components";
+import { Card , PhilosophySection , CampaignShowcase , SpotlightSection , CollectionGallery , PromoBanner, HeroSection } from "@/components";
 import { getAllProducts } from "@/lib/actions/product";
-import NoirHauteCoutureHero from "@/components/hero-section";
+
 const Home = async () => {
 	const { products, totalCount } = await getAllProducts({ limit: 6 });
 
 	return (
 		<>
-			<div className="pb-4">
-				{/* <Hero  /> */}
-				<NoirHauteCoutureHero/>
+			<div className="">
+				<HeroSection/>
+				<PhilosophySection/>
+				<CampaignShowcase/>
+				<SpotlightSection/>
+				<CollectionGallery/>
+				<PromoBanner/>
 			</div>
-			<main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 bg-background">
+			{/* <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 bg-background">
 				<section aria-labelledby="latest" className="pb-12">
 					<h2 id="latest" className="mb-6 text-heading-3 text-black font-medium dark:text-white-100">
 						Latest shoes
@@ -39,7 +43,8 @@ const Home = async () => {
 						})}
 					</div>
 				</section>
-			</main>
+			</main> */}
+		
 		</>
 	);
 };
