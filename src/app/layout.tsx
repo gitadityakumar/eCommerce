@@ -27,8 +27,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Nike",
-  description: "An e-commerce platform for Nike shoes",
+  title: "Preety Twist",
+  description: "An e-commerce platform for Hair Bows",
 };
 
 export default function RootShell({

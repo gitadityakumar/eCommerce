@@ -27,18 +27,18 @@ export default function Navbar() {
   //fixed top-0 w-full z-50 border-b border-white/5 bg-black/50 backdrop-blur-md transition-all duration-500
 
   return (
-    <div className="sticky top-0 z-50 w-full h-12 border-b border-white/5  bg-black/85 backdrop-blur-md transition-all duaration-500 flex items-center justify-center">
+    <div className="sticky top-0 z-50 w-full h-15 border-b border-white/5  bg-black/85 backdrop-blur-md transition-all duaration-500 flex items-center justify-center">
       
         <Menu setActive={setActive} className="border-none shadow-none bg-transparent dark:bg-transparent px-0 py-0 w-full justify-between mix-blend-difference z-50">
           {/* Logo */}
-          <Link href="/" aria-label="Nike Home" className="flex items-center">
+          <Link href="/" aria-label="PreetyTwist Home" className="flex items-center">
             <Image
               src="/logo.svg"
-              alt="Nike"
+              alt="PreetyTwist"
               width={24}
               height={24}
               priority
-              className="invert dark:invert-0"
+              className="ml-4"
             />
           </Link>
 
