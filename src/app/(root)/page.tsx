@@ -3,7 +3,7 @@ import { Card , PhilosophySection , CampaignShowcase , SpotlightSection , Collec
 import { getAllProducts } from "@/lib/actions/product";
 
 const Home = async () => {
-	const { products, totalCount } = await getAllProducts({ limit: 6 });
+	// const { products, totalCount } = await getAllProducts({ limit: 6 });
 
 	return (
 		<>

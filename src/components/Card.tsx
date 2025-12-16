@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-export type BadgeTone = "red" | "green" | "orange";
+
 
 export interface CardProps {
   title: string;
@@ -12,15 +12,11 @@ export interface CardProps {
   imageAlt?: string;
   price?: string | number;
   href?: string;
-  badge?: { label: string; tone?: BadgeTone };
+
   className?: string;
 }
 
-const toneToBg: Record<BadgeTone, string> = {
-  red: "text-[--color-red]",
-  green: "text-[--color-green]",
-  orange: "text-[--color-orange]",
-};
+
 
 export default function Card({
   title,
@@ -31,7 +27,7 @@ export default function Card({
   imageAlt = title,
   price,
   href,
-  badge,
+
   className = "",
 }: CardProps) {
   const displayPrice =
