@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;600&amp;family=Montserrat:wght@400&amp;family=Playfair+Display:wght@300&amp;display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -17,15 +18,15 @@
 
   /* Supporting colors */
   --color-green: #007d48;
-  --color-red: #d33918;
-  --color-orange: #d37918;
+  --color-primary-accent: #ec4899;
+  --color-secondary-accent: #8b5cf6;
 
   /* Font family */
   --font-jost: "Jost", sans-serif;
 
   /* Heading sizes */
-  --text-heading-1: 72px;
-  --text-heading-1--line-height: 78px;
+  --text-heading-1: 60px;
+  --text-heading-1--line-height: 68px;
   --text-heading-1--font-weight: 700;
 
   --text-heading-2: 56px;
@@ -59,6 +60,58 @@
   --text-footnote: 12px;
   --text-footnote--line-height: 18px;
   --text-footnote--font-weight: 400;
+
+  /* 
+   * ==========================================
+   * NOIR HAUTE COUTURE TYPOGRAPHY SYSTEM
+   * ==========================================
+   * Use these variables to maintain consistency across the site.
+   */
+
+  /* Font Families */
+  --font-playfair: "Playfair Display", serif;
+  --font-montserrat: "Montserrat", sans-serif;
+  --font-inter: "Inter", sans-serif;
+
+  /* 
+   * HEADLINE (Hero & Section Titles)
+   * Usage: Large, dramatic headings.
+   * Font: Playfair Display (Light 300)
+   */
+  --text-noir-headline: clamp(2.5rem, 8vw, 8rem);
+  --text-noir-headline--line-height: 1.1;
+  --text-noir-headline--font-weight: 300;
+  --text-noir-headline--tracking: -0.02em;
+
+  /* 
+   * SUBTITLE (Hero & Section Descriptions)
+   * Usage: Secondary text below headlines.
+   * Font: Inter (Light 300)
+   */
+  --text-noir-subtitle: clamp(0.875rem, 2vw, 1.25rem);
+  --text-noir-subtitle--line-height: 1.6;
+  --text-noir-subtitle--font-weight: 300;
+  --text-noir-subtitle--tracking: 0.05em;
+
+  /* 
+   * EYEBROW (Labels & Tags)
+   * Usage: Small labels above headlines or categories.
+   * Font: Montserrat (Regular 400)
+   */
+  --text-noir-eyebrow: clamp(0.625rem, 1vw, 0.75rem);
+  --text-noir-eyebrow--line-height: 1.4;
+  --text-noir-eyebrow--font-weight: 400;
+  --text-noir-eyebrow--tracking: 0.2em;
+
+  /* 
+   * BUTTON TEXT (CTAs)
+   * Usage: Text inside buttons.
+   * Font: Montserrat (SemiBold 600)
+   */
+  --text-noir-button: clamp(0.813rem, 1.5vw, 0.875rem);
+  --text-noir-button--line-height: 1;
+  --text-noir-button--font-weight: 600;
+  --text-noir-button--tracking: 0.15em;
 }
 
 @theme inline {
@@ -99,6 +152,9 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+@theme {
+  --bg-hero: url(https://ik.imagekit.io/nq9atqhjb/upscaled-bg.jpg?updatedAt=1761907462485);
+}
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -176,4 +232,36 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Hero background as the first layer via pseudo-element */
+.hero-bg {
+  position: relative;
+}
+
+.hero-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--bg-hero);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+}
+
+/* Gradient animation keyframes */
+@keyframes gradient-x {
+  0%, 100% {
+    background-size: 200% 200%;
+    background-position: left center;
+  }
+  50% {
+    background-size: 200% 200%;
+    background-position: right center;
+  }
+}
+
+.animate-gradient-x {
+  animation: gradient-x 8s ease infinite;
 }

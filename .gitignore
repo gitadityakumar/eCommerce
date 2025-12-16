@@ -43,3 +43,18 @@ next-env.d.ts
 #specfile
 
 ./spec.md
+
+# Playwright/MCP testing files
+.playwright-mcp/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+Thumbs.db
+.DS_Store
+!.gitignore

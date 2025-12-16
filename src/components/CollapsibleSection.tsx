@@ -21,24 +21,24 @@ export default function CollapsibleSection({
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <section className={`border-b border-light-300 ${className}`}>
+    <section className={`border-b border-light-300 dark:border-dark-300 ${className}`}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center justify-between gap-4 py-5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-dark-500]"
+        className="flex w-full items-center justify-between gap-4 py-5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-dark-500] dark:focus-visible:ring-[--color-light-500]"
         aria-expanded={open}
       >
-        <span className="text-body-medium text-dark-900">{title}</span>
+        <span className="text-body-medium text-dark-900 dark:text-light-900">{title}</span>
         <span className="flex items-center gap-2">
           {rightMeta}
           <ChevronDown
-            className={`h-5 w-5 text-dark-900 transition-transform ${open ? "rotate-180" : ""}`}
+            className={`h-5 w-5 text-dark-900 dark:text-light-900 transition-transform ${open ? "rotate-180" : ""}`}
             aria-hidden="true"
           />
         </span>
       </button>
       {open && (
         <div className="pb-6">
-          {children ? <div className="text-body text-dark-700">{children}</div> : null}
+          {children ? <div className="text-body text-dark-700 dark:text-light-700">{children}</div> : null}
         </div>
       )}
     </section>

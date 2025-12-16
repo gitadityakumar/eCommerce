@@ -1,89 +1,79 @@
-import Image from "next/image";
-import Link from "next/link";
+import {
+IconBrandInstagram,
+IconBrandX,
+IconBrandMeta
+} from "@tabler/icons-react";
 
-const columns = [
-  {
-    title: "Featured",
-    links: ["Air Force 1", "Huarache", "Air Max 90", "Air Max 95"],
-  },
-  {
-    title: "Shoes",
-    links: ["All Shoes", "Custom Shoes", "Jordan Shoes", "Running Shoes"],
-  },
-  {
-    title: "Clothing",
-    links: ["All Clothing", "Modest Wear", "Hoodies & Pullovers", "Shirts & Tops"],
-  },
-  {
-    title: "Kids'",
-    links: ["Infant & Toddler Shoes", "Kids' Shoes", "Kids' Jordan Shoes", "Kids' Basketball Shoes"],
-  },
-] as const;
+
 
 export default function Footer() {
   return (
-    <footer className="bg-dark-900 text-light-100">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 items-start gap-8 md:grid-cols-12">
-          <div className="flex items-start md:col-span-3">
-            <Image src="/logo.svg" alt="Nike" width={48} height={48} />
+    <footer className="bg-black pt-24 pb-12 border-t border-white/5">
+      <div className="max-w-[1800px] mx-auto px-6 md:px-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-24">
+          <div className="md:col-span-1">
+            <a href="#" className="text-2xl tracking-[0.2em] font-light text-white uppercase block mb-8">
+              Preety Twist
+            </a>
+            <p className="text-neutral-600 text-sm font-light leading-relaxed">
+              Redefining the art of hair accessories through uncompromising quality and modern design.
+            </p>
+          </div>
+          
+          <div>
+            <h4 className="text-white text-xs font-bold tracking-[0.2em] uppercase mb-8">Shop</h4>
+            <ul className="space-y-4">
+              <li><a href="#" className="text-neutral-500 hover:text-white transition-colors text-sm font-light tracking-wide">All Accessories</a></li>
+              <li><a href="#" className="text-neutral-500 hover:text-white transition-colors text-sm font-light tracking-wide">New Arrivals</a></li>
+              <li><a href="#" className="text-neutral-500 hover:text-white transition-colors text-sm font-light tracking-wide">The Velvet Edit</a></li>
+              <li><a href="#" className="text-neutral-500 hover:text-white transition-colors text-sm font-light tracking-wide">Gift Cards</a></li>
+            </ul>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 md:col-span-7">
-            {columns.map((col) => (
-              <div key={col.title}>
-                <h4 className="mb-4 text-heading-3">{col.title}</h4>
-                <ul className="space-y-3">
-                  {col.links.map((l) => (
-                    <li key={l}>
-                      <Link
-                        href="#"
-                        className="text-body text-light-400 hover:text-light-300"
-                      >
-                        {l}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+          <div>
+            <h4 className="text-white text-xs font-bold tracking-[0.2em] uppercase mb-8">Client Services</h4>
+            <ul className="space-y-4">
+              <li><a href="#" className="text-neutral-500 hover:text-white transition-colors text-sm font-light tracking-wide">Contact Us</a></li>
+              <li><a href="#" className="text-neutral-500 hover:text-white transition-colors text-sm font-light tracking-wide">Shipping & Returns</a></li>
+              <li><a href="#" className="text-neutral-500 hover:text-white transition-colors text-sm font-light tracking-wide">Care Instructions</a></li>
+              <li><a href="#" className="text-neutral-500 hover:text-white transition-colors text-sm font-light tracking-wide">FAQ</a></li>
+            </ul>
           </div>
 
-          <div className="flex gap-4 md:col-span-2 md:justify-end">
-            {[
-              { src: "/x.svg", alt: "X" },
-              { src: "/facebook.svg", alt: "Facebook" },
-              { src: "/instagram.svg", alt: "Instagram" },
-            ].map((s) => (
-              <Link
-                key={s.alt}
-                href="#"
-                aria-label={s.alt}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-light-100"
-              >
-                <Image src={s.src} alt={s.alt} width={18} height={18} />
-              </Link>
-            ))}
-          </div>
+          {/* <div>
+            <h4 className="text-white text-xs font-bold tracking-[0.2em] uppercase mb-8">Newsletter</h4>
+            <div className="relative border-b border-neutral-800 hover:border-white transition-colors duration-300 pb-2">
+              <input 
+                type="email" 
+                placeholder="Email Address" 
+                className="bg-transparent w-full text-white outline-none placeholder-neutral-700 font-light text-sm"
+              />
+              <button className="absolute right-0 bottom-2 text-neutral-500 hover:text-white transition-colors">
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div> */}
         </div>
-      </div>
 
-      <div className="border-t border-white/10">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-4 text-light-400 sm:flex-row sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 text-caption">
-            <Image src="/india.svg" alt="" width={16} height={16} />
-            <span>India </span>
-            <span>© 2025 Nike, Inc. All Rights Reserved</span>
+        <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/5">
+          <div className="flex gap-6 mb-4 md:mb-0">
+            <span className="text-neutral-700 text-xs">© 2025 Pretty Twist</span>
+            <a href="#" className="text-neutral-700 hover:text-neutral-400 text-xs transition-colors">Privacy</a>
+            <a href="#" className="text-neutral-700 hover:text-neutral-400 text-xs transition-colors">Terms</a>
           </div>
-          <ul className="flex items-center gap-6 text-caption">
-            {["Guides", "Terms of Sale", "Terms of Use", "Nike Privacy Policy"].map((t) => (
-              <li key={t}>
-                <Link href="#">{t}</Link>
-              </li>
-            ))}
-          </ul>
+          <div className="flex gap-6">
+            <a href="#" className="text-neutral-500 hover:text-white transition-colors">
+              <IconBrandInstagram className="w-4 h-4" />
+            </a>
+            <a href="#" className="text-neutral-500 hover:text-white transition-colors">
+              <IconBrandX className="w-4 h-4" />
+            </a>
+            <a href="#" className="text-neutral-500 hover:text-white transition-colors">
+              <IconBrandMeta className="w-4 h-4" />
+            </a>
+          </div>
         </div>
       </div>
     </footer>
   );
-}
+};

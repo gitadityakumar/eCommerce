@@ -14,13 +14,13 @@ function formatPrice(price: number | null | undefined) {
 
 function NotFoundBlock() {
   return (
-    <section className="mx-auto max-w-3xl rounded-xl border border-light-300 bg-light-100 p-8 text-center">
-      <h1 className="text-heading-3 text-dark-900">Product not found</h1>
-      <p className="mt-2 text-body text-dark-700">The product you’re looking for doesn’t exist or may have been removed.</p>
+    <section className="mx-auto max-w-3xl rounded-xl border border-input bg-card p-8 text-center">
+      <h1 className="text-heading-3 text-foreground">Product not found</h1>
+      <p className="mt-2 text-body text-muted-foreground">The product you're looking for doesn't exist or may have been removed.</p>
       <div className="mt-6">
         <Link
           href="/products"
-          className="inline-block rounded-full bg-dark-900 px-6 py-3 text-body-medium text-light-100 transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-dark-500]"
+          className="inline-block rounded-full bg-primary px-6 py-3 text-body-medium text-primary-foreground transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           Browse Products
         </Link>
@@ -39,9 +39,9 @@ async function ReviewsSection({ productId }: { productId: string }) {
     <CollapsibleSection
       title={`Reviews (${count})`}
       rightMeta={
-        <span className="flex items-center gap-1 text-dark-900">
+        <span className="flex items-center gap-1 text-foreground">
           {[1, 2, 3, 4, 5].map((i) => (
-            <Star key={i} className={`h-4 w-4 ${i <= Math.round(avg) ? "fill-[--color-dark-900]" : ""}`} />
+            <Star key={i} className={`h-4 w-4 ${i <= Math.round(avg) ? "fill-foreground" : ""}`} />
           ))}
         </span>
       }
@@ -51,18 +51,18 @@ async function ReviewsSection({ productId }: { productId: string }) {
       ) : (
         <ul className="space-y-4">
           {reviews.slice(0, 10).map((r) => (
-            <li key={r.id} className="rounded-lg border border-light-300 p-4">
+            <li key={r.id} className="rounded-lg border border-input p-4">
               <div className="mb-1 flex items-center justify-between">
-                <p className="text-body-medium text-dark-900">{r.author}</p>
+                <p className="text-body-medium text-foreground">{r.author}</p>
                 <span className="flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((i) => (
-                    <Star key={i} className={`h-4 w-4 ${i <= r.rating ? "fill-[--color-dark-900]" : ""}`} />
+                    <Star key={i} className={`h-4 w-4 ${i <= r.rating ? "fill-foreground" : ""}`} />
                   ))}
                 </span>
               </div>
-              {r.title && <p className="text-body-medium text-dark-900">{r.title}</p>}
-              {r.content && <p className="mt-1 line-clamp-[8] text-body text-dark-700">{r.content}</p>}
-              <p className="mt-2 text-caption text-dark-700">{new Date(r.createdAt).toLocaleDateString()}</p>
+              {r.title && <p className="text-body-medium text-foreground">{r.title}</p>}
+              {r.content && <p className="mt-1 line-clamp-[8] text-body text-muted-foreground">{r.content}</p>}
+              <p className="mt-2 text-caption text-muted-foreground">{new Date(r.createdAt).toLocaleDateString()}</p>
             </li>
           ))}
         </ul>
@@ -76,7 +76,7 @@ async function AlsoLikeSection({ productId }: { productId: string }) {
   if (!recs.length) return null;
   return (
     <section className="mt-16">
-      <h2 className="mb-6 text-heading-3 text-dark-900">You Might Also Like</h2>
+      <h2 className="mb-6 text-heading-3 text-dark-900 dark:text-white">You Might Also Like</h2>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {recs.map((p) => (
           <Card
@@ -99,9 +99,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   if (!data) {
     return (
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <nav className="py-4 text-caption text-dark-700">
-          <Link href="/" className="hover:underline">Home</Link> / <Link href="/products" className="hover:underline">Products</Link> /{" "}
-          <span className="text-dark-900">Not found</span>
+          <nav className="py-4 text-caption text-muted-foreground">
+            <Link href="/" className="hover:underline">Home</Link> / <Link href="/products" className="hover:underline">Products</Link> /{" "}
+            <span className="text-foreground">Not found</span>
         </nav>
         <NotFoundBlock />
       </main>
@@ -149,9 +149,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
   return (
     <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <nav className="py-4 text-caption text-dark-700">
+      <nav className="py-4 text-caption text-muted-foreground">
         <Link href="/" className="hover:underline">Home</Link> / <Link href="/products" className="hover:underline">Products</Link> /{" "}
-        <span className="text-dark-900">{product.name}</span>
+        <span className="text-foreground">{product.name}</span>
       </nav>
 
       <section className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_480px]">
@@ -161,17 +161,17 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
         <div className="flex flex-col gap-6">
           <header className="flex flex-col gap-2">
-            <h1 className="text-heading-2 text-dark-900">{product.name}</h1>
-            {subtitle && <p className="text-body text-dark-700">{subtitle}</p>}
+            <h1 className="text-heading-2 text-foreground">{product.name}</h1>
+            {subtitle && <p className="text-body text-muted-foreground">{subtitle}</p>}
           </header>
 
           <div className="flex items-center gap-3">
-            <p className="text-lead text-dark-900">{formatPrice(displayPrice)}</p>
+            <p className="text-lead text-foreground">{formatPrice(displayPrice)}</p>
             {compareAt && (
               <>
-                <span className="text-body text-dark-700 line-through">{formatPrice(compareAt)}</span>
+                <span className="text-body text-muted-foreground line-through">{formatPrice(compareAt)}</span>
                 {discount !== null && (
-                  <span className="rounded-full border border-light-300 px-2 py-1 text-caption text-[--color-green]">
+                  <span className="rounded-full border border-input px-2 py-1 text-caption text-green-600 dark:text-green-400">
                     {discount}% off
                   </span>
                 )}
@@ -183,11 +183,11 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           <SizePicker />
 
           <div className="flex flex-col gap-3">
-            <button className="flex items-center justify-center gap-2 rounded-full bg-dark-900 px-6 py-4 text-body-medium text-light-100 transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-dark-500]">
+            <button className="flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-4 text-body-medium text-primary-foreground transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <ShoppingBag className="h-5 w-5" />
               Add to Bag
             </button>
-            <button className="flex items-center justify-center gap-2 rounded-full border border-light-300 px-6 py-4 text-body-medium text-dark-900 transition hover:border-dark-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-dark-500]">
+            <button className="flex items-center justify-center gap-2 rounded-full border border-input px-6 py-4 text-body-medium text-foreground transition hover:border-ring focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <Heart className="h-5 w-5" />
               Favorite
             </button>
@@ -216,10 +216,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
       <Suspense
         fallback={
           <section className="mt-16">
-            <h2 className="mb-6 text-heading-3 text-dark-900">You Might Also Like</h2>
+            <h2 className="mb-6 text-heading-3 text-foreground">You Might Also Like</h2>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="h-64 animate-pulse rounded-xl bg-light-200" />
+                <div key={i} className="h-64 animate-pulse rounded-xl bg-muted" />
               ))}
             </div>
           </section>

@@ -73,14 +73,14 @@ export default function ProductGallery({
             key={`${src}-${i}`}
             aria-label={`Thumbnail ${i + 1}`}
             onClick={() => setActiveIndex(i)}
-            className={`relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg ring-1 ring-light-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-dark-500] ${i === activeIndex ? "ring-[--color-dark-500]" : ""}`}
+            className={`relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg ring-1 ring-border focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${i === activeIndex ? "ring-ring" : ""}`}
           >
             <Image src={src} alt={`Thumbnail ${i + 1}`} fill sizes="64px" className="object-cover" />
           </button>
         ))}
       </div>
 
-      <div ref={mainRef} className="order-1 relative w-full h-[500px] overflow-hidden rounded-xl bg-light-200 lg:order-2">
+      <div ref={mainRef} className="order-1 relative w-full h-[500px] overflow-hidden rounded-xl bg-muted lg:order-2">
         {images.length > 0 ? (
           <>
             <Image
@@ -96,24 +96,24 @@ export default function ProductGallery({
               <button
                 aria-label="Previous image"
                 onClick={() => go(-1)}
-                className="rounded-full bg-light-100/80 p-2 ring-1 ring-light-300 transition hover:bg-light-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-dark-500]"
+                className="rounded-full bg-background/80 p-2 ring-1 ring-border transition hover:bg-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <ChevronLeft className="h-5 w-5 text-dark-900" />
+                <ChevronLeft className="h-5 w-5" />
               </button>
               <button
                 aria-label="Next image"
                 onClick={() => go(1)}
-                className="rounded-full bg-light-100/80 p-2 ring-1 ring-light-300 transition hover:bg-light-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-dark-500]"
+                className="rounded-full bg-background/80 p-2 ring-1 ring-border transition hover:bg-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <ChevronRight className="h-5 w-5 text-dark-900" />
+                <ChevronRight className="h-5 w-5" />
               </button>
             </div>
           </>
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-dark-700">
-            <div className="flex items-center gap-2 rounded-lg border border-light-300 bg-light-100 px-4 py-3">
+          <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+            <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-3">
               <ImageOff className="h-5 w-5" />
-              <span className="text-body">No images available</span>
+              <span className="text-muted-foreground">No images available</span>
             </div>
           </div>
         )}

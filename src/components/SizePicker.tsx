@@ -14,8 +14,8 @@ export default function SizePicker({ className = "" }: SizePickerProps) {
   return (
     <div className={`flex flex-col gap-3 ${className}`}>
       <div className="flex items-center justify-between">
-        <p className="text-body-medium text-dark-900">Select Size</p>
-        <button className="text-caption text-dark-700 underline-offset-2 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-dark-500]">
+        <p className="text-body-medium text-foreground">Select Size</p>
+        <button className="text-caption text-muted-foreground underline-offset-2 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
           Size Guide
         </button>
       </div>
@@ -27,8 +27,8 @@ export default function SizePicker({ className = "" }: SizePickerProps) {
             <button
               key={s}
               onClick={() => setSelected(isActive ? null : s)}
-              className={`rounded-lg border px-3 py-3 text-center text-body transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-dark-500] ${
-                isActive ? "border-dark-900 text-dark-900" : "border-light-300 text-dark-700 hover:border-dark-500"
+              className={`rounded-lg border px-3 py-3 text-center text-body transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                isActive ? "border-primary text-primary" : "border-input text-muted-foreground hover:border-ring"
               }`}
               aria-pressed={isActive}
             >
