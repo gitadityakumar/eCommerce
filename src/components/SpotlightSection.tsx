@@ -1,17 +1,16 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import Image from "next/image"
+import { Plus } from 'lucide-react'
 
 export default function SpotlightSection () {
   return (
     <section className="relative py-32 w-full overflow-hidden">
       <div className="absolute inset-0">
-        <Image 
+        <img 
           src="https://images.unsplash.com/photo-1611042553365-9b101441c135?q=80&w=2000&auto=format&fit=crop" 
-          className="object-cover brightness-[0.25]" 
+          className="w-full h-full object-cover brightness-[0.25]" 
           alt="Background Texture" 
-          fill
         />
       </div>
       <div className="relative z-10 max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
@@ -50,11 +49,10 @@ export default function SpotlightSection () {
           className="relative"
         >
           <div className="relative z-20 aspect-square max-w-md ml-auto">
-            <Image 
+            <img 
               src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/c543a9e1-f226-4ced-80b0-feb8445a75b9_1600w.jpg" 
-              className="object-cover shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5" 
+              className="w-full h-full object-cover shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5" 
               alt="Pearl Detail" 
-              fill
             />
           </div>
           <motion.div 
@@ -64,11 +62,10 @@ export default function SpotlightSection () {
             transition={{ delay: 0.3 }}
             className="absolute -bottom-10 -left-10 z-10 w-64 h-64 bg-[#111] p-1"
           >
-            <Image 
+            <img 
               src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/5bab247f-35d9-400d-a82b-fd87cfe913d2_1600w.webp" 
-              className="object-cover opacity-60" 
+              className="w-full h-full object-cover opacity-60" 
               alt="Texture Close Up" 
-              fill
             />
           </motion.div>
         </motion.div>

@@ -6,7 +6,8 @@ import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { IconSun, IconMoonStars, IconMenu2, IconX } from '@tabler/icons-react';
-import { Menu } from "@/components/ui/navbar-menu";
+import { Menu, MenuItem, HoveredLink } from "@/components/ui/navbar-menu";
+import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
   { label: "Men", href: "/products?gender=men" },
@@ -17,7 +18,7 @@ const NAV_LINKS = [
 ] as const;
 
 export default function Navbar() {
-  const [, setActive] = useState<string | null>(null);
+  const [active, setActive] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);

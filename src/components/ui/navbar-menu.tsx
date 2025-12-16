@@ -1,11 +1,11 @@
 "use client";
 import React from "react";
-import { motion, Transition } from "framer-motion";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-const transition: Transition = {
+const transition: any = {
   type: "spring",
   mass: 0.5,
   damping: 11.5,
@@ -115,7 +115,7 @@ export const ProductItem = ({
   );
 };
 
-export const HoveredLink = ({ children, ...rest }: React.ComponentProps<typeof Link>) => {
+export const HoveredLink = ({ children, ...rest }: any) => {
   return (
     <Link
       {...rest}

@@ -1,6 +1,6 @@
 import React from "react";
-import { PhilosophySection , CampaignShowcase , SpotlightSection , CollectionGallery , PromoBanner, HeroSection } from "@/components";
-// import { getAllProducts } from "@/lib/actions/product";
+import { Card , PhilosophySection , CampaignShowcase , SpotlightSection , CollectionGallery , PromoBanner, HeroSection } from "@/components";
+import { getAllProducts } from "@/lib/actions/product";
 
 const Home = async () => {
 	// const { products, totalCount } = await getAllProducts({ limit: 6 });

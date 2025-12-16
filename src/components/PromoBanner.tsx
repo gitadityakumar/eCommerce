@@ -1,7 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import Image from "next/image";
+import { motion } from 'framer-motion';
 
 export default function PromoBanner () {
   return (
@@ -12,14 +11,12 @@ export default function PromoBanner () {
         transition={{ duration: 10, repeat: Infinity, repeatType: "reverse" }}
         className="absolute inset-0 w-full h-full"
       >
-        <div className="absolute inset-0">
-        <Image 
-          src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/4734259a-bad7-422f-981e-ce01e79184f2_1600w.jpg" 
-          className="object-cover opacity-40 mix-blend-overlay" 
-          alt="Background Texture" 
-          fill
+        <div className="absolute inset-0 bg-black/50 z-10"></div>
+        <img 
+          src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=2073&auto=format&fit=crop" 
+          className="w-full h-full object-cover opacity-50" 
+          alt="Seasonal Promo" 
         />
-      </div>
       </motion.div>
       
       <motion.div 

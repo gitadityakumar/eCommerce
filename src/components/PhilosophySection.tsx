@@ -3,7 +3,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
-import Image from "next/image"
 
 export default function PhilosophySection () {
   return (
@@ -18,11 +17,10 @@ export default function PhilosophySection () {
             className="lg:col-span-5"
           >
             <div className="relative aspect-[3/4] overflow-hidden rounded-sm group">
-              <Image 
+              <img 
                 src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/4734259a-bad7-422f-981e-ce01e79184f2_1600w.jpg" 
                 alt="Signature Velvet Bow" 
-                className="object-cover group-hover:scale-105 transition-transform duration-[1.5s] opacity-90"
-                fill
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[1.5s] opacity-90"
               />
               
               {/* Hotspot */}
