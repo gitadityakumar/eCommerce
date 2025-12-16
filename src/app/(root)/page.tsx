@@ -1,9 +1,9 @@
 import React from "react";
-import { Card , PhilosophySection , CampaignShowcase , SpotlightSection , CollectionGallery , PromoBanner, HeroSection } from "@/components";
-import { getAllProducts } from "@/lib/actions/product";
+import { PhilosophySection , CampaignShowcase , SpotlightSection , CollectionGallery , PromoBanner, HeroSection } from "@/components";
+// import { getAllProducts } from "@/lib/actions/product";
 
 const Home = async () => {
-	const { products, totalCount } = await getAllProducts({ limit: 6 });
+	// const { products, totalCount } = await getAllProducts({ limit: 6 });
 
 	return (
 		<>
