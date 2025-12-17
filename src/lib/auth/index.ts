@@ -1,13 +1,13 @@
-import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { db } from "@/lib/db";
-import * as schema from "@/lib/db/schema/index";
-import { v4 as uuidv4 } from "uuid";
-import {nextCookies} from "better-auth/next-js";
+import { betterAuth } from 'better-auth'
+import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+import { nextCookies } from 'better-auth/next-js'
+import { v4 as uuidv4 } from 'uuid'
+import { db } from '@/lib/db'
+import * as schema from '@/lib/db/schema/index'
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
-    provider: "pg",
+    provider: 'pg',
     schema: {
       user: schema.users,
       session: schema.sessions,
@@ -23,25 +23,26 @@ export const auth = betterAuth({
   sessions: {
     cookieCache: {
       enabled: true,
-      maxAge: 60 * 60 * 24 * 7
-    }
+      maxAge: 60 * 60 * 24 * 7,
+    },
   },
   cookies: {
     sessionToken: {
-      name: "auth_session",
+      name: 'auth_session',
       options: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        // eslint-disable-next-line node/prefer-global/process
+        secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
         path: '/',
         maxAge: 60 * 60 * 24 * 7,
-      }
-    }
+      },
+    },
   },
   advanced: {
     database: {
-      generateId: () => uuidv4()
-    }
+      generateId: () => uuidv4(),
+    },
   },
-  plugins: [nextCookies()]
-});
+  plugins: [nextCookies()],
+})

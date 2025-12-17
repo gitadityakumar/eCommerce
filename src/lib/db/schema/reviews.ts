@@ -1,8 +1,8 @@
-import { pgTable, text, timestamp, uuid, integer } from 'drizzle-orm/pg-core';
-import { relations, sql } from 'drizzle-orm';
-import { z } from 'zod';
-import { products } from './products';
-import { users } from './user';
+import { relations, sql } from 'drizzle-orm'
+import { integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { z } from 'zod'
+import { products } from './products'
+import { users } from './user'
 
 export const reviews = pgTable('reviews', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -11,9 +11,9 @@ export const reviews = pgTable('reviews', {
   rating: integer('rating').notNull(),
   comment: text('comment'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-}, (t) => ({
+}, t => ({
   ratingRange: sql`CHECK (${t.rating.name} BETWEEN 1 AND 5)`,
-}));
+}))
 
 export const reviewsRelations = relations(reviews, ({ one }) => ({
   product: one(products, {
@@ -24,7 +24,7 @@ export const reviewsRelations = relations(reviews, ({ one }) => ({
     fields: [reviews.userId],
     references: [users.id],
   }),
-}));
+}))
 
 export const insertReviewSchema = z.object({
   productId: z.string().uuid(),
@@ -32,9 +32,9 @@ export const insertReviewSchema = z.object({
   rating: z.number().int().min(1).max(5),
   comment: z.string().optional().nullable(),
   createdAt: z.date().optional(),
-});
+})
 export const selectReviewSchema = insertReviewSchema.extend({
   id: z.string().uuid(),
-});
-export type InsertReview = z.infer<typeof insertReviewSchema>;
-export type SelectReview = z.infer<typeof selectReviewSchema>;
+})
+export type InsertReview = z.infer<typeof insertReviewSchema>
+export type SelectReview = z.infer<typeof selectReviewSchema>

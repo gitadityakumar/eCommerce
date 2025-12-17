@@ -1,10 +1,8 @@
 import {
-IconBrandInstagram,
-IconBrandX,
-IconBrandMeta
-} from "@tabler/icons-react";
-
-
+  IconBrandInstagram,
+  IconBrandMeta,
+  IconBrandX,
+} from '@tabler/icons-react'
 
 export default function Footer() {
   return (
@@ -19,7 +17,7 @@ export default function Footer() {
               Redefining the art of hair accessories through uncompromising quality and modern design.
             </p>
           </div>
-          
+
           <div>
             <h4 className="text-white text-xs font-bold tracking-[0.2em] uppercase mb-8">Shop</h4>
             <ul className="space-y-4">
@@ -43,9 +41,9 @@ export default function Footer() {
           {/* <div>
             <h4 className="text-white text-xs font-bold tracking-[0.2em] uppercase mb-8">Newsletter</h4>
             <div className="relative border-b border-neutral-800 hover:border-white transition-colors duration-300 pb-2">
-              <input 
-                type="email" 
-                placeholder="Email Address" 
+              <input
+                type="email"
+                placeholder="Email Address"
                 className="bg-transparent w-full text-white outline-none placeholder-neutral-700 font-light text-sm"
               />
               <button className="absolute right-0 bottom-2 text-neutral-500 hover:text-white transition-colors">
@@ -75,5 +73,5 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  );
+  )
 };

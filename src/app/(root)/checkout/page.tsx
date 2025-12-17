@@ -1,5 +1,5 @@
-const page = () => {
-	return <div>CheckoutPage</div>;
-};
+function page() {
+  return <div>CheckoutPage</div>
+}
 
-export default page;
+export default page

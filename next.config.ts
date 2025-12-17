@@ -1,8 +1,8 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-	// lets adds some temp image domain
-	 images: {
+  // lets adds some temp image domain
+  images: {
     remotePatterns: [
       {
         protocol: 'https',
@@ -16,12 +16,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-	/* config options here */
-	reactCompiler:true,
-	devIndicators: false,
-	turbopack: {
-		root: process.cwd(),
-	},
-};
+  /* config options here */
+  reactCompiler: true,
+  devIndicators: false,
+  turbopack: {
+    // eslint-disable-next-line node/prefer-global/process
+    root: process.cwd(),
+  },
+}
 
-export default nextConfig;
+export default nextConfig
