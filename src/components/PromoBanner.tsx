@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 export default function PromoBanner () {
   return (
@@ -12,7 +13,7 @@ export default function PromoBanner () {
         className="absolute inset-0 w-full h-full"
       >
         <div className="absolute inset-0 bg-black/50 z-10"></div>
-        <img 
+        <Image 
           src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=2073&auto=format&fit=crop" 
           className="w-full h-full object-cover opacity-50" 
           alt="Seasonal Promo" 

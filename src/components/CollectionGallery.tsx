@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion';
-import { Plus } from 'lucide-react';
+import Image from 'next/image';
 
 export default function CollectionGallery ()  {
   const items = [
@@ -64,7 +64,7 @@ export default function CollectionGallery ()  {
                     Quick Add
                   </motion.button>
                 </motion.div>
-                <img 
+                <Image 
                   src={item.image} 
                   className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 opacity-80 group-hover:opacity-100" 
                   alt={item.title} 
