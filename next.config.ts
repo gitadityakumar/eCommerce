@@ -1,4 +1,4 @@
-import type { NextConfig } from 'next'
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   // lets adds some temp image domain
@@ -20,9 +20,9 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   devIndicators: false,
   turbopack: {
-    // eslint-disable-next-line node/prefer-global/process
+
     root: process.cwd(),
   },
-}
+};
 
-export default nextConfig
+export default nextConfig;

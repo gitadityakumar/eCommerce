@@ -1,10 +1,10 @@
-'use client'
-import type { Transition } from 'framer-motion'
-import { motion } from 'framer-motion'
-import Image from 'next/image'
-import Link from 'next/link'
-import React from 'react'
-import { cn } from '@/lib/utils'
+'use client';
+import type { Transition } from 'framer-motion';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
+import React from 'react';
+import { cn } from '@/lib/utils';
 
 const transition: Transition = {
   type: 'spring',
@@ -13,7 +13,7 @@ const transition: Transition = {
   stiffness: 100,
   restDelta: 0.001,
   restSpeed: 0.001,
-}
+};
 
 export function MenuItem({
   setActive,
@@ -21,10 +21,10 @@ export function MenuItem({
   item,
   children,
 }: {
-  setActive: (item: string) => void
-  active: string | null
-  item: string
-  children?: React.ReactNode
+  setActive: (item: string) => void;
+  active: string | null;
+  item: string;
+  children?: React.ReactNode;
 }) {
   return (
     <div onMouseEnter={() => setActive(item)} className="relative ">
@@ -59,7 +59,7 @@ export function MenuItem({
         </motion.div>
       )}
     </div>
-  )
+  );
 }
 
 export function Menu({
@@ -67,9 +67,9 @@ export function Menu({
   children,
   className,
 }: {
-  setActive: (item: string | null) => void
-  children: React.ReactNode
-  className?: string
+  setActive: (item: string | null) => void;
+  children: React.ReactNode;
+  className?: string;
 }) {
   return (
     <nav
@@ -81,7 +81,7 @@ export function Menu({
     >
       {children}
     </nav>
-  )
+  );
 }
 
 export function ProductItem({
@@ -90,10 +90,10 @@ export function ProductItem({
   href,
   src,
 }: {
-  title: string
-  description: string
-  href: string
-  src: string
+  title: string;
+  description: string;
+  href: string;
+  src: string;
 }) {
   return (
     <Link href={href} className="flex space-x-2">
@@ -113,7 +113,7 @@ export function ProductItem({
         </p>
       </div>
     </Link>
-  )
+  );
 }
 
 export function HoveredLink({ children, ...rest }: React.ComponentProps<typeof Link>) {
@@ -124,5 +124,5 @@ export function HoveredLink({ children, ...rest }: React.ComponentProps<typeof L
     >
       {children}
     </Link>
-  )
+  );
 }

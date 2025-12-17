@@ -1,34 +1,34 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import SocialProviders from './SocialProviders'
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import SocialProviders from './SocialProviders';
 
 interface Props {
-  mode: 'sign-in' | 'sign-up'
-  onSubmit: (formData: FormData) => Promise<{ ok: boolean, userId?: string } | void>
+  mode: 'sign-in' | 'sign-up';
+  onSubmit: (formData: FormData) => Promise<{ ok: boolean; userId?: string } | void>;
 }
 
 export default function AuthForm({ mode, onSubmit }: Props) {
-  const [show, setShow] = useState(false)
-  const router = useRouter()
+  const [show, setShow] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const formData = new FormData(e.currentTarget)
+    const formData = new FormData(e.currentTarget);
 
     try {
-      const result = await onSubmit(formData)
+      const result = await onSubmit(formData);
 
       if (result?.ok)
-        router.push('/')
+        router.push('/');
     }
     catch (e) {
-      console.warn('error', e)
+      console.warn('error', e);
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -148,5 +148,5 @@ export default function AuthForm({ mode, onSubmit }: Props) {
         )}
       </form>
     </div>
-  )
+  );
 }

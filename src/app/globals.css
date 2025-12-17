@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;600&amp;family=Montserrat:wght@400&amp;family=Playfair+Display:wght@300&amp;display=swap');
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -22,7 +22,7 @@
   --color-secondary-accent: #8b5cf6;
 
   /* Font family */
-  --font-jost: "Jost", sans-serif;
+  --font-jost: 'Jost', sans-serif;
 
   /* Heading sizes */
   --text-heading-1: 60px;
@@ -61,7 +61,7 @@
   --text-footnote--line-height: 18px;
   --text-footnote--font-weight: 400;
 
-  /* 
+  /*
    * ==========================================
    * NOIR HAUTE COUTURE TYPOGRAPHY SYSTEM
    * ==========================================
@@ -69,11 +69,11 @@
    */
 
   /* Font Families */
-  --font-playfair: "Playfair Display", serif;
-  --font-montserrat: "Montserrat", sans-serif;
-  --font-inter: "Inter", sans-serif;
+  --font-playfair: 'Playfair Display', serif;
+  --font-montserrat: 'Montserrat', sans-serif;
+  --font-inter: 'Inter', sans-serif;
 
-  /* 
+  /*
    * HEADLINE (Hero & Section Titles)
    * Usage: Large, dramatic headings.
    * Font: Playfair Display (Light 300)
@@ -83,7 +83,7 @@
   --text-noir-headline--font-weight: 300;
   --text-noir-headline--tracking: -0.02em;
 
-  /* 
+  /*
    * SUBTITLE (Hero & Section Descriptions)
    * Usage: Secondary text below headlines.
    * Font: Inter (Light 300)
@@ -93,7 +93,7 @@
   --text-noir-subtitle--font-weight: 300;
   --text-noir-subtitle--tracking: 0.05em;
 
-  /* 
+  /*
    * EYEBROW (Labels & Tags)
    * Usage: Small labels above headlines or categories.
    * Font: Montserrat (Regular 400)
@@ -103,7 +103,7 @@
   --text-noir-eyebrow--font-weight: 400;
   --text-noir-eyebrow--tracking: 0.2em;
 
-  /* 
+  /*
    * BUTTON TEXT (CTAs)
    * Usage: Text inside buttons.
    * Font: Montserrat (SemiBold 600)
@@ -240,7 +240,7 @@
 }
 
 .hero-bg::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   background-image: var(--bg-hero);
@@ -252,7 +252,8 @@
 
 /* Gradient animation keyframes */
 @keyframes gradient-x {
-  0%, 100% {
+  0%,
+  100% {
     background-size: 200% 200%;
     background-position: left center;
   }
@@ -265,3 +266,4 @@
 .animate-gradient-x {
   animation: gradient-x 8s ease infinite;
 }
+/* Rebuild trigger */

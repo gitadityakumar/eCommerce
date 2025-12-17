@@ -1,25 +1,25 @@
-'use client'
-import { motion } from 'framer-motion'
-import { Button } from '@/components/ui/button' // Adjust the import path as needed
+'use client';
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button'; // Adjust the import path as needed
 
 // Animation variants based on the design system
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 1 },
-}
+};
 
 const fadeIn = {
   initial: { opacity: 0 },
   animate: { opacity: 1 },
   transition: { duration: 0.8 },
-}
+};
 
 const scaleX = {
   initial: { scaleX: 0 },
   animate: { scaleX: 1 },
   transition: { duration: 0.6 },
-}
+};
 
 const scrollIndicatorBounce = {
   y: ['0%', '20%', '0%'],
@@ -27,7 +27,7 @@ const scrollIndicatorBounce = {
     duration: 2,
     repeat: Infinity,
   },
-}
+};
 
 export default function HeroSection() {
   return (
@@ -146,5 +146,5 @@ export default function HeroSection() {
         </motion.div>
       </motion.div>
     </section>
-  )
+  );
 }

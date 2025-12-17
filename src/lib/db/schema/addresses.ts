@@ -1,9 +1,9 @@
-import { relations } from 'drizzle-orm'
-import { boolean, pgEnum, pgTable, text, uuid } from 'drizzle-orm/pg-core'
-import { z } from 'zod'
-import { users } from './user'
+import { relations } from 'drizzle-orm';
+import { boolean, pgEnum, pgTable, text, uuid } from 'drizzle-orm/pg-core';
+import { z } from 'zod';
+import { users } from './user';
 
-export const addressTypeEnum = pgEnum('address_type', ['billing', 'shipping'])
+export const addressTypeEnum = pgEnum('address_type', ['billing', 'shipping']);
 
 export const addresses = pgTable('addresses', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -16,14 +16,14 @@ export const addresses = pgTable('addresses', {
   country: text('country').notNull(),
   postalCode: text('postal_code').notNull(),
   isDefault: boolean('is_default').notNull().default(false),
-})
+});
 
 export const addressesRelations = relations(addresses, ({ one }) => ({
   user: one(users, {
     fields: [addresses.userId],
     references: [users.id],
   }),
-}))
+}));
 
 export const insertAddressSchema = z.object({
   userId: z.string().uuid(),
@@ -35,9 +35,9 @@ export const insertAddressSchema = z.object({
   country: z.string().min(1),
   postalCode: z.string().min(1),
   isDefault: z.boolean().optional(),
-})
+});
 export const selectAddressSchema = insertAddressSchema.extend({
   id: z.string().uuid(),
-})
-export type InsertAddress = z.infer<typeof insertAddressSchema>
-export type SelectAddress = z.infer<typeof selectAddressSchema>
+});
+export type InsertAddress = z.infer<typeof insertAddressSchema>;
+export type SelectAddress = z.infer<typeof selectAddressSchema>;

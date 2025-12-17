@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
-import { motion } from 'framer-motion'
-import Image from 'next/image'
+import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 export default function SpotlightSection() {
   return (
@@ -11,6 +11,7 @@ export default function SpotlightSection() {
           src="https://images.unsplash.com/photo-1611042553365-9b101441c135?q=80&w=2000&auto=format&fit=crop"
           className="w-full h-full object-cover brightness-[0.25]"
           alt="Background Texture"
+          fill
         />
       </div>
       <div className="relative z-10 max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
@@ -58,6 +59,7 @@ export default function SpotlightSection() {
               src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/c543a9e1-f226-4ced-80b0-feb8445a75b9_1600w.jpg"
               className="w-full h-full object-cover shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5"
               alt="Pearl Detail"
+              fill
             />
           </div>
           <motion.div
@@ -71,10 +73,11 @@ export default function SpotlightSection() {
               src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/5bab247f-35d9-400d-a82b-fd87cfe913d2_1600w.webp"
               className="w-full h-full object-cover opacity-60"
               alt="Texture Close Up"
+              fill
             />
           </motion.div>
         </motion.div>
       </div>
     </section>
-  )
+  );
 };

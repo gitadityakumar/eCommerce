@@ -1,17 +1,17 @@
-import type { RecommendedProduct, Review } from '@/lib/actions/product'
-import { Heart, ShoppingBag, Star } from 'lucide-react'
-import Link from 'next/link'
-import { Suspense } from 'react'
-import { Card, CollapsibleSection, ProductGallery, SizePicker } from '@/components'
-import ColorSwatches from '@/components/ColorSwatches'
-import { getProduct, getProductReviews, getRecommendedProducts } from '@/lib/actions/product'
+import type { RecommendedProduct, Review } from '@/lib/actions/product';
+import { Heart, ShoppingBag, Star } from 'lucide-react';
+import Link from 'next/link';
+import { Suspense } from 'react';
+import { Card, CollapsibleSection, ProductGallery, SizePicker } from '@/components';
+import ColorSwatches from '@/components/ColorSwatches';
+import { getProduct, getProductReviews, getRecommendedProducts } from '@/lib/actions/product';
 
-interface GalleryVariant { color: string, images: string[] }
+interface GalleryVariant { color: string; images: string[] }
 
 function formatPrice(price: number | null | undefined) {
   if (price === null || price === undefined)
-    return undefined
-  return `$${price.toFixed(2)}`
+    return undefined;
+  return `$${price.toFixed(2)}`;
 }
 
 function NotFoundBlock() {
@@ -28,14 +28,14 @@ function NotFoundBlock() {
         </Link>
       </div>
     </section>
-  )
+  );
 }
 
 async function ReviewsSection({ productId }: { productId: string }) {
-  const reviews: Review[] = await getProductReviews(productId)
-  const count = reviews.length
+  const reviews: Review[] = await getProductReviews(productId);
+  const count = reviews.length;
   const avg
-    = count > 0 ? (reviews.reduce((s, r) => s + r.rating, 0) / count) : 0
+    = count > 0 ? (reviews.reduce((s, r) => s + r.rating, 0) / count) : 0;
 
   return (
     <CollapsibleSection
@@ -72,13 +72,13 @@ async function ReviewsSection({ productId }: { productId: string }) {
             </ul>
           )}
     </CollapsibleSection>
-  )
+  );
 }
 
 async function AlsoLikeSection({ productId }: { productId: string }) {
-  const recs: RecommendedProduct[] = await getRecommendedProducts(productId)
+  const recs: RecommendedProduct[] = await getRecommendedProducts(productId);
   if (!recs.length)
-    return null
+    return null;
   return (
     <section className="mt-16">
       <h2 className="mb-6 text-heading-3 text-dark-900 dark:text-white">You Might Also Like</h2>
@@ -94,12 +94,12 @@ async function AlsoLikeSection({ productId }: { productId: string }) {
         ))}
       </div>
     </section>
-  )
+  );
 }
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
-  const data = await getProduct(id)
+  const { id } = await params;
+  const data = await getProduct(id);
 
   if (!data) {
     return (
@@ -116,49 +116,49 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         </nav>
         <NotFoundBlock />
       </main>
-    )
+    );
   }
 
-  const { product, variants, images } = data
+  const { product, variants, images } = data;
 
   const galleryVariants: GalleryVariant[] = variants.map((v) => {
     const imgs = images
       .filter(img => img.variantId === v.id)
-      .map(img => img.url)
+      .map(img => img.url);
 
     const fallback = images
       .filter(img => img.variantId === null)
       .sort((a, b) => {
         if (a.isPrimary && !b.isPrimary)
-          return -1
+          return -1;
         if (!a.isPrimary && b.isPrimary)
-          return 1
-        return (a.sortOrder ?? 0) - (b.sortOrder ?? 0)
+          return 1;
+        return (a.sortOrder ?? 0) - (b.sortOrder ?? 0);
       })
-      .map(img => img.url)
+      .map(img => img.url);
 
     return {
       color: v.color?.name || 'Default',
       images: imgs.length ? imgs : fallback,
-    }
-  }).filter(gv => gv.images.length > 0)
+    };
+  }).filter(gv => gv.images.length > 0);
 
   const defaultVariant
-    = variants.find(v => v.id === product.defaultVariantId) || variants[0]
+    = variants.find(v => v.id === product.defaultVariantId) || variants[0];
 
-  const basePrice = defaultVariant ? Number(defaultVariant.price) : null
-  const salePrice = defaultVariant?.salePrice ? Number(defaultVariant.salePrice) : null
+  const basePrice = defaultVariant ? Number(defaultVariant.price) : null;
+  const salePrice = defaultVariant?.salePrice ? Number(defaultVariant.salePrice) : null;
 
-  const displayPrice = salePrice !== null && !Number.isNaN(salePrice) ? salePrice : basePrice
-  const compareAt = salePrice !== null && !Number.isNaN(salePrice) ? basePrice : null
+  const displayPrice = salePrice !== null && !Number.isNaN(salePrice) ? salePrice : basePrice;
+  const compareAt = salePrice !== null && !Number.isNaN(salePrice) ? basePrice : null;
 
   const discount
     = compareAt && displayPrice && compareAt > displayPrice
       ? Math.round(((compareAt - displayPrice) / compareAt) * 100)
-      : null
+      : null;
 
   const subtitle
-    = product.gender?.label ? `${product.gender.label} Shoes` : undefined
+    = product.gender?.label ? `${product.gender.label} Shoes` : undefined;
 
   return (
     <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -248,5 +248,5 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         <AlsoLikeSection productId={product.id} />
       </Suspense>
     </main>
-  )
+  );
 }

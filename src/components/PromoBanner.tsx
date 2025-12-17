@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
-import { motion } from 'framer-motion'
-import Image from 'next/image'
+import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 export default function PromoBanner() {
   return (
@@ -17,6 +17,7 @@ export default function PromoBanner() {
           src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=2073&auto=format&fit=crop"
           className="w-full h-full object-cover opacity-50"
           alt="Seasonal Promo"
+          fill
         />
       </motion.div>
 
@@ -41,5 +42,5 @@ export default function PromoBanner() {
         </motion.button>
       </motion.div>
     </section>
-  )
+  );
 };

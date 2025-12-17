@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
-import { motion } from 'framer-motion'
-import Image from 'next/image'
+import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 export default function CollectionGallery() {
   const items = [
@@ -26,7 +26,7 @@ export default function CollectionGallery() {
       price: '$160',
       offset: 'md:mt-0',
     },
-  ]
+  ];
 
   return (
     <section className="py-32 bg-[#100000]">
@@ -68,6 +68,7 @@ export default function CollectionGallery() {
                   src={item.image}
                   className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 opacity-80 group-hover:opacity-100"
                   alt={item.title}
+                  fill
                 />
               </div>
               <div className="mt-6 text-center">
@@ -82,5 +83,5 @@ export default function CollectionGallery() {
         </div>
       </div>
     </section>
-  )
+  );
 };

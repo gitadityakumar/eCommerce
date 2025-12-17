@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import { ChevronDown } from 'lucide-react'
-import { useState } from 'react'
+import { ChevronDown } from 'lucide-react';
+import { useState } from 'react';
 
 export interface CollapsibleSectionProps {
-  title: string
-  children?: React.ReactNode
-  defaultOpen?: boolean
-  rightMeta?: React.ReactNode
-  className?: string
+  title: string;
+  children?: React.ReactNode;
+  defaultOpen?: boolean;
+  rightMeta?: React.ReactNode;
+  className?: string;
 }
 
 export default function CollapsibleSection({
@@ -18,7 +18,7 @@ export default function CollapsibleSection({
   rightMeta,
   className = '',
 }: CollapsibleSectionProps) {
-  const [open, setOpen] = useState(defaultOpen)
+  const [open, setOpen] = useState(defaultOpen);
 
   return (
     <section className={`border-b border-light-300 dark:border-dark-300 ${className}`}>
@@ -42,5 +42,5 @@ export default function CollapsibleSection({
         </div>
       )}
     </section>
-  )
+  );
 }

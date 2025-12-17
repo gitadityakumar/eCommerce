@@ -1,10 +1,10 @@
-import { relations } from 'drizzle-orm'
-import { pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
-import { z } from 'zod'
-import { orders } from './orders'
+import { relations } from 'drizzle-orm';
+import { pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { z } from 'zod';
+import { orders } from './orders';
 
-export const paymentMethodEnum = pgEnum('payment_method', ['stripe', 'paypal', 'cod'])
-export const paymentStatusEnum = pgEnum('payment_status', ['initiated', 'completed', 'failed'])
+export const paymentMethodEnum = pgEnum('payment_method', ['stripe', 'paypal', 'cod']);
+export const paymentStatusEnum = pgEnum('payment_status', ['initiated', 'completed', 'failed']);
 
 export const payments = pgTable('payments', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -13,14 +13,14 @@ export const payments = pgTable('payments', {
   status: paymentStatusEnum('status').notNull().default('initiated'),
   paidAt: timestamp('paid_at'),
   transactionId: text('transaction_id'),
-})
+});
 
 export const paymentsRelations = relations(payments, ({ one }) => ({
   order: one(orders, {
     fields: [payments.orderId],
     references: [orders.id],
   }),
-}))
+}));
 
 export const insertPaymentSchema = z.object({
   orderId: z.string().uuid(),
@@ -28,9 +28,9 @@ export const insertPaymentSchema = z.object({
   status: z.enum(['initiated', 'completed', 'failed']).optional(),
   paidAt: z.date().optional().nullable(),
   transactionId: z.string().optional().nullable(),
-})
+});
 export const selectPaymentSchema = insertPaymentSchema.extend({
   id: z.string().uuid(),
-})
-export type InsertPayment = z.infer<typeof insertPaymentSchema>
-export type SelectPayment = z.infer<typeof selectPaymentSchema>
+});
+export type InsertPayment = z.infer<typeof insertPaymentSchema>;
+export type SelectPayment = z.infer<typeof selectPaymentSchema>;

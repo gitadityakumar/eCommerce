@@ -1,9 +1,9 @@
-import { betterAuth } from 'better-auth'
-import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-import { nextCookies } from 'better-auth/next-js'
-import { v4 as uuidv4 } from 'uuid'
-import { db } from '@/lib/db'
-import * as schema from '@/lib/db/schema/index'
+import { betterAuth } from 'better-auth';
+import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { nextCookies } from 'better-auth/next-js';
+import { v4 as uuidv4 } from 'uuid';
+import { db } from '@/lib/db';
+import * as schema from '@/lib/db/schema/index';
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -31,7 +31,7 @@ export const auth = betterAuth({
       name: 'auth_session',
       options: {
         httpOnly: true,
-        // eslint-disable-next-line node/prefer-global/process
+
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
         path: '/',
@@ -45,4 +45,4 @@ export const auth = betterAuth({
     },
   },
   plugins: [nextCookies()],
-})
+});

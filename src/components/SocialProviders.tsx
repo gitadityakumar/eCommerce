@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import Image from 'next/image';
 
 interface Props { variant?: 'sign-in' | 'sign-up' }
 
@@ -22,5 +22,5 @@ export default function SocialProviders({ variant = 'sign-in' }: Props) {
         <span>Continue with Apple</span>
       </button>
     </div>
-  )
+  );
 }

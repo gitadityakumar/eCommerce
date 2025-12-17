@@ -1,12 +1,12 @@
-import { relations } from 'drizzle-orm'
-import { integer, jsonb, numeric, pgTable, real, text, timestamp, uuid } from 'drizzle-orm/pg-core'
-import { z } from 'zod'
-import { cartItems } from './carts'
-import { colors } from './filters/colors'
-import { sizes } from './filters/sizes'
-import { productImages } from './images'
-import { orderItems } from './orders'
-import { products } from './products'
+import { relations } from 'drizzle-orm';
+import { integer, jsonb, numeric, pgTable, real, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { z } from 'zod';
+import { cartItems } from './carts';
+import { colors } from './filters/colors';
+import { sizes } from './filters/sizes';
+import { productImages } from './images';
+import { orderItems } from './orders';
+import { products } from './products';
 
 export const productVariants = pgTable('product_variants', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -20,7 +20,7 @@ export const productVariants = pgTable('product_variants', {
   weight: real('weight'),
   dimensions: jsonb('dimensions'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-})
+});
 
 export const productVariantsRelations = relations(productVariants, ({ one, many }) => ({
   product: one(products, {
@@ -38,7 +38,7 @@ export const productVariantsRelations = relations(productVariants, ({ one, many 
   images: many(productImages),
   orderItems: many(orderItems),
   cartItems: many(cartItems),
-}))
+}));
 
 export const insertVariantSchema = z.object({
   productId: z.string().uuid(),
@@ -59,9 +59,9 @@ export const insertVariantSchema = z.object({
     .optional()
     .nullable(),
   createdAt: z.date().optional(),
-})
+});
 export const selectVariantSchema = insertVariantSchema.extend({
   id: z.string().uuid(),
-})
-export type InsertVariant = z.infer<typeof insertVariantSchema>
-export type SelectVariant = z.infer<typeof selectVariantSchema>
+});
+export type InsertVariant = z.infer<typeof insertVariantSchema>;
+export type SelectVariant = z.infer<typeof selectVariantSchema>;

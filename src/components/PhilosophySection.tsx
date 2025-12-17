@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
-import { motion } from 'framer-motion'
-import { ArrowRight } from 'lucide-react'
-import Image from 'next/image'
+import { motion } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
+import Image from 'next/image';
 
 export default function PhilosophySection() {
   return (
@@ -21,6 +21,7 @@ export default function PhilosophySection() {
                 src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/4734259a-bad7-422f-981e-ce01e79184f2_1600w.jpg"
                 alt="Signature Velvet Bow"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[1.5s] opacity-90"
+                fill
               />
 
               {/* Hotspot */}
@@ -67,5 +68,5 @@ export default function PhilosophySection() {
         </div>
       </div>
     </section>
-  )
+  );
 };

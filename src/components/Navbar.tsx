@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import { IconMenu2, IconMoonStars, IconSun, IconX } from '@tabler/icons-react'
-import { useTheme } from 'next-themes'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Menu } from '@/components/ui/navbar-menu'
+import { IconMenu2, IconMoonStars, IconSun, IconX } from '@tabler/icons-react';
+import { useTheme } from 'next-themes';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Menu } from '@/components/ui/navbar-menu';
 // import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
@@ -15,16 +15,16 @@ const NAV_LINKS = [
   { label: 'Kids', href: '/products?gender=unisex' },
   { label: 'Collections', href: '/collections' },
   { label: 'Contact', href: '/contact' },
-] as const
+] as const;
 
 export default function Navbar() {
   // eslint-disable-next-line unused-imports/no-unused-vars
-  const [active, setActive] = useState<string | null>(null)
-  const [open, setOpen] = useState(false)
-  const { setTheme, resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const [active, setActive] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+  const { setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), [])
+  useEffect(() => setMounted(true), []);
   // fixed top-0 w-full z-50 border-b border-white/5 bg-black/50 backdrop-blur-md transition-all duration-500
 
   return (
@@ -69,8 +69,8 @@ export default function Navbar() {
             variant="ghost"
             size="icon"
             onClick={() => {
-              const current = resolvedTheme === 'dark' ? 'light' : 'dark'
-              setTheme(current)
+              const current = resolvedTheme === 'dark' ? 'light' : 'dark';
+              setTheme(current);
             }}
             aria-label="Toggle theme"
             className="h-8 w-8 rounded-full   backdrop-blur-md shadow-sm hover:bg-white/10 transition-colors"
@@ -130,5 +130,5 @@ export default function Navbar() {
         </div>
       )}
     </div>
-  )
+  );
 }

@@ -1,5 +1,5 @@
-import React from 'react'
-import { CampaignShowcase, CollectionGallery, HeroSection, PhilosophySection, PromoBanner, SpotlightSection } from '@/components'
+import React from 'react';
+import { CampaignShowcase, CollectionGallery, HeroSection, PhilosophySection, PromoBanner, SpotlightSection } from '@/components';
 // import { getAllProducts } from "@/lib/actions/product";
 
 async function Home() {
@@ -46,7 +46,7 @@ href={`/products/${p.id}`}
 </main> */}
 
     </>
-  )
+  );
 }
 
-export default Home
+export default Home;

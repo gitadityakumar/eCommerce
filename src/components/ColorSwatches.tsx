@@ -1,32 +1,32 @@
-'use client'
+'use client';
 
-import { Check } from 'lucide-react'
-import Image from 'next/image'
-import { useVariantStore } from '@/store/variant'
+import { Check } from 'lucide-react';
+import Image from 'next/image';
+import { useVariantStore } from '@/store/variant';
 
-interface Variant { color: string, images: string[] }
+interface Variant { color: string; images: string[] }
 
 export interface ColorSwatchesProps {
-  productId: string
-  variants: Variant[]
-  className?: string
+  productId: string;
+  variants: Variant[];
+  className?: string;
 }
 
 function firstValidImage(images: string[]) {
-  return images.find(s => typeof s === 'string' && s.trim().length > 0)
+  return images.find(s => typeof s === 'string' && s.trim().length > 0);
 }
 
 export default function ColorSwatches({ productId, variants, className = '' }: ColorSwatchesProps) {
-  const setSelected = useVariantStore(s => s.setSelected)
-  const selected = useVariantStore(s => s.getSelected(productId, 0))
+  const setSelected = useVariantStore(s => s.setSelected);
+  const selected = useVariantStore(s => s.getSelected(productId, 0));
 
   return (
     <div className={`flex flex-wrap gap-3 ${className}`} role="listbox" aria-label="Choose color">
       {variants.map((v, i) => {
-        const src = firstValidImage(v.images)
+        const src = firstValidImage(v.images);
         if (!src)
-          return null
-        const isActive = selected === i
+          return null;
+        const isActive = selected === i;
         return (
           <button
             key={`${v.color}-${i}`}
@@ -45,8 +45,8 @@ export default function ColorSwatches({ productId, variants, className = '' }: C
               </span>
             )}
           </button>
-        )
+        );
       })}
     </div>
-  )
+  );
 }

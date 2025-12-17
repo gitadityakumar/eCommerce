@@ -1,24 +1,24 @@
-'use client'
+'use client';
 
-import { ChevronLeft, ChevronRight, ImageOff } from 'lucide-react'
-import Image from 'next/image'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useVariantStore } from '@/store/variant'
+import { ChevronLeft, ChevronRight, ImageOff } from 'lucide-react';
+import Image from 'next/image';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useVariantStore } from '@/store/variant';
 
 interface Variant {
-  color: string
-  images: string[]
+  color: string;
+  images: string[];
 }
 
 export interface ProductGalleryProps {
-  productId: string
-  variants: Variant[]
-  initialVariantIndex?: number
-  className?: string
+  productId: string;
+  variants: Variant[];
+  initialVariantIndex?: number;
+  className?: string;
 }
 
 function isValidSrc(src: string | undefined | null) {
-  return typeof src === 'string' && src.trim().length > 0
+  return typeof src === 'string' && src.trim().length > 0;
 }
 
 export default function ProductGallery({
@@ -30,46 +30,46 @@ export default function ProductGallery({
   const validVariants = useMemo(
     () => variants.filter(v => Array.isArray(v.images) && v.images.some(isValidSrc)),
     [variants],
-  )
+  );
 
   const variantIndex
     = useVariantStore(
       s => s.selectedByProduct[productId] ?? Math.min(initialVariantIndex, Math.max(validVariants.length - 1, 0)),
-    )
+    );
 
-  const images = validVariants[variantIndex]?.images?.filter(isValidSrc) ?? []
-  const [activeIndex, setActiveIndex] = useState(0)
-  const mainRef = useRef<HTMLDivElement>(null)
+  const images = validVariants[variantIndex]?.images?.filter(isValidSrc) ?? [];
+  const [activeIndex, setActiveIndex] = useState(0);
+  const mainRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setActiveIndex(0)
-  }, [variantIndex])
+    setActiveIndex(0);
+  }, [variantIndex]);
 
   const go = useCallback(
     (dir: -1 | 1) => {
       if (images.length === 0)
-        return
-      setActiveIndex(i => (i + dir + images.length) % images.length)
+        return;
+      setActiveIndex(i => (i + dir + images.length) % images.length);
     },
     [images.length],
-  )
+  );
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (!mainRef.current)
-        return
+        return;
       if (!document.activeElement)
-        return
+        return;
       if (!mainRef.current.contains(document.activeElement))
-        return
+        return;
       if (e.key === 'ArrowLeft')
-        go(-1)
+        go(-1);
       if (e.key === 'ArrowRight')
-        go(1)
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [go])
+        go(1);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [go]);
 
   return (
     <section className={`flex w-full flex-col gap-4 lg:flex-row ${className}`}>
@@ -128,5 +128,5 @@ export default function ProductGallery({
       </div>
 
     </section>
-  )
+  );
 }

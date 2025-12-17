@@ -2,7 +2,7 @@ import {
   IconBrandInstagram,
   IconBrandMeta,
   IconBrandX,
-} from '@tabler/icons-react'
+} from '@tabler/icons-react';
 
 export default function Footer() {
   return (
@@ -73,5 +73,5 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 };

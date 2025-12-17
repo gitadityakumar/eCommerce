@@ -1,20 +1,20 @@
-import { Card } from '@/components'
-import Filters from '@/components/Filters'
-import Sort from '@/components/Sort'
-import { getAllProducts } from '@/lib/actions/product'
-import { parseFilterParams } from '@/lib/utils/query'
+import { Card } from '@/components';
+import Filters from '@/components/Filters';
+import Sort from '@/components/Sort';
+import { getAllProducts } from '@/lib/actions/product';
+import { parseFilterParams } from '@/lib/utils/query';
 
-type SearchParams = Record<string, string | string[] | undefined>
+type SearchParams = Record<string, string | string[] | undefined>;
 
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<SearchParams>
+  searchParams: Promise<SearchParams>;
 }) {
-  const sp = await searchParams
+  const sp = await searchParams;
 
-  const parsed = parseFilterParams(sp)
-  const { products, totalCount } = await getAllProducts(parsed)
+  const parsed = parseFilterParams(sp);
+  const { products, totalCount } = await getAllProducts(parsed);
 
   const activeBadges: string[] = [];
   (sp.gender ? (Array.isArray(sp.gender) ? sp.gender : [sp.gender]) : []).forEach(g =>
@@ -25,10 +25,10 @@ export default async function ProductsPage({
     activeBadges.push(String(c)[0].toUpperCase() + String(c).slice(1)),
   );
   (sp.price ? (Array.isArray(sp.price) ? sp.price : [sp.price]) : []).forEach((p) => {
-    const [min, max] = String(p).split('-')
-    const label = min && max ? `$${min} - $${max}` : min && !max ? `Over $${min}` : `$0 - $${max}`
-    activeBadges.push(label)
-  })
+    const [min, max] = String(p).split('-');
+    const label = min && max ? `$${min} - $${max}` : min && !max ? `Over $${min}` : `$0 - $${max}`;
+    activeBadges.push(label);
+  });
 
   return (
     <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -71,7 +71,7 @@ export default async function ProductsPage({
                         ? `$${p.minPrice.toFixed(2)} - $${p.maxPrice.toFixed(2)}`
                         : p.minPrice !== null
                           ? p.minPrice
-                          : undefined
+                          : undefined;
                     return (
                       <Card
                         key={p.id}
@@ -81,12 +81,12 @@ export default async function ProductsPage({
                         price={price}
                         href={`/products/${p.id}`}
                       />
-                    )
+                    );
                   })}
                 </div>
               )}
         </div>
       </section>
     </main>
-  )
+  );
 }

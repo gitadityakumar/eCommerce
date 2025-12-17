@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
-import { motion } from 'framer-motion'
-import { Plus } from 'lucide-react'
-import Image from 'next/image'
+import { motion } from 'framer-motion';
+import { Plus } from 'lucide-react';
+import Image from 'next/image';
 
 export default function CampaignShowcase() {
   return (
@@ -120,5 +120,5 @@ export default function CampaignShowcase() {
         </div>
       </div>
     </section>
-  )
+  );
 };
