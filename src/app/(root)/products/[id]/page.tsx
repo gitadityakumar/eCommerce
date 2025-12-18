@@ -16,7 +16,7 @@ function NotFoundBlock() {
   return (
     <section className="mx-auto max-w-3xl rounded-xl border border-input bg-card p-8 text-center">
       <h1 className="text-heading-3 text-foreground">Product not found</h1>
-      <p className="mt-2 text-body text-muted-foreground">The product you're looking for doesn't exist or may have been removed.</p>
+      <p className="mt-2 text-body text-muted-foreground">The product you&apos;re looking for doesn&apos;t exist or may have been removed.</p>
       <div className="mt-6">
         <Link
           href="/products"

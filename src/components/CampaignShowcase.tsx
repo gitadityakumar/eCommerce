@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { Plus } from 'lucide-react'
+import Image from 'next/image';
 
 export default function CampaignShowcase() {
   return (
@@ -30,10 +31,11 @@ export default function CampaignShowcase() {
             className="md:col-span-6 md:row-span-2 relative group cursor-pointer"
           >
             <div className="w-full h-full overflow-hidden relative bg-neutral-900">
-              <img 
+              <Image 
                 src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/c543a9e1-f226-4ced-80b0-feb8445a75b9_1600w.jpg" 
                 className="w-full h-[80vh] object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700 opacity-80 group-hover:opacity-100" 
                 alt="Model Portrait" 
+                fill
               />
               <div className="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black/90 to-transparent">
                 <p className="text-white text-3xl font-serif italic mb-2">The Grand Bow</p>
@@ -50,10 +52,11 @@ export default function CampaignShowcase() {
             transition={{ delay: 0.2 }}
             className="md:col-span-6 md:row-span-1 relative group cursor-pointer overflow-hidden"
           >
-            <img 
+            <Image 
               src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/4734259a-bad7-422f-981e-ce01e79184f2_1600w.jpg" 
               className="w-full h-full object-cover hover:scale-110 transition-transform duration-1000" 
               alt="Texture Detail" 
+              fill
             />
             <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500"></div>
             <div className="absolute top-6 right-6">
@@ -78,10 +81,11 @@ export default function CampaignShowcase() {
                 <span className="text-neutral-500 text-xs">01.</span>
                 <Plus className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
-              <img 
+              <Image 
                 src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/917d6f93-fb36-439a-8c48-884b67b35381_1600w.jpg" 
                 className="w-32 h-32 object-cover mx-auto my-4 rounded-full shadow-2xl" 
                 alt="Accessory" 
+                fill
               />
               <div>
                 <h4 className="text-white text-lg font-light leading-tight">Petite Noir</h4>
