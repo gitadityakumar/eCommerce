@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   title: 'Preety Twist',
   description: 'An e-commerce platform for Hair Bows',
 };
-
+// just a commnet to track current progress
 export default function RootShell({
   children,
 }: Readonly<{
