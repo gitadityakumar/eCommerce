@@ -6,6 +6,8 @@ import { productImages } from './images';
 import { orderItems } from './orders';
 import { cartItems } from './carts';
 import { productOptionValues } from './options';
+import { colors } from './filters/colors';
+import { sizes } from './filters/sizes';
 
 export const productVariants = pgTable('product_variants', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -15,6 +17,8 @@ export const productVariants = pgTable('product_variants', {
   salePrice: numeric('sale_price', { precision: 15, scale: 2 }),
   weight: real('weight'),
   dimensions: jsonb('dimensions'),
+  colorId: uuid('color_id').references(() => colors.id, { onDelete: 'set null' }),
+  sizeId: uuid('size_id').references(() => sizes.id, { onDelete: 'set null' }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
@@ -31,6 +35,14 @@ export const productVariantsRelations = relations(productVariants, ({ one, many 
     references: [products.id],
   }),
   optionValues: many(variantOptions),
+  color: one(colors, {
+    fields: [productVariants.colorId],
+    references: [colors.id],
+  }),
+  size: one(sizes, {
+    fields: [productVariants.sizeId],
+    references: [sizes.id],
+  }),
   images: many(productImages),
   orderItems: many(orderItems),
   cartItems: many(cartItems),
@@ -62,6 +74,8 @@ export const insertVariantSchema = z.object({
     .partial()
     .optional()
     .nullable(),
+  colorId: z.string().uuid().optional().nullable(),
+  sizeId: z.string().uuid().optional().nullable(),
   createdAt: z.date().optional(),
 });
 export const selectVariantSchema = insertVariantSchema.extend({

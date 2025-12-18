@@ -132,11 +132,12 @@ async function seed() {
 
       const product = insertProductSchema.parse({
         name,
+        slug: name.toLowerCase().replace(/\s+/g, '-'),
         description: desc,
         categoryId: catPick?.id ?? null,
         genderId: gender?.id ?? null,
         brandId: nike?.id ?? null,
-        isPublished: true,
+        status: 'published',
       });
 
       const retP = await db.insert(products).values(product as InsertProduct).returning();
@@ -171,9 +172,11 @@ async function seed() {
         }
       }
 
+      /*
       if (defaultVariantId) {
         await db.update(products).set({ defaultVariantId }).where(eq(products.id, insertedProduct.id));
       }
+      */
 
       const pickName = sourceImages[i % sourceImages.length];
       const src = join(sourceDir, pickName);

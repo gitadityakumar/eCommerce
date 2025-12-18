@@ -35,7 +35,7 @@ import {
 	type SelectSize,
 } from "@/lib/db/schema";
 
-import { NormalizedProductfilters } from "@/lib/utils/query";
+import { NormalizedProductFilters } from "@/lib/utils/query";
 
 type ProductListItem = {
 	id: string;
@@ -53,9 +53,8 @@ export type GetAllProductsResult = {
 };
 
 export async function getAllProducts(
-	filters?: NormalizedProductfilters,
-): Promise<GetAllProductsResult> {
-	const conds: SQL[] = [eq(products.isPublished, true)];
+	  filters?: NormalizedProductFilters,): Promise<GetAllProductsResult> {
+	const conds: SQL[] = [eq(products.status, 'published')];
 
 	if (filters?.search) {
 		const pattern = `%${filters?.search}%`;
@@ -92,7 +91,7 @@ export async function getAllProducts(
 				db
 					.select({ id: sizes.id })
 					.from(sizes)
-					.where(inArray(sizes.slug, filters?.sizeSlugs)),
+					.where(inArray(sizes.slug, filters?.sizeSlugs || [])),
 			),
 		);
 	}
@@ -103,7 +102,7 @@ export async function getAllProducts(
 				db
 					.select({ id: colors.id })
 					.from(colors)
-					.where(inArray(colors.slug, filters?.colorSlugs)),
+					.where(inArray(colors.slug, filters?.colorSlugs || [])),
 			),
 		);
 	}
@@ -169,7 +168,7 @@ export async function getAllProducts(
 						db
 							.select({ id: colors.id })
 							.from(colors)
-							.where(inArray(colors.slug, filters?.colorSlugs)),
+							.where(inArray(colors.slug, filters?.colorSlugs || [])),
 					),
 				)
 				.as("pi")
@@ -203,8 +202,8 @@ export async function getAllProducts(
 				? desc(sql`max(${variantJoin.price})`)
 				: desc(products.createdAt);
 
-	const page = Math.max(1, filters?.page);
-	const limit = Math.max(1, Math.min(filters?.limit, 60));
+	const page = Math.max(1, filters?.page || 1);
+	const limit = Math.max(1, Math.min(filters?.limit || 20, 60));
 	const offset = (page - 1) * limit;
 
 	const rows = await db
@@ -254,13 +253,13 @@ export async function getAllProducts(
 	return { products: productsOut, totalCount };
 }
 
-export type FullProduct = {
-	product: SelectProduct & {
-		brand?: SelectBrand | null;
-		category?: SelectCategory | null;
-		gender?: SelectGender | null;
-	};
-	variants: Array<
+	export type FullProduct = {
+		product: SelectProduct & {
+			brand?: SelectBrand | null;
+			category?: SelectCategory | null;
+			gender?: SelectGender | null;
+			isPublished: boolean;
+		};	variants: Array<
 		SelectVariant & {
 			color?: SelectColor | null;
 			size?: SelectSize | null;
@@ -276,12 +275,13 @@ export async function getProduct(
 		.select({
 			productId: products.id,
 			productName: products.name,
+			productSlug: products.slug,
 			productDescription: products.description,
 			productBrandId: products.brandId,
 			productCategoryId: products.categoryId,
 			productGenderId: products.genderId,
-			isPublished: products.isPublished,
-			defaultVariantId: products.defaultVariantId,
+			productStatus: products.status,
+
 			productCreatedAt: products.createdAt,
 			productUpdatedAt: products.updatedAt,
 
@@ -306,7 +306,7 @@ export async function getProduct(
 			>`${productVariants.salePrice}::numeric`,
 			variantColorId: productVariants.colorId,
 			variantSizeId: productVariants.sizeId,
-			variantInStock: productVariants.inStock,
+
 
 			colorId: colors.id,
 			colorName: colors.name,
@@ -342,15 +342,17 @@ export async function getProduct(
 		brand?: SelectBrand | null;
 		category?: SelectCategory | null;
 		gender?: SelectGender | null;
+		isPublished: boolean;
 	} = {
 		id: head.productId,
 		name: head.productName,
+		slug: head.productSlug,
 		description: head.productDescription,
 		brandId: head.productBrandId ?? null,
 		categoryId: head.productCategoryId ?? null,
 		genderId: head.productGenderId ?? null,
-		isPublished: head.isPublished,
-		defaultVariantId: head.defaultVariantId ?? null,
+		isPublished: head.productStatus === 'published',
+
 		createdAt: head.productCreatedAt,
 		updatedAt: head.productUpdatedAt,
 		brand: head.brandId
@@ -392,7 +394,7 @@ export async function getProduct(
 					r.variantSalePrice !== null ? String(r.variantSalePrice) : null,
 				colorId: r.variantColorId!,
 				sizeId: r.variantSizeId!,
-				inStock: r.variantInStock!,
+
 				weight: null,
 				dimensions: null,
 				createdAt: head.productCreatedAt,
@@ -530,7 +532,7 @@ export async function getRecommendedProducts(
 		.leftJoin(v, eq(v.productId, products.id))
 		.leftJoin(pi, eq(pi.productId, products.id))
 		.where(
-			and(eq(products.isPublished, true), sql`${products.id} <> ${productId}`),
+			and(eq(products.status, 'published'), sql`${products.id} <> ${productId}`),
 		)
 		.groupBy(products.id, products.name, products.createdAt)
 		.orderBy(desc(priority), desc(products.createdAt), asc(products.id))

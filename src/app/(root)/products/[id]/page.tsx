@@ -130,8 +130,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     };
   }).filter((gv) => gv.images.length > 0);
 
-  const defaultVariant =
-    variants.find((v) => v.id === product.defaultVariantId) || variants[0];
+  const defaultVariant = variants[0];
 
   const basePrice = defaultVariant ? Number(defaultVariant.price) : null;
   const salePrice = defaultVariant?.salePrice ? Number(defaultVariant.salePrice) : null;

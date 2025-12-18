@@ -2,21 +2,21 @@
 
 import * as React from "react";
 import {
-	IconCamera,
-	IconDashboard,
-	IconDatabase,
-	IconFileAi,
-	IconFileDescription,
-	IconFileWord,
-	IconHelp,
+	IconBox,
+	IconHash,
+	IconHome,
 	IconInnerShadowTop,
-	IconListDetails,
-	IconReport,
+	IconLink,
+	IconPackage,
+	IconPlus,
 	IconSearch,
 	IconSettings,
+	IconTag,
+	IconTicket,
+	IconUsers,
 } from "@tabler/icons-react";
 
-import { NavDocuments } from "@/components/nav-documents";
+import Link from "next/link";
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
@@ -36,104 +36,72 @@ const data = {
 		email: "m@example.com",
 		avatar: "/avatars/shadcn.jpg",
 	},
-	navMain: [
+	quickLinks: [
 		{
 			title: "Dashboard",
-			url: "#",
-			icon: IconDashboard,
+			url: "/admin",
+			icon: IconHome,
 		},
 		{
 			title: "New Product",
-			url: "#",
-			icon: IconListDetails,
+			url: "/admin/products/new",
+			icon: IconPlus,
 		},
 		{
 			title: "New Coupon",
-			url: "#",
-			icon: IconListDetails,
+			url: "/admin/coupons",
+			icon: IconTicket,
 		},
 	],
-
-	navClouds: [
+	catalog: [
 		{
-			title: "Capture",
-			icon: IconCamera,
-			isActive: true,
-			url: "#",
-			items: [
-				{
-					title: "Active Proposals",
-					url: "#",
-				},
-				{
-					title: "Archived",
-					url: "#",
-				},
-			],
+			title: "Products",
+			url: "/admin/products",
+			icon: IconBox,
 		},
 		{
-			title: "Proposal",
-			icon: IconFileDescription,
-			url: "#",
-			items: [
-				{
-					title: "Active Proposals",
-					url: "#",
-				},
-				{
-					title: "Archived",
-					url: "#",
-				},
-			],
+			title: "Categories",
+			url: "/admin/categories",
+			icon: IconLink,
 		},
 		{
-			title: "Prompts",
-			icon: IconFileAi,
-			url: "#",
-			items: [
-				{
-					title: "Active Proposals",
-					url: "#",
-				},
-				{
-					title: "Archived",
-					url: "#",
-				},
-			],
+			title: "Collections",
+			url: "/admin/collections",
+			icon: IconTag,
+		},
+		{
+			title: "Attributes",
+			url: "/admin/attributes",
+			icon: IconHash,
 		},
 	],
-	navSecondary: [
+	sale: [
 		{
-			title: "Settings",
+			title: "Orders",
+			url: "/admin/orders",
+			icon: IconPackage,
+		},
+	],
+	customer: [
+		{
+			title: "Customers",
+			url: "/admin/customers",
+			icon: IconUsers,
+		},
+	],
+	setting: [
+		{
+			title: "SETTING",
 			url: "#",
 			icon: IconSettings,
 		},
-		{
-			title: "Get Help",
-			url: "#",
-			icon: IconHelp,
-		},
+	],
+	navSecondary: [
+		
 		{
 			title: "Search",
 			url: "#",
 			icon: IconSearch,
-		},
-	],
-	documents: [
-		{
-			name: "Data Library",
-			url: "#",
-			icon: IconDatabase,
-		},
-		{
-			name: "Reports",
-			url: "#",
-			icon: IconReport,
-		},
-		{
-			name: "Word Assistant",
-			url: "#",
-			icon: IconFileWord,
 		},
 	],
 };
@@ -148,17 +116,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 							asChild
 							className="data-[slot=sidebar-menu-button]:!p-1.5"
 						>
-							<a href="#">
+							<Link href="/admin">
 								<IconInnerShadowTop className="!size-5" />
-								<span className="text-base font-semibold">Acme Inc.</span>
-							</a>
+								<span className="text-base font-semibold">Pretty Twist</span>
+							</Link>
 						</SidebarMenuButton>
 					</SidebarMenuItem>
 				</SidebarMenu>
 			</SidebarHeader>
 			<SidebarContent>
-				<NavMain items={data.navMain} />
-				<NavDocuments items={data.documents} />
+				<NavMain items={data.quickLinks} label="QUICK LINKS" />
+				<NavMain items={data.catalog} label="CATALOG" />
+				<NavMain items={data.sale} label="SALE" />
+				<NavMain items={data.customer} label="CUSTOMER" />
+				<NavMain items={data.setting} />
 				<NavSecondary items={data.navSecondary} className="mt-auto" />
 			</SidebarContent>
 			<SidebarFooter>
