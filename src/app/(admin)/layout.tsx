@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation"
+import { getCurrentUser } from "@/lib/auth/actions"
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
 import {
@@ -5,11 +7,17 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar"
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const user = await getCurrentUser();
+
+  if (!user || user.role !== "admin") {
+    redirect("/sign-in");
+  }
+
   return (
     <SidebarProvider
       style={

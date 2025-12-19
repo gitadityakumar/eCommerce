@@ -52,6 +52,11 @@ const data = {
 			url: "/admin/coupons",
 			icon: IconTicket,
 		},
+		{
+			title: "New Collection",
+			url: "/admin/collections/new",
+			icon: IconTag,
+		},
 	],
 	catalog: [
 		{

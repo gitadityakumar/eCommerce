@@ -1,7 +1,16 @@
-export default function CategoriesPage() {
+import { getCategories } from "@/actions/categories";
+import { CategoryClient } from "./CategoryClient";
+
+export const dynamic = "force-dynamic";
+
+export default async function CategoriesPage() {
+  const result = await getCategories();
+  
+  const categories = result.success ? result.data || [] : [];
+
   return (
-    <div className="flex flex-col gap-3 w-full h-full">
-      <h1>Categories Page</h1>
+    <div className="container mx-auto py-6">
+      <CategoryClient initialCategories={categories} />
     </div>
   );
 }
