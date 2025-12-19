@@ -14,6 +14,7 @@ import {
 	IconTag,
 	IconTicket,
 	IconUsers,
+	IconBuildingStore
 } from "@tabler/icons-react";
 
 import Link from "next/link";
@@ -79,6 +80,23 @@ const data = {
 			url: "/admin/attributes",
 			icon: IconHash,
 		},
+		{
+			title: "Inventory",
+			url: "/admin/inventory",
+			icon: IconPackage,
+		},
+	],
+	health: [
+		{
+			title: "Audit Logs",
+			url: "/admin/audit-logs",
+			icon: IconInnerShadowTop,
+		},
+		{
+			title: "Sessions",
+			url: "/admin/sessions",
+			icon: IconUsers,
+		},
 	],
 	sale: [
 		{
@@ -121,8 +139,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 							asChild
 							className="data-[slot=sidebar-menu-button]:!p-1.5"
 						>
-							<Link href="/admin">
-								<IconInnerShadowTop className="!size-5" />
+							<Link href="/">
+								<IconBuildingStore className="!size-5 text-blue-500" />
 								<span className="text-base font-semibold">Pretty Twist</span>
 							</Link>
 						</SidebarMenuButton>
@@ -132,6 +150,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			<SidebarContent>
 				<NavMain items={data.quickLinks} label="QUICK LINKS" />
 				<NavMain items={data.catalog} label="CATALOG" />
+				<NavMain items={data.health} label="SYSTEM" />
 				<NavMain items={data.sale} label="SALE" />
 				<NavMain items={data.customer} label="CUSTOMER" />
 				<NavMain items={data.setting} />

@@ -1,0 +1,345 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { SelectSize, insertSizeSchema } from "@/lib/db/schema/filters/sizes";
+import { createSize, updateSize, deleteSize } from "@/actions/attributes";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormDescription,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { IconPlus, IconSearch, IconEdit, IconTrash, IconLoader2, IconSparkles } from "@tabler/icons-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
+type FormValues = z.infer<typeof insertSizeSchema>;
+
+interface SizeTabProps {
+  initialData: SelectSize[];
+}
+
+export function SizeTab({ initialData }: SizeTabProps) {
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [editingSize, setEditingSize] = useState<SelectSize | null>(null);
+  const [sizeToDelete, setSizeToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(insertSizeSchema),
+    defaultValues: {
+      name: "",
+      slug: "",
+      sortOrder: 0,
+    },
+  });
+
+  const name = form.watch("name");
+  const { dirtyFields } = form.formState;
+
+  useEffect(() => {
+    if (editingSize) return;
+    
+    // Only auto-generate if the slug field hasn't been manually touched
+    if (!dirtyFields.slug) {
+      const generatedSlug = (name || "")
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/--+/g, "-");
+      form.setValue("slug", generatedSlug, { shouldValidate: true });
+    }
+  }, [name, form, editingSize, dirtyFields.slug]);
+
+  const filteredData = initialData.filter(
+    (item) =>
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.slug.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const onSubmit = async (values: FormValues) => {
+    try {
+      const result = editingSize
+        ? await updateSize(editingSize.id, values)
+        : await createSize(values);
+
+      if (result.success) {
+        toast.success(editingSize ? "Size updated" : "Size created");
+        setIsOpen(false);
+        setEditingSize(null);
+        form.reset();
+        router.refresh();
+      } else {
+        if (typeof result.error === "object") {
+          Object.entries(result.error as Record<string, string[]>).forEach(([key, messages]) => {
+            if (messages && messages.length > 0) {
+              form.setError(key as keyof FormValues, { message: messages[0] });
+            }
+          });
+        } else {
+          toast.error(result.error);
+        }
+      }
+    } catch {
+      toast.error("Something went wrong");
+    }
+  };
+
+  const handleEdit = (size: SelectSize) => {
+    setEditingSize(size);
+    form.reset({
+      name: size.name,
+      slug: size.slug,
+      sortOrder: size.sortOrder,
+    });
+    setIsOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!sizeToDelete) return;
+    setIsDeleting(true);
+    try {
+      const result = await deleteSize(sizeToDelete);
+      if (result.success) {
+        toast.success("Size deleted");
+        router.refresh();
+      } else {
+        toast.error(result.error);
+      }
+    } catch {
+      toast.error("Failed to delete size");
+    } finally {
+      setIsDeleting(false);
+      setSizeToDelete(null);
+    }
+  };
+
+  const generateSlug = () => {
+    const name = form.getValues("name");
+    if (!name) return;
+    const slug = name
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/--+/g, "-");
+    form.setValue("slug", slug, { shouldValidate: true });
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-4">
+        <div className="relative flex-1 max-w-sm">
+          <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          <Input
+            placeholder="Search sizes..."
+            className="pl-9"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <Button onClick={() => {
+          setEditingSize(null);
+          form.reset({ name: "", slug: "", sortOrder: 0 });
+          setIsOpen(true);
+        }}>
+          <IconPlus className="mr-2 size-4" />
+          Add Size
+        </Button>
+      </div>
+
+      <div className="rounded-md border bg-card">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Order</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Slug</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredData.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={4} className="h-24 text-center">
+                  No sizes found.
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredData.map((size) => (
+                <TableRow key={size.id}>
+                  <TableCell className="font-mono">{size.sortOrder}</TableCell>
+                  <TableCell className="font-medium">{size.name}</TableCell>
+                  <TableCell className="font-mono text-xs">{size.slug}</TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <Button variant="ghost" size="icon" onClick={() => handleEdit(size)}>
+                        <IconEdit size={16} />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="text-destructive hover:bg-destructive/10"
+                        onClick={() => setSizeToDelete(size.id)}
+                      >
+                        <IconTrash size={16} />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>{editingSize ? "Edit Size" : "Add New Size"}</DialogTitle>
+            <DialogDescription>
+              {editingSize 
+                ? "Update the details of your size attribute." 
+                : "Create a new size attribute for your products."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Large" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="slug"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center justify-between">
+                        Slug
+                        <Button 
+                          type="button" 
+                          variant="ghost" 
+                          className="h-auto p-0 text-xs text-primary hover:bg-transparent"
+                          onClick={generateSlug}
+                        >
+                          <IconSparkles size={12} className="mr-1" />
+                          Generate
+                        </Button>
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder="large" {...field} />
+                      </FormControl>
+                      <FormDescription>Unique URL-friendly identifier.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="sortOrder"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Sort Order</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          min={0}
+                          {...field} 
+                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)} 
+                        />
+                      </FormControl>
+                      <FormDescription>Used for ordering sizes in the UI.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex gap-2 pt-4">
+                  <Button type="submit" className="flex-1" disabled={form.formState.isSubmitting}>
+                    {form.formState.isSubmitting && <IconLoader2 className="mr-2 size-4 animate-spin" />}
+                    {editingSize ? "Save Changes" : "Create Size"}
+                  </Button>
+                  <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={!!sizeToDelete} onOpenChange={(open) => !open && setSizeToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This size will be permanently deleted. Products using this size might be affected.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={(e) => {
+                e.preventDefault();
+                handleDelete();
+              }}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? "Deleting..." : "Delete Size"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
