@@ -1,12 +1,12 @@
 'use server';
 
-import { db } from "@/lib/db";
-import { orders, fulfillments, auditLogs, orderStatusEnum } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
-import { z } from "zod";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { eq } from 'drizzle-orm';
+import { revalidatePath } from 'next/cache';
+import { headers } from 'next/headers';
+import { z } from 'zod';
+import { auth } from '@/lib/auth';
+import { db } from '@/lib/db';
+import { auditLogs, fulfillments, orders, orderStatusEnum } from '@/lib/db/schema';
 
 const updateStatusSchema = z.object({
   orderId: z.string().uuid(),
@@ -33,8 +33,9 @@ export async function getOrders() {
       orderBy: (orders, { desc }) => [desc(orders.createdAt)],
     });
     return allOrders;
-  } catch (error) {
-    console.error("Error fetching orders:", error);
+  }
+  catch (error) {
+    console.error('Error fetching orders:', error);
     return [];
   }
 }
@@ -54,9 +55,9 @@ export async function getOrderById(id: string) {
                 product: true,
                 color: true,
                 size: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         payments: true,
         fulfillments: true,
@@ -64,8 +65,9 @@ export async function getOrderById(id: string) {
     });
 
     return order;
-  } catch (error) {
-    console.error("Error fetching order:", error);
+  }
+  catch (error) {
+    console.error('Error fetching order:', error);
     return null;
   }
 }
@@ -77,7 +79,7 @@ export async function updateOrderStatus(orderId: string, status: (typeof orderSt
     });
 
     if (!session || session.user.role !== 'admin') {
-      return { success: false, error: "Unauthorized" };
+      return { success: false, error: 'Unauthorized' };
     }
 
     const validated = updateStatusSchema.parse({ orderId, status });
@@ -91,13 +93,13 @@ export async function updateOrderStatus(orderId: string, status: (typeof orderSt
         .limit(1);
 
       if (!currentOrder) {
-        throw new Error("Order not found");
+        throw new Error('Order not found');
       }
 
       // 2. Update order status
       const [updatedOrder] = await tx
         .update(orders)
-        .set({ 
+        .set({
           status: validated.status,
           updatedAt: new Date(),
         })
@@ -120,12 +122,13 @@ export async function updateOrderStatus(orderId: string, status: (typeof orderSt
     revalidatePath(`/admin/orders/${orderId}`);
     revalidatePath('/admin/orders');
     return { success: true, order: result };
-  } catch (error) {
-    console.error("Error updating order status:", error);
+  }
+  catch (error) {
+    console.error('Error updating order status:', error);
     if (error instanceof z.ZodError) {
       return { success: false, error: error.issues[0].message };
     }
-    return { success: false, error: "Failed to update order status" };
+    return { success: false, error: 'Failed to update order status' };
   }
 }
 
@@ -136,7 +139,7 @@ export async function upsertFulfillment(input: z.infer<typeof fulfillmentSchema>
     });
 
     if (!session || session.user.role !== 'admin') {
-      return { success: false, error: "Unauthorized" };
+      return { success: false, error: 'Unauthorized' };
     }
 
     const validated = fulfillmentSchema.parse(input);
@@ -153,7 +156,8 @@ export async function upsertFulfillment(input: z.infer<typeof fulfillmentSchema>
         })
         .where(eq(fulfillments.id, validated.id))
         .returning();
-    } else {
+    }
+    else {
       [result] = await db
         .insert(fulfillments)
         .values({
@@ -167,11 +171,12 @@ export async function upsertFulfillment(input: z.infer<typeof fulfillmentSchema>
 
     revalidatePath(`/admin/orders/${validated.orderId}`);
     return { success: true, fulfillment: result };
-  } catch (error) {
-    console.error("Error upserting fulfillment:", error);
+  }
+  catch (error) {
+    console.error('Error upserting fulfillment:', error);
     if (error instanceof z.ZodError) {
       return { success: false, error: error.issues[0].message };
     }
-    return { success: false, error: "Failed to manage fulfillment" };
+    return { success: false, error: 'Failed to manage fulfillment' };
   }
 }

@@ -1,17 +1,17 @@
-"use server";
+'use server';
 
-import { db } from "@/lib/db";
-import { collections, productCollections, auditLogs } from "@/lib/db/schema";
-import { insertCollectionSchema } from "@/lib/db/schema/collections";
-import { getCurrentUser } from "@/lib/auth/actions";
-import { eq, sql } from "drizzle-orm";
-import { revalidatePath, unstable_noStore as noStore } from "next/cache";
-import { z } from "zod";
+import { eq, sql } from 'drizzle-orm';
+import { unstable_noStore as noStore, revalidatePath } from 'next/cache';
+import { z } from 'zod';
+import { getCurrentUser } from '@/lib/auth/actions';
+import { db } from '@/lib/db';
+import { auditLogs, collections, productCollections } from '@/lib/db/schema';
+import { insertCollectionSchema } from '@/lib/db/schema/collections';
 
 const collectionFormSchema = insertCollectionSchema.extend({
   slug: z.string()
-    .min(1, "Slug is required")
-    .regex(/^[a-z0-9-]+$/, "Slug must only contain lowercase letters, numbers, and hyphens"),
+    .min(1, 'Slug is required')
+    .regex(/^[a-z0-9-]+$/, 'Slug must only contain lowercase letters, numbers, and hyphens'),
   productIds: z.array(z.string().uuid()).optional(),
 });
 
@@ -27,15 +27,16 @@ export async function getCollections() {
       createdAt: collections.createdAt,
       productCount: sql<number>`count(${productCollections.id})::int`,
     })
-    .from(collections)
-    .leftJoin(productCollections, eq(collections.id, productCollections.collectionId))
-    .groupBy(collections.id)
-    .orderBy(collections.createdAt);
+      .from(collections)
+      .leftJoin(productCollections, eq(collections.id, productCollections.collectionId))
+      .groupBy(collections.id)
+      .orderBy(collections.createdAt);
 
     return { success: true, data };
-  } catch (error) {
-    console.error("Error fetching collections:", error);
-    return { success: false, error: "Failed to fetch collections" };
+  }
+  catch (error) {
+    console.error('Error fetching collections:', error);
+    return { success: false, error: 'Failed to fetch collections' };
   }
 }
 
@@ -50,26 +51,27 @@ export async function getCollectionById(id: string) {
     });
 
     if (!collection) {
-      return { success: false, error: "Collection not found" };
+      return { success: false, error: 'Collection not found' };
     }
 
-    return { 
-      success: true, 
+    return {
+      success: true,
       data: {
         ...collection,
-        productIds: collection.junctions.map(j => j.productId)
-      } 
+        productIds: collection.junctions.map(j => j.productId),
+      },
     };
-  } catch (error) {
-    console.error("Error fetching collection:", error);
-    return { success: false, error: "Failed to fetch collection" };
+  }
+  catch (error) {
+    console.error('Error fetching collection:', error);
+    return { success: false, error: 'Failed to fetch collection' };
   }
 }
 
 export async function createCollection(data: CollectionFormInput) {
   const user = await getCurrentUser();
-  if (!user || user.role !== "admin") {
-    return { success: false, error: "Unauthorized. Admin access required." };
+  if (!user || user.role !== 'admin') {
+    return { success: false, error: 'Unauthorized. Admin access required.' };
   }
 
   const validatedFields = collectionFormSchema.safeParse(data);
@@ -91,38 +93,39 @@ export async function createCollection(data: CollectionFormInput) {
           productIds.map(productId => ({
             collectionId: newCollection.id,
             productId,
-          }))
+          })),
         );
       }
 
       // 3. Log the action
       await tx.insert(auditLogs).values({
         adminId: user.id,
-        entityType: "collection",
+        entityType: 'collection',
         entityId: newCollection.id,
-        action: "create",
+        action: 'create',
         newValue: { ...newCollection, productIds },
       });
 
       return newCollection;
     });
 
-    revalidatePath("/admin/collections");
+    revalidatePath('/admin/collections');
     return { success: true, data: result };
-  } catch (error: unknown) {
+  }
+  catch (error: unknown) {
     const dbError = error as { code?: string };
-    if (dbError.code === "23505") {
-      return { success: false, error: "A collection with this slug already exists" };
+    if (dbError.code === '23505') {
+      return { success: false, error: 'A collection with this slug already exists' };
     }
-    console.error("Error creating collection:", error);
-    return { success: false, error: "Failed to create collection" };
+    console.error('Error creating collection:', error);
+    return { success: false, error: 'Failed to create collection' };
   }
 }
 
 export async function updateCollection(id: string, data: CollectionFormInput) {
   const user = await getCurrentUser();
-  if (!user || user.role !== "admin") {
-    return { success: false, error: "Unauthorized. Admin access required." };
+  if (!user || user.role !== 'admin') {
+    return { success: false, error: 'Unauthorized. Admin access required.' };
   }
 
   const validatedFields = collectionFormSchema.safeParse(data);
@@ -138,11 +141,11 @@ export async function updateCollection(id: string, data: CollectionFormInput) {
       where: eq(collections.id, id),
       with: {
         junctions: true,
-      }
+      },
     });
 
     if (!oldCollection) {
-      return { success: false, error: "Collection not found" };
+      return { success: false, error: 'Collection not found' };
     }
 
     const result = await db.transaction(async (tx) => {
@@ -156,23 +159,23 @@ export async function updateCollection(id: string, data: CollectionFormInput) {
       // 2. Sync Product Associations
       // Delete old associations
       await tx.delete(productCollections).where(eq(productCollections.collectionId, id));
-      
+
       // Insert new associations
       if (productIds && productIds.length > 0) {
         await tx.insert(productCollections).values(
           productIds.map(productId => ({
             collectionId: id,
             productId,
-          }))
+          })),
         );
       }
 
       // 3. Log the action
       await tx.insert(auditLogs).values({
         adminId: user.id,
-        entityType: "collection",
+        entityType: 'collection',
         entityId: id,
-        action: "update",
+        action: 'update',
         oldValue: { ...oldCollection, productIds: oldCollection.junctions.map(j => j.productId) },
         newValue: { ...updatedCollection, productIds },
       });
@@ -180,22 +183,23 @@ export async function updateCollection(id: string, data: CollectionFormInput) {
       return updatedCollection;
     });
 
-    revalidatePath("/admin/collections");
+    revalidatePath('/admin/collections');
     return { success: true, data: result };
-  } catch (error: unknown) {
+  }
+  catch (error: unknown) {
     const dbError = error as { code?: string };
-    if (dbError.code === "23505") {
-      return { success: false, error: "A collection with this slug already exists" };
+    if (dbError.code === '23505') {
+      return { success: false, error: 'A collection with this slug already exists' };
     }
-    console.error("Error updating collection:", error);
-    return { success: false, error: "Failed to update collection" };
+    console.error('Error updating collection:', error);
+    return { success: false, error: 'Failed to update collection' };
   }
 }
 
 export async function deleteCollection(id: string) {
   const user = await getCurrentUser();
-  if (!user || user.role !== "admin") {
-    return { success: false, error: "Unauthorized. Admin access required." };
+  if (!user || user.role !== 'admin') {
+    return { success: false, error: 'Unauthorized. Admin access required.' };
   }
 
   try {
@@ -203,11 +207,11 @@ export async function deleteCollection(id: string) {
       where: eq(collections.id, id),
       with: {
         junctions: true,
-      }
+      },
     });
 
     if (!oldCollection) {
-      return { success: false, error: "Collection not found" };
+      return { success: false, error: 'Collection not found' };
     }
 
     await db.transaction(async (tx) => {
@@ -216,17 +220,18 @@ export async function deleteCollection(id: string) {
       // Log the action
       await tx.insert(auditLogs).values({
         adminId: user.id,
-        entityType: "collection",
+        entityType: 'collection',
         entityId: id,
-        action: "delete",
+        action: 'delete',
         oldValue: { ...oldCollection, productIds: oldCollection.junctions.map(j => j.productId) },
       });
     });
 
-    revalidatePath("/admin/collections");
+    revalidatePath('/admin/collections');
     return { success: true };
-  } catch (error) {
-    console.error("Error deleting collection:", error);
-    return { success: false, error: "Failed to delete collection" };
+  }
+  catch (error) {
+    console.error('Error deleting collection:', error);
+    return { success: false, error: 'Failed to delete collection' };
   }
 }

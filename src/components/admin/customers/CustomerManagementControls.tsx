@@ -1,13 +1,13 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { useState } from "react";
-import { ShieldCheck, Settings2, Loader2 } from "lucide-react";
-import { toast } from "sonner";
-import { updateCustomerRole, updateCustomerVerification } from "@/actions/users";
+import { Loader2, Settings2, ShieldCheck } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { updateCustomerRole, updateCustomerVerification } from '@/actions/users';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 
 interface ManagementControlsProps {
   userId: string;
@@ -24,16 +24,19 @@ export function CustomerManagementControls({ userId, initialRole, initialVerifie
   const handleRoleChange = async (newRole: string) => {
     setIsUpdatingRole(true);
     try {
-      const res = await updateCustomerRole(userId, newRole as "customer" | "staff" | "admin");
+      const res = await updateCustomerRole(userId, newRole as 'customer' | 'staff' | 'admin');
       if (res.success) {
         setRole(newRole);
-        toast.success("User role updated successfully");
-      } else {
-        toast.error(res.error || "Failed to update role");
+        toast.success('User role updated successfully');
       }
-    } catch {
-      toast.error("Something went wrong");
-    } finally {
+      else {
+        toast.error(res.error || 'Failed to update role');
+      }
+    }
+    catch {
+      toast.error('Something went wrong');
+    }
+    finally {
       setIsUpdatingRole(false);
     }
   };
@@ -44,13 +47,16 @@ export function CustomerManagementControls({ userId, initialRole, initialVerifie
       const res = await updateCustomerVerification(userId, checked);
       if (res.success) {
         setVerified(checked);
-        toast.success("Verification status updated");
-      } else {
-        toast.error(res.error || "Failed to update verification");
+        toast.success('Verification status updated');
       }
-    } catch {
-      toast.error("Something went wrong");
-    } finally {
+      else {
+        toast.error(res.error || 'Failed to update verification');
+      }
+    }
+    catch {
+      toast.error('Something went wrong');
+    }
+    finally {
       setIsUpdatingVerified(false);
     }
   };

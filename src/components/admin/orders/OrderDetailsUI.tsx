@@ -1,31 +1,31 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { format } from "date-fns";
-import { 
-  Package, 
-  Truck, 
-  CreditCard, 
-  MapPin, 
-  Clock, 
+import { format } from 'date-fns';
+import {
   AlertCircle,
+  Clock,
+  CreditCard,
+  History as HistoryIcon,
+  Loader2,
+  MapPin,
+  Package,
   Save,
-  Loader2
-} from "lucide-react";
-import { toast } from "sonner";
-import { StatusBadge } from "./StatusBadge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { updateOrderStatus, upsertFulfillment } from "@/actions/orders";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { EntityHistoryTab } from "@/components/admin/EntityHistoryTab";
-import { History as HistoryIcon } from "lucide-react";
+  Truck,
+} from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { updateOrderStatus, upsertFulfillment } from '@/actions/orders';
+import { EntityHistoryTab } from '@/components/admin/EntityHistoryTab';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { StatusBadge } from './StatusBadge';
 
 interface OrderItem {
   id: string;
@@ -87,29 +87,29 @@ interface OrderDetailsProps {
 export function OrderDetailsUI({ order }: OrderDetailsProps) {
   const [status, setStatus] = useState(order.status);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
-  
+
   // Fulfillment state
   const existingFulfillment = order.fulfillments?.[0] || {};
-  const [trackingNumber, setTrackingNumber] = useState(existingFulfillment.trackingNumber || "");
-  const [carrier, setCarrier] = useState(existingFulfillment.carrier || "");
-  const [fulfillmentStatus] = useState(existingFulfillment.status || "pending");
+  const [trackingNumber, setTrackingNumber] = useState(existingFulfillment.trackingNumber || '');
+  const [carrier, setCarrier] = useState(existingFulfillment.carrier || '');
+  const [fulfillmentStatus] = useState(existingFulfillment.status || 'pending');
   const [isUpdatingFulfillment, setIsUpdatingFulfillment] = useState(false);
-
-  // Consume setFulfillmentStatus to avoid lint error if not used elsewhere
-  console.log("Current fulfillment status:", fulfillmentStatus);
 
   const handleStatusUpdate = async () => {
     setIsUpdatingStatus(true);
     try {
-      const res = await updateOrderStatus(order.id, status as "pending" | "processing" | "paid" | "partially_shipped" | "shipped" | "delivered" | "cancelled" | "returned" | "refunded" | "failed");
+      const res = await updateOrderStatus(order.id, status as 'pending' | 'processing' | 'paid' | 'partially_shipped' | 'shipped' | 'delivered' | 'cancelled' | 'returned' | 'refunded' | 'failed');
       if (res.success) {
-        toast.success("Order status updated successfully");
-      } else {
-        toast.error(res.error || "Failed to update status");
+        toast.success('Order status updated successfully');
       }
-    } catch {
-      toast.error("An error occurred");
-    } finally {
+      else {
+        toast.error(res.error || 'Failed to update status');
+      }
+    }
+    catch {
+      toast.error('An error occurred');
+    }
+    finally {
       setIsUpdatingStatus(false);
     }
   };
@@ -125,21 +125,24 @@ export function OrderDetailsUI({ order }: OrderDetailsProps) {
         status: fulfillmentStatus,
       });
       if (res.success) {
-        toast.success("Fulfillment updated successfully");
-      } else {
-        toast.error(res.error || "Failed to update fulfillment");
+        toast.success('Fulfillment updated successfully');
       }
-    } catch {
-      toast.error("An error occurred");
-    } finally {
+      else {
+        toast.error(res.error || 'Failed to update fulfillment');
+      }
+    }
+    catch {
+      toast.error('An error occurred');
+    }
+    finally {
       setIsUpdatingFulfillment(false);
     }
   };
 
   const formatPrice = (price: string | number) => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
       minimumFractionDigits: 2,
     }).format(Number(price));
   };
@@ -159,10 +162,16 @@ export function OrderDetailsUI({ order }: OrderDetailsProps) {
       <TabsContent value="details" className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Order #{order.id.slice(0, 8)}</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Order #
+              {order.id.slice(0, 8)}
+            </h1>
             <div className="flex items-center gap-2 mt-1 text-muted-foreground">
               <Clock className="h-4 w-4" />
-              <span>Placed on {format(new Date(order.createdAt), "PPP p")}</span>
+              <span>
+                Placed on
+                {format(new Date(order.createdAt), 'PPP p')}
+              </span>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -178,7 +187,9 @@ export function OrderDetailsUI({ order }: OrderDetailsProps) {
                 <div className="space-y-1">
                   <CardTitle>Order Items</CardTitle>
                   <CardDescription>
-                    {order.items?.length || 0} items in this order
+                    {order.items?.length || 0}
+                    {' '}
+                    items in this order
                   </CardDescription>
                 </div>
                 <Package className="h-5 w-5 text-muted-foreground" />
@@ -199,10 +210,14 @@ export function OrderDetailsUI({ order }: OrderDetailsProps) {
                         <TableCell>
                           <div className="flex flex-col">
                             <span className="font-medium text-primary">
-                              {item.variant?.product?.name || "Product"}
+                              {item.variant?.product?.name || 'Product'}
                             </span>
                             <span className="text-xs text-muted-foreground">
-                              SKU: {item.variant?.sku} | 
+                              SKU:
+                              {' '}
+                              {item.variant?.sku}
+                              {' '}
+                              |
                               {item.variant?.color?.name && ` Color: ${item.variant.color.name}`}
                               {item.variant?.size?.name && ` Size: ${item.variant.size.name}`}
                             </span>
@@ -245,19 +260,25 @@ export function OrderDetailsUI({ order }: OrderDetailsProps) {
                   <CardTitle className="text-lg">Shipping Address</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm space-y-1">
-                  {order.shippingAddress ? (
-                    <>
-                      <p className="font-medium">{order.user?.name}</p>
-                      <p>{order.shippingAddress.line1}</p>
-                      {order.shippingAddress.line2 && <p>{order.shippingAddress.line2}</p>}
-                      <p>
-                        {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postalCode}
-                      </p>
-                      <p>{order.shippingAddress.country}</p>
-                    </>
-                  ) : (
-                    <p className="text-muted-foreground italic">No shipping address provided</p>
-                  )}
+                  {order.shippingAddress
+                    ? (
+                        <>
+                          <p className="font-medium">{order.user?.name}</p>
+                          <p>{order.shippingAddress.line1}</p>
+                          {order.shippingAddress.line2 && <p>{order.shippingAddress.line2}</p>}
+                          <p>
+                            {order.shippingAddress.city}
+                            ,
+                            {order.shippingAddress.state}
+                            {' '}
+                            {order.shippingAddress.postalCode}
+                          </p>
+                          <p>{order.shippingAddress.country}</p>
+                        </>
+                      )
+                    : (
+                        <p className="text-muted-foreground italic">No shipping address provided</p>
+                      )}
                 </CardContent>
               </Card>
 
@@ -267,19 +288,25 @@ export function OrderDetailsUI({ order }: OrderDetailsProps) {
                   <CardTitle className="text-lg">Billing Address</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm space-y-1">
-                  {order.billingAddress ? (
-                    <>
-                      <p className="font-medium">{order.user?.name}</p>
-                      <p>{order.billingAddress.line1}</p>
-                      {order.billingAddress.line2 && <p>{order.billingAddress.line2}</p>}
-                      <p>
-                        {order.billingAddress.city}, {order.billingAddress.state} {order.billingAddress.postalCode}
-                      </p>
-                      <p>{order.billingAddress.country}</p>
-                    </>
-                  ) : (
-                    <p className="text-muted-foreground italic">Same as shipping address</p>
-                  )}
+                  {order.billingAddress
+                    ? (
+                        <>
+                          <p className="font-medium">{order.user?.name}</p>
+                          <p>{order.billingAddress.line1}</p>
+                          {order.billingAddress.line2 && <p>{order.billingAddress.line2}</p>}
+                          <p>
+                            {order.billingAddress.city}
+                            ,
+                            {order.billingAddress.state}
+                            {' '}
+                            {order.billingAddress.postalCode}
+                          </p>
+                          <p>{order.billingAddress.country}</p>
+                        </>
+                      )
+                    : (
+                        <p className="text-muted-foreground italic">Same as shipping address</p>
+                      )}
                 </CardContent>
               </Card>
             </div>
@@ -312,16 +339,18 @@ export function OrderDetailsUI({ order }: OrderDetailsProps) {
                     </SelectContent>
                   </Select>
                 </div>
-                <Button 
-                  onClick={handleStatusUpdate} 
-                  className="w-full" 
+                <Button
+                  onClick={handleStatusUpdate}
+                  className="w-full"
                   disabled={isUpdatingStatus || status === order.status}
                 >
-                  {isUpdatingStatus ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Save className="mr-2 h-4 w-4" />
-                  )}
+                  {isUpdatingStatus
+                    ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )
+                    : (
+                        <Save className="mr-2 h-4 w-4" />
+                      )}
                   Save Status
                 </Button>
               </CardContent>
@@ -335,33 +364,35 @@ export function OrderDetailsUI({ order }: OrderDetailsProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {order.payments?.length > 0 ? (
-                  order.payments.map((payment) => (
-                    <div key={payment.id} className="space-y-2 text-sm">
-                      <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground">Method</span>
-                        <Badge variant="secondary" className="uppercase">{payment.method}</Badge>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground">Status</span>
-                        <span className={payment.status === 'completed' ? 'text-green-600 font-medium' : 'text-yellow-600 font-medium'}>
-                          {payment.status}
-                        </span>
-                      </div>
-                      {payment.transactionId && (
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Transaction ID</span>
-                          <code className="text-xs bg-muted px-1 rounded">{payment.transactionId}</code>
+                {order.payments?.length > 0
+                  ? (
+                      order.payments.map(payment => (
+                        <div key={payment.id} className="space-y-2 text-sm">
+                          <div className="flex justify-between items-center">
+                            <span className="text-muted-foreground">Method</span>
+                            <Badge variant="secondary" className="uppercase">{payment.method}</Badge>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-muted-foreground">Status</span>
+                            <span className={payment.status === 'completed' ? 'text-green-600 font-medium' : 'text-yellow-600 font-medium'}>
+                              {payment.status}
+                            </span>
+                          </div>
+                          {payment.transactionId && (
+                            <div className="flex justify-between items-center">
+                              <span className="text-muted-foreground">Transaction ID</span>
+                              <code className="text-xs bg-muted px-1 rounded">{payment.transactionId}</code>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground italic">
-                    <AlertCircle className="h-4 w-4" />
-                    No payment records found
-                  </div>
-                )}
+                      ))
+                    )
+                  : (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground italic">
+                        <AlertCircle className="h-4 w-4" />
+                        No payment records found
+                      </div>
+                    )}
               </CardContent>
             </Card>
 
@@ -375,33 +406,35 @@ export function OrderDetailsUI({ order }: OrderDetailsProps) {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="carrier">Carrier</Label>
-                  <Input 
-                    id="carrier" 
-                    placeholder="e.g. FedEx, BlueDart" 
+                  <Input
+                    id="carrier"
+                    placeholder="e.g. FedEx, BlueDart"
                     value={carrier}
-                    onChange={(e) => setCarrier(e.target.value)}
+                    onChange={e => setCarrier(e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="tracking">Tracking Number</Label>
-                  <Input 
-                    id="tracking" 
-                    placeholder="e.g. 1Z999..." 
+                  <Input
+                    id="tracking"
+                    placeholder="e.g. 1Z999..."
                     value={trackingNumber}
-                    onChange={(e) => setTrackingNumber(e.target.value)}
+                    onChange={e => setTrackingNumber(e.target.value)}
                   />
                 </div>
-                <Button 
-                  onClick={handleFulfillmentUpdate} 
+                <Button
+                  onClick={handleFulfillmentUpdate}
                   variant="outline"
                   className="w-full"
                   disabled={isUpdatingFulfillment}
                 >
-                  {isUpdatingFulfillment ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Truck className="mr-2 h-4 w-4" />
-                  )}
+                  {isUpdatingFulfillment
+                    ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )
+                    : (
+                        <Truck className="mr-2 h-4 w-4" />
+                      )}
                   Update Tracking
                 </Button>
               </CardContent>

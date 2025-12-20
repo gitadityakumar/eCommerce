@@ -1,36 +1,24 @@
-"use client"
+'use client';
 
-import * as React from "react"
-import {
+import type {
   ColumnDef,
+  SortingState,
+} from '@tanstack/react-table';
+import {
+  IconDotsVertical,
+  IconTrash,
+} from '@tabler/icons-react';
+import {
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
-} from "@tanstack/react-table"
-import {
-  IconDotsVertical,
-  IconTrash,
-} from "@tabler/icons-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+} from '@tanstack/react-table';
+import { format } from 'date-fns';
+import Link from 'next/link';
+import * as React from 'react';
+import { toast } from 'sonner';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,53 +28,71 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import Link from "next/link"
-import { format } from "date-fns"
-import { deleteCoupon } from "@/lib/actions/coupons"
-import { toast } from "sonner"
+} from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { deleteCoupon } from '@/lib/actions/coupons';
 
 interface Coupon {
-  id: string
-  code: string
-  discountType: "percentage" | "fixed"
-  discountValue: string
-  minOrderAmount: string | null
-  startsAt: Date
-  expiresAt: Date | null
-  maxUsage: number | null
-  usedCount: number
+  id: string;
+  code: string;
+  discountType: 'percentage' | 'fixed';
+  discountValue: string;
+  minOrderAmount: string | null;
+  startsAt: Date;
+  expiresAt: Date | null;
+  maxUsage: number | null;
+  usedCount: number;
 }
 
 export function CouponTable({ data }: { data: Coupon[] }) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [isDeleting, setIsDeleting] = React.useState(false)
-  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
-  const [couponToDelete, setCouponToDelete] = React.useState<string | null>(null)
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [isDeleting, setIsDeleting] = React.useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [couponToDelete, setCouponToDelete] = React.useState<string | null>(null);
 
   const handleDelete = async () => {
-    if (!couponToDelete) return
-    setIsDeleting(true)
+    if (!couponToDelete)
+      return;
+    setIsDeleting(true);
     try {
-      const result = await deleteCoupon(couponToDelete)
+      const result = await deleteCoupon(couponToDelete);
       if (result.success) {
-        toast.success("Coupon deleted successfully")
-      } else {
-        toast.error(result.error || "Failed to delete coupon")
+        toast.success('Coupon deleted successfully');
       }
-    } catch {
-      toast.error("An unexpected error occurred")
-    } finally {
-      setIsDeleting(false)
-      setDeleteDialogOpen(false)
-      setCouponToDelete(null)
+      else {
+        toast.error(result.error || 'Failed to delete coupon');
+      }
     }
-  }
+    catch {
+      toast.error('An unexpected error occurred');
+    }
+    finally {
+      setIsDeleting(false);
+      setDeleteDialogOpen(false);
+      setCouponToDelete(null);
+    }
+  };
 
   const columns: ColumnDef<Coupon>[] = [
     {
-      accessorKey: "code",
-      header: "Code",
+      accessorKey: 'code',
+      header: 'Code',
       cell: ({ row }) => (
         <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
           {row.original.code}
@@ -94,63 +100,72 @@ export function CouponTable({ data }: { data: Coupon[] }) {
       ),
     },
     {
-      accessorKey: "discountValue",
-      header: "Discount",
+      accessorKey: 'discountValue',
+      header: 'Discount',
       cell: ({ row }) => {
-        const value = parseFloat(row.original.discountValue)
-        const type = row.original.discountType
+        const value = Number.parseFloat(row.original.discountValue);
+        const type = row.original.discountType;
         return (
           <Badge variant="secondary">
-            {type === "percentage" ? `${value}%` : `₹${value.toFixed(2)}`}
+            {type === 'percentage' ? `${value}%` : `₹${value.toFixed(2)}`}
           </Badge>
-        )
+        );
       },
     },
     {
-      accessorKey: "minOrderAmount",
-      header: "Min Order",
+      accessorKey: 'minOrderAmount',
+      header: 'Min Order',
       cell: ({ row }) => {
-        const amount = row.original.minOrderAmount ? parseFloat(row.original.minOrderAmount) : 0
-        return amount > 0 ? `₹${amount.toFixed(2)}` : "None"
+        const amount = row.original.minOrderAmount ? Number.parseFloat(row.original.minOrderAmount) : 0;
+        return amount > 0 ? `₹${amount.toFixed(2)}` : 'None';
       },
     },
     {
-      accessorKey: "usage",
-      header: "Usage",
+      accessorKey: 'usage',
+      header: 'Usage',
       cell: ({ row }) => {
-        const used = row.original.usedCount
-        const max = row.original.maxUsage
+        const used = row.original.usedCount;
+        const max = row.original.maxUsage;
         return (
           <div className="flex flex-col gap-1">
             <span className="text-sm">
-              {used} / {max || "∞"}
+              {used}
+              {' '}
+              /
+              {max || '∞'}
             </span>
             <div className="w-24 h-1.5 bg-muted rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-primary" 
+              <div
+                className="h-full bg-primary"
                 style={{ width: `${max ? Math.min((used / max) * 100, 100) : 0}%` }}
               />
             </div>
           </div>
-        )
+        );
       },
     },
     {
-      accessorKey: "validity",
-      header: "Validity",
+      accessorKey: 'validity',
+      header: 'Validity',
       cell: ({ row }) => {
-        const start = row.original.startsAt
-        const end = row.original.expiresAt
+        const start = row.original.startsAt;
+        const end = row.original.expiresAt;
         return (
           <div className="text-xs flex flex-col">
-            <span>From: {format(start, "MMM d, yyyy")}</span>
-            <span>To: {end ? format(end, "MMM d, yyyy") : "Forever"}</span>
+            <span>
+              From:
+              {format(start, 'MMM d, yyyy')}
+            </span>
+            <span>
+              To:
+              {end ? format(end, 'MMM d, yyyy') : 'Forever'}
+            </span>
           </div>
-        )
+        );
       },
     },
     {
-      id: "actions",
+      id: 'actions',
       cell: ({ row }) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -163,11 +178,11 @@ export function CouponTable({ data }: { data: Coupon[] }) {
               <Link href={`/admin/coupons/${row.original.id}`}>Edit</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem 
+            <DropdownMenuItem
               className="text-destructive"
               onClick={() => {
-                setCouponToDelete(row.original.id)
-                setDeleteDialogOpen(true)
+                setCouponToDelete(row.original.id);
+                setDeleteDialogOpen(true);
               }}
             >
               <IconTrash className="mr-2 size-4" />
@@ -177,7 +192,7 @@ export function CouponTable({ data }: { data: Coupon[] }) {
         </DropdownMenu>
       ),
     },
-  ]
+  ];
 
   const table = useReactTable({
     data,
@@ -189,22 +204,22 @@ export function CouponTable({ data }: { data: Coupon[] }) {
     state: {
       sorting,
     },
-  })
+  });
 
   return (
     <div className="flex flex-col gap-4">
       <div className="rounded-md border bg-card">
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
+            {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
+                {headerGroup.headers.map(header => (
                   <TableHead key={header.id}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 ))}
@@ -212,23 +227,25 @@ export function CouponTable({ data }: { data: Coupon[] }) {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            {table.getRowModel().rows?.length
+              ? (
+                  table.getRowModel().rows.map(row => (
+                    <TableRow key={row.id}>
+                      {row.getVisibleCells().map(cell => (
+                        <TableCell key={cell.id}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                )
+              : (
+                  <TableRow>
+                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                      No coupons found.
                     </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No coupons found.
-                </TableCell>
-              </TableRow>
-            )}
+                  </TableRow>
+                )}
           </TableBody>
         </Table>
       </div>
@@ -262,16 +279,16 @@ export function CouponTable({ data }: { data: Coupon[] }) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={isDeleting}
             >
-              {isDeleting ? "Deleting..." : "Delete Coupon"}
+              {isDeleting ? 'Deleting...' : 'Delete Coupon'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  )
+  );
 }

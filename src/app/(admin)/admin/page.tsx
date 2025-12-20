@@ -1,40 +1,45 @@
-import { AppSidebar } from '@/components/app-sidebar';
-import { ChartAreaInteractive } from '@/components/chart-area-interactive';
-import { DataTable } from '@/components/data-table';
-import { SectionCards } from '@/components/section-cards';
-import { SiteHeader } from '@/components/site-header';
-import {
-  SidebarInset,
-  SidebarProvider,
-} from '@/components/ui/sidebar';
+import { getDashboardData } from '@/actions/dashboard';
+import { DashboardAuditFeed } from '@/components/admin/dashboard/DashboardAuditFeed';
+import { DashboardDateRangePicker } from '@/components/admin/dashboard/DashboardDateRangePicker';
+import { DashboardKpiCards } from '@/components/admin/dashboard/DashboardKpiCards';
+import { DashboardRecentOrders } from '@/components/admin/dashboard/DashboardRecentOrders';
+import { DashboardSalesTrendChart } from '@/components/admin/dashboard/DashboardSalesTrendChart';
+import { DashboardStockStatus } from '@/components/admin/dashboard/DashboardStockStatus';
 
-import data from './data.json';
+interface AdminPageProps {
+  searchParams: Promise<{ from?: string; to?: string }>;
+}
 
-export default function Page() {
+export default async function Page({ searchParams }: AdminPageProps) {
+  const params = await searchParams;
+  const dateRange = params.from && params.to
+    ? { from: new Date(params.from), to: new Date(params.to) }
+    : undefined;
+
+  const data = await getDashboardData(dateRange);
+
   return (
-    <SidebarProvider
-      style={
-        {
-          '--sidebar-width': 'calc(var(--spacing) * 72)',
-          '--header-height': 'calc(var(--spacing) * 12)',
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader />
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              <SectionCards />
-              <div className="px-4 lg:px-6">
-                <ChartAreaInteractive />
-              </div>
-              <DataTable data={data} />
-            </div>
-          </div>
+    <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
+      <div className="flex items-center justify-between space-y-2">
+        <h2 className="text-3xl font-bold tracking-tight">Dashboard Overview</h2>
+        <div className="flex items-center space-x-2">
+          <DashboardDateRangePicker />
         </div>
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
+
+      <DashboardKpiCards stats={data} />
+
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-7">
+        <DashboardSalesTrendChart data={data.salesTrends} />
+        <div className="col-span-1 md:col-span-2 lg:col-span-4">
+          <DashboardRecentOrders orders={data.recentOrders} />
+        </div>
+      </div>
+
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
+        <DashboardStockStatus items={data.lowStockItems} />
+        <DashboardAuditFeed logs={data.auditFeed} />
+      </div>
+    </div>
   );
 }

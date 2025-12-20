@@ -1,10 +1,20 @@
-import { db } from './index';
-import { 
-  orders, orderItems, users, productVariants, payments, 
-  sessions, guests, auditLogs, inventoryLevels, carts, cartItems 
-} from './schema';
+/* eslint-disable no-console */
 import { eq } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
+import { db } from './index';
+import {
+  auditLogs,
+  cartItems,
+  carts,
+  guests,
+  inventoryLevels,
+  orderItems,
+  orders,
+  payments,
+  productVariants,
+  sessions,
+  users,
+} from './schema';
 
 async function seedDashboard() {
   console.log('--- Dashboard Data Seeding ---');
@@ -27,7 +37,7 @@ async function seedDashboard() {
     const daysAgo = Math.floor(Math.random() * 30);
     const date = new Date();
     date.setDate(date.getDate() - daysAgo);
-    
+
     const statuses = ['delivered', 'shipped', 'processing', 'paid', 'pending'];
     const status = statuses[Math.floor(Math.random() * statuses.length)];
     const amount = (Math.random() * 5000 + 500).toFixed(2);
@@ -65,7 +75,7 @@ async function seedDashboard() {
   console.log('Seeding active sessions and guests...');
   const now = new Date();
   const future = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-  
+
   for (let i = 0; i < 15; i++) {
     const user = userList[Math.floor(Math.random() * userList.length)];
     await db.insert(sessions).values({
@@ -88,13 +98,13 @@ async function seedDashboard() {
   console.log('Seeding audit logs...');
   const entities = ['product', 'order', 'coupon', 'category'];
   const actions = ['create', 'update', 'delete'];
-  
+
   for (let i = 0; i < 10; i++) {
     const date = new Date();
     date.setMinutes(date.getMinutes() - i * 30);
-    
+
     await db.insert(auditLogs).values({
-      adminId: adminId,
+      adminId,
       entityType: entities[Math.floor(Math.random() * entities.length)],
       entityId: uuidv4(),
       action: actions[Math.floor(Math.random() * actions.length)],
@@ -111,7 +121,7 @@ async function seedDashboard() {
       updatedAt: new Date(),
     }).onConflictDoUpdate({
       target: inventoryLevels.variantId,
-      set: { available: Math.floor(Math.random() * 5) }
+      set: { available: Math.floor(Math.random() * 5) },
     });
   }
 
@@ -121,7 +131,7 @@ async function seedDashboard() {
     const [cart] = await db.insert(carts).values({
       userId: user.id,
     }).returning();
-    
+
     await db.insert(cartItems).values({
       cartId: cart.id,
       productVariantId: variants[Math.floor(Math.random() * variants.length)].id,

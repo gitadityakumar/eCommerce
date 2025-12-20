@@ -1,16 +1,16 @@
-import { getCurrentUser } from "@/lib/auth/actions";
-import { redirect } from "next/navigation";
-import { getProducts } from "@/actions/products";
-import { CollectionForm } from "../CollectionForm";
-import { Library, ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { ArrowLeft, Library } from 'lucide-react';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { getProducts } from '@/actions/products';
+import { Button } from '@/components/ui/button';
+import { getCurrentUser } from '@/lib/auth/actions';
+import { CollectionForm } from '../CollectionForm';
 
 export default async function NewCollectionPage() {
   const user = await getCurrentUser();
 
-  if (!user || user.role !== "admin") {
-    redirect("/");
+  if (!user || user.role !== 'admin') {
+    redirect('/');
   }
 
   const products = await getProducts();
@@ -35,8 +35,8 @@ export default async function NewCollectionPage() {
       </div>
 
       <div className="bg-card border rounded-lg p-6 shadow-sm">
-        <CollectionForm 
-          products={products} 
+        <CollectionForm
+          products={products}
         />
       </div>
     </div>

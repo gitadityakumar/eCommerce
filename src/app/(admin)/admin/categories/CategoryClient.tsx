@@ -1,14 +1,11 @@
-"use client"
+'use client';
 
-import { useState, useTransition } from "react";
-import { SelectCategory } from "@/lib/db/schema/categories";
-import { CategoryList } from "./CategoryList";
-import { CategoryForm } from "./CategoryForm";
-import { Input } from "@/components/ui/input";
-import { IconSearch, IconLayoutList } from "@tabler/icons-react";
-import { deleteCategory } from "@/actions/categories";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import type { SelectCategory } from '@/lib/db/schema/categories';
+import { IconLayoutList, IconSearch } from '@tabler/icons-react';
+import { useRouter } from 'next/navigation';
+import { useState, useTransition } from 'react';
+import { toast } from 'sonner';
+import { deleteCategory } from '@/actions/categories';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,7 +15,10 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
+import { Input } from '@/components/ui/input';
+import { CategoryForm } from './CategoryForm';
+import { CategoryList } from './CategoryList';
 
 interface CategoryClientProps {
   initialCategories: SelectCategory[];
@@ -27,26 +27,30 @@ interface CategoryClientProps {
 export function CategoryClient({ initialCategories }: CategoryClientProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [editingCategory, setEditingCategory] = useState<SelectCategory | null>(null);
   const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
-    if (!categoryToDelete) return;
+    if (!categoryToDelete)
+      return;
 
     setIsDeleting(true);
     try {
       const result = await deleteCategory(categoryToDelete);
       if (result.success) {
-        toast.success("Category deleted");
+        toast.success('Category deleted');
         router.refresh();
-      } else {
+      }
+      else {
         toast.error(result.error);
       }
-    } catch {
-      toast.error("Failed to delete category");
-    } finally {
+    }
+    catch {
+      toast.error('Failed to delete category');
+    }
+    finally {
       setIsDeleting(false);
       setCategoryToDelete(null);
     }
@@ -54,7 +58,7 @@ export function CategoryClient({ initialCategories }: CategoryClientProps) {
 
   const handleEdit = (category: SelectCategory) => {
     setEditingCategory(category);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleCancelEdit = () => {
@@ -80,30 +84,30 @@ export function CategoryClient({ initialCategories }: CategoryClientProps) {
             Manage your product hierarchy and taxonomy.
           </p>
         </div>
-        
+
         <div className="relative w-full md:w-72">
           <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
             placeholder="Search categories..."
             className="pl-9 bg-background"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
           />
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-6 items-start">
-        <div className={`space-y-4 ${isPending ? "opacity-50 transition-opacity" : "transition-opacity"}`}>
-          <CategoryList 
-            categories={initialCategories} 
-            onEdit={handleEdit} 
+        <div className={`space-y-4 ${isPending ? 'opacity-50 transition-opacity' : 'transition-opacity'}`}>
+          <CategoryList
+            categories={initialCategories}
+            onEdit={handleEdit}
             onDelete={setCategoryToDelete}
             searchQuery={searchQuery}
           />
         </div>
 
         <div className="lg:block">
-          <CategoryForm 
+          <CategoryForm
             categories={initialCategories}
             editingCategory={editingCategory}
             onSuccess={handleSuccess}
@@ -112,7 +116,7 @@ export function CategoryClient({ initialCategories }: CategoryClientProps) {
         </div>
       </div>
 
-      <AlertDialog open={!!categoryToDelete} onOpenChange={(open) => !open && setCategoryToDelete(null)}>
+      <AlertDialog open={!!categoryToDelete} onOpenChange={open => !open && setCategoryToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -122,7 +126,7 @@ export function CategoryClient({ initialCategories }: CategoryClientProps) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={(e) => {
                 e.preventDefault();
                 handleDelete();
@@ -130,7 +134,7 @@ export function CategoryClient({ initialCategories }: CategoryClientProps) {
               disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isDeleting ? "Deleting..." : "Delete Category"}
+              {isDeleting ? 'Deleting...' : 'Delete Category'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

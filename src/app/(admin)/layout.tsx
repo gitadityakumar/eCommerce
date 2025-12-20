@@ -1,29 +1,29 @@
-import { redirect } from "next/navigation"
-import { getCurrentUser } from "@/lib/auth/actions"
-import { AppSidebar } from "@/components/app-sidebar"
-import { SiteHeader } from "@/components/site-header"
+import { redirect } from 'next/navigation';
+import { AppSidebar } from '@/components/app-sidebar';
+import { SiteHeader } from '@/components/site-header';
 import {
   SidebarInset,
   SidebarProvider,
-} from "@/components/ui/sidebar"
+} from '@/components/ui/sidebar';
+import { getCurrentUser } from '@/lib/auth/actions';
 
 export default async function AdminLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   const user = await getCurrentUser();
 
-  if (!user || user.role !== "admin") {
-    redirect("/sign-in");
+  if (!user || user.role !== 'admin') {
+    redirect('/sign-in');
   }
 
   return (
     <SidebarProvider
       style={
         {
-          "--sidebar-width": "calc(var(--spacing) * 60)",
-          "--header-height": "calc(var(--spacing) * 12)",
+          '--sidebar-width': 'calc(var(--spacing) * 60)',
+          '--header-height': 'calc(var(--spacing) * 12)',
         } as React.CSSProperties
       }
     >
@@ -37,5 +37,5 @@ export default async function AdminLayout({
         </div>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }

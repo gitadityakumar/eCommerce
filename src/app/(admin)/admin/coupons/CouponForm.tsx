@@ -1,16 +1,17 @@
-"use client"
+'use client';
 
-import * as React from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { useRouter } from "next/navigation"
-import { toast } from "sonner"
-import { CalendarIcon, Loader2 } from "lucide-react"
-import { format } from "date-fns"
+import { zodResolver } from '@hookform/resolvers/zod';
+import { format } from 'date-fns';
+import { CalendarIcon, Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import * as React from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import * as z from 'zod';
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -19,91 +20,93 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { createCoupon } from "@/lib/actions/coupons"
+} from '@/components/ui/select';
+import { createCoupon } from '@/lib/actions/coupons';
+import { cn } from '@/lib/utils';
 
 const couponFormSchema = z.object({
-  code: z.string().min(1, "Coupon code is required").toUpperCase().trim(),
-  discountType: z.enum(["percentage", "fixed"], {
-    message: "Please select a discount type",
+  code: z.string().min(1, 'Coupon code is required').toUpperCase().trim(),
+  discountType: z.enum(['percentage', 'fixed'], {
+    message: 'Please select a discount type',
   }),
-  discountValue: z.string().min(1, "Discount value is required").refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
-    message: "Discount value must be a positive number",
+  discountValue: z.string().min(1, 'Discount value is required').refine(val => !Number.isNaN(Number(val)) && Number(val) > 0, {
+    message: 'Discount value must be a positive number',
   }),
-  minOrderAmount: z.string().min(1, "Minimum order amount is required").refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
-    message: "Minimum order amount must be 0 or more",
+  minOrderAmount: z.string().min(1, 'Minimum order amount is required').refine(val => !Number.isNaN(Number(val)) && Number(val) >= 0, {
+    message: 'Minimum order amount must be 0 or more',
   }),
   startsAt: z.date({
-    message: "Start date is required",
+    message: 'Start date is required',
   }),
   expiresAt: z.date().optional().nullable(),
-  maxUsage: z.string().optional().nullable().refine((val) => !val || (!isNaN(Number(val)) && Number(val) > 0), {
-    message: "Max usage must be a positive integer",
+  maxUsage: z.string().optional().nullable().refine(val => !val || (!Number.isNaN(Number(val)) && Number(val) > 0), {
+    message: 'Max usage must be a positive integer',
   }),
-})
+});
 
-type CouponFormValues = z.infer<typeof couponFormSchema>
+type CouponFormValues = z.infer<typeof couponFormSchema>;
 
 export function CouponForm() {
-  const router = useRouter()
-  const [isPending, setIsPending] = React.useState(false)
+  const router = useRouter();
+  const [isPending, setIsPending] = React.useState(false);
 
   const form = useForm<CouponFormValues>({
     resolver: zodResolver(couponFormSchema),
     defaultValues: {
-      code: "",
-      discountType: "percentage",
-      discountValue: "",
-      minOrderAmount: "0",
+      code: '',
+      discountType: 'percentage',
+      discountValue: '',
+      minOrderAmount: '0',
       startsAt: new Date(),
       expiresAt: null,
-      maxUsage: "",
+      maxUsage: '',
     },
-  })
+  });
 
   // Watch discountType to show the correct symbol
-  const discountType = form.watch("discountType")
+  const discountType = form.watch('discountType');
 
   async function onSubmit(values: CouponFormValues) {
-    setIsPending(true)
-    
+    setIsPending(true);
+
     // Prepare data for server action (convert strings to numbers)
     const submitData = {
       ...values,
-      discountValue: parseFloat(values.discountValue),
-      minOrderAmount: parseFloat(values.minOrderAmount),
-      maxUsage: values.maxUsage ? parseInt(values.maxUsage) : null,
+      discountValue: Number.parseFloat(values.discountValue),
+      minOrderAmount: Number.parseFloat(values.minOrderAmount),
+      maxUsage: values.maxUsage ? Number.parseInt(values.maxUsage) : null,
       usedCount: 0,
-    }
+    };
 
     try {
-      const result = await createCoupon(submitData)
-      
+      const result = await createCoupon(submitData);
+
       if (result.success) {
-        toast.success("Coupon created successfully")
-        router.push("/admin/coupons")
-      } else {
-        toast.error(result.error || "Failed to create coupon")
+        toast.success('Coupon created successfully');
+        router.push('/admin/coupons');
       }
-    } catch {
-      toast.error("An unexpected error occurred")
-    } finally {
-      setIsPending(false)
+      else {
+        toast.error(result.error || 'Failed to create coupon');
+      }
+    }
+    catch {
+      toast.error('An unexpected error occurred');
+    }
+    finally {
+      setIsPending(false);
     }
   }
 
@@ -171,7 +174,7 @@ export function CouponForm() {
                       <div className="relative">
                         <Input type="number" step="0.01" placeholder="0.00" {...field} className="pr-10" />
                         <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-muted-foreground font-semibold">
-                          {discountType === "percentage" ? "%" : "₹"}
+                          {discountType === 'percentage' ? '%' : '₹'}
                         </div>
                       </div>
                     </FormControl>
@@ -209,17 +212,19 @@ export function CouponForm() {
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            variant={"outline"}
+                            variant="outline"
                             className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
+                              'w-full pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground',
                             )}
                           >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
+                            {field.value
+                              ? (
+                                  format(field.value, 'PPP')
+                                )
+                              : (
+                                  <span>Pick a date</span>
+                                )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
@@ -229,9 +234,8 @@ export function CouponForm() {
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
-                          disabled={(date) =>
-                            date < new Date("1900-01-01")
-                          }
+                          disabled={date =>
+                            date < new Date('1900-01-01')}
                           initialFocus
                         />
                       </PopoverContent>
@@ -252,17 +256,19 @@ export function CouponForm() {
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            variant={"outline"}
+                            variant="outline"
                             className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
+                              'w-full pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground',
                             )}
                           >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Never expires</span>
-                            )}
+                            {field.value
+                              ? (
+                                  format(field.value, 'PPP')
+                                )
+                              : (
+                                  <span>Never expires</span>
+                                )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
@@ -272,15 +278,14 @@ export function CouponForm() {
                           mode="single"
                           selected={field.value || undefined}
                           onSelect={field.onChange}
-                          disabled={(date) =>
-                            date < (form.getValues("startsAt") || new Date())
-                          }
+                          disabled={date =>
+                            date < (form.getValues('startsAt') || new Date())}
                           initialFocus
                         />
-                         <div className="p-3 border-t">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
+                        <div className="p-3 border-t">
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             className="w-full text-xs"
                             onClick={() => field.onChange(null)}
                           >
@@ -303,7 +308,7 @@ export function CouponForm() {
                 <FormItem>
                   <FormLabel>Total Usage Limit (Optional)</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Leave blank for unlimited" {...field} value={field.value || ""} min="1" />
+                    <Input type="number" placeholder="Leave blank for unlimited" {...field} value={field.value || ''} min="1" />
                   </FormControl>
                   <FormDescription>Total number of times this coupon can be used globally.</FormDescription>
                   <FormMessage />
@@ -312,28 +317,30 @@ export function CouponForm() {
             />
 
             <div className="flex justify-end gap-4 mt-4">
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 onClick={() => router.back()}
                 disabled={isPending}
               >
                 Cancel
               </Button>
               <Button type="submit" disabled={isPending} className="bg-primary hover:bg-primary/90">
-                {isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating...
-                  </>
-                ) : (
-                  "Create Coupon"
-                )}
+                {isPending
+                  ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating...
+                      </>
+                    )
+                  : (
+                      'Create Coupon'
+                    )}
               </Button>
             </div>
           </CardContent>
         </Card>
       </form>
     </Form>
-  )
+  );
 }

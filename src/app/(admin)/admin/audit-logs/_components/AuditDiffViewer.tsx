@@ -1,16 +1,16 @@
 'use client';
 
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
-import { ArrowRight, Info } from "lucide-react";
+import { ArrowRight, Info } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 interface AuditDiffViewerProps {
   oldValue: Record<string, unknown> | null;
@@ -37,7 +37,7 @@ export function AuditDiffViewer({ oldValue, newValue }: AuditDiffViewerProps) {
   if (oldValue && !newValue) {
     return (
       <Card className="p-4 bg-rose-50/50 border-rose-100">
-         <div className="flex items-center gap-2 mb-2 text-rose-700 text-sm font-semibold">
+        <div className="flex items-center gap-2 mb-2 text-rose-700 text-sm font-semibold">
           <Info className="h-4 w-4" />
           <span>Deleted Record</span>
         </div>
@@ -64,7 +64,7 @@ export function AuditDiffViewer({ oldValue, newValue }: AuditDiffViewerProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {changes.map((key) => (
+          {changes.map(key => (
             <TableRow key={key}>
               <TableCell className="font-medium text-muted-foreground">{key}</TableCell>
               <TableCell>

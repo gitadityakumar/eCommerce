@@ -1,28 +1,31 @@
-"use client"
+'use client';
 
-import * as React from "react"
-import {
+import type {
   ColumnDef,
+  SortingState,
+} from '@tanstack/react-table';
+import {
+  IconDotsVertical,
+  IconPlus,
+} from '@tabler/icons-react';
+import {
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
-} from "@tanstack/react-table"
-import {
-  IconDotsVertical,
-  IconPlus,
-} from "@tabler/icons-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+} from '@tanstack/react-table';
+import Link from 'next/link';
+import * as React from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from '@/components/ui/dropdown-menu';
 import {
   Table,
   TableBody,
@@ -30,22 +33,21 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import Link from "next/link"
+} from '@/components/ui/table';
 
 interface Product {
-  id: string
-  name: string
-  slug: string
-  status: string
-  category?: { name: string } | null
-  brand?: { name: string } | null
+  id: string;
+  name: string;
+  slug: string;
+  status: string;
+  category?: { name: string } | null;
+  brand?: { name: string } | null;
 }
 
 const columns: ColumnDef<Product>[] = [
   {
-    accessorKey: "name",
-    header: "Product",
+    accessorKey: 'name',
+    header: 'Product',
     cell: ({ row }) => (
       <div className="flex flex-col">
         <span className="font-medium">{row.original.name}</span>
@@ -54,18 +56,18 @@ const columns: ColumnDef<Product>[] = [
     ),
   },
   {
-    accessorKey: "category.name",
-    header: "Category",
-    cell: ({ row }) => row.original.category?.name || "-",
+    accessorKey: 'category.name',
+    header: 'Category',
+    cell: ({ row }) => row.original.category?.name || '-',
   },
   {
-    accessorKey: "brand.name",
-    header: "Brand",
-    cell: ({ row }) => row.original.brand?.name || "-",
+    accessorKey: 'brand.name',
+    header: 'Brand',
+    cell: ({ row }) => row.original.brand?.name || '-',
   },
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: 'status',
+    header: 'Status',
     cell: ({ row }) => (
       <Badge variant="outline" className="capitalize">
         {row.original.status}
@@ -73,7 +75,7 @@ const columns: ColumnDef<Product>[] = [
     ),
   },
   {
-    id: "actions",
+    id: 'actions',
     cell: ({ row }) => (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -92,10 +94,10 @@ const columns: ColumnDef<Product>[] = [
       </DropdownMenu>
     ),
   },
-]
+];
 
 export function ProductTable({ data }: { data: Product[] }) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const table = useReactTable({
     data,
@@ -107,7 +109,7 @@ export function ProductTable({ data }: { data: Product[] }) {
     state: {
       sorting,
     },
-  })
+  });
 
   return (
     <div className="flex flex-col gap-4 px-4 lg:px-6">
@@ -123,15 +125,15 @@ export function ProductTable({ data }: { data: Product[] }) {
       <div className="rounded-md border">
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
+            {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
+                {headerGroup.headers.map(header => (
                   <TableHead key={header.id}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 ))}
@@ -139,23 +141,25 @@ export function ProductTable({ data }: { data: Product[] }) {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            {table.getRowModel().rows?.length
+              ? (
+                  table.getRowModel().rows.map(row => (
+                    <TableRow key={row.id}>
+                      {row.getVisibleCells().map(cell => (
+                        <TableCell key={cell.id}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                )
+              : (
+                  <TableRow>
+                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                      No products found.
                     </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No products found.
-                </TableCell>
-              </TableRow>
-            )}
+                  </TableRow>
+                )}
           </TableBody>
         </Table>
       </div>
@@ -178,5 +182,5 @@ export function ProductTable({ data }: { data: Product[] }) {
         </Button>
       </div>
     </div>
-  )
+  );
 }

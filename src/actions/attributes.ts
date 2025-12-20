@@ -1,20 +1,23 @@
-"use server";
+'use server';
 
-import { db } from "@/lib/db";
-import { 
-  colors, 
-  sizes, 
-  genders, 
-  productOptions, 
-  productOptionValues, 
-  auditLogs 
-} from "@/lib/db/schema";
-import { insertColorSchema, type InsertColor } from "@/lib/db/schema/filters/colors";
-import { insertSizeSchema, type InsertSize } from "@/lib/db/schema/filters/sizes";
-import { insertGenderSchema, type InsertGender } from "@/lib/db/schema/filters/genders";
-import { getCurrentUser } from "@/lib/auth/actions";
-import { eq } from "drizzle-orm";
-import { revalidatePath, unstable_noStore as noStore } from "next/cache";
+import type { InsertColor } from '@/lib/db/schema/filters/colors';
+import type { InsertGender } from '@/lib/db/schema/filters/genders';
+import type { InsertSize } from '@/lib/db/schema/filters/sizes';
+import { eq } from 'drizzle-orm';
+import { unstable_noStore as noStore, revalidatePath } from 'next/cache';
+import { getCurrentUser } from '@/lib/auth/actions';
+import { db } from '@/lib/db';
+import {
+  auditLogs,
+  colors,
+  genders,
+  productOptions,
+  productOptionValues,
+  sizes,
+} from '@/lib/db/schema';
+import { insertColorSchema } from '@/lib/db/schema/filters/colors';
+import { insertGenderSchema } from '@/lib/db/schema/filters/genders';
+import { insertSizeSchema } from '@/lib/db/schema/filters/sizes';
 
 // --- Colors ---
 
@@ -25,15 +28,17 @@ export async function getColors() {
       orderBy: (colors, { asc }) => [asc(colors.name)],
     });
     return { success: true, data };
-  } catch (error) {
-    console.error("Error fetching colors:", error);
-    return { success: false, error: "Failed to fetch colors" };
+  }
+  catch (error) {
+    console.error('Error fetching colors:', error);
+    return { success: false, error: 'Failed to fetch colors' };
   }
 }
 
 export async function createColor(data: InsertColor) {
   const user = await getCurrentUser();
-  if (!user) return { success: false, error: "Unauthorized" };
+  if (!user)
+    return { success: false, error: 'Unauthorized' };
 
   const validated = insertColorSchema.safeParse(data);
   if (!validated.success) {
@@ -45,25 +50,28 @@ export async function createColor(data: InsertColor) {
 
     await db.insert(auditLogs).values({
       adminId: user.id,
-      entityType: "color",
+      entityType: 'color',
       entityId: newColor.id,
-      action: "create",
+      action: 'create',
       newValue: newColor,
     });
 
-    revalidatePath("/admin/attributes");
+    revalidatePath('/admin/attributes');
     return { success: true, data: newColor };
-  } catch (error: unknown) {
+  }
+  catch (error: unknown) {
     const dbError = error as { code?: string };
-    if (dbError.code === "23505") return { success: false, error: "Slug already exists" };
-    console.error("Error creating color:", error);
-    return { success: false, error: "Failed to create color" };
+    if (dbError.code === '23505')
+      return { success: false, error: 'Slug already exists' };
+    console.error('Error creating color:', error);
+    return { success: false, error: 'Failed to create color' };
   }
 }
 
 export async function updateColor(id: string, data: InsertColor) {
   const user = await getCurrentUser();
-  if (!user) return { success: false, error: "Unauthorized" };
+  if (!user)
+    return { success: false, error: 'Unauthorized' };
 
   const validated = insertColorSchema.safeParse(data);
   if (!validated.success) {
@@ -72,7 +80,8 @@ export async function updateColor(id: string, data: InsertColor) {
 
   try {
     const oldColor = await db.query.colors.findFirst({ where: eq(colors.id, id) });
-    if (!oldColor) return { success: false, error: "Color not found" };
+    if (!oldColor)
+      return { success: false, error: 'Color not found' };
 
     const [updatedColor] = await db
       .update(colors)
@@ -82,46 +91,51 @@ export async function updateColor(id: string, data: InsertColor) {
 
     await db.insert(auditLogs).values({
       adminId: user.id,
-      entityType: "color",
+      entityType: 'color',
       entityId: id,
-      action: "update",
+      action: 'update',
       oldValue: oldColor,
       newValue: updatedColor,
     });
 
-    revalidatePath("/admin/attributes");
+    revalidatePath('/admin/attributes');
     return { success: true, data: updatedColor };
-  } catch (error: unknown) {
+  }
+  catch (error: unknown) {
     const dbError = error as { code?: string };
-    if (dbError.code === "23505") return { success: false, error: "Slug already exists" };
-    console.error("Error updating color:", error);
-    return { success: false, error: "Failed to update color" };
+    if (dbError.code === '23505')
+      return { success: false, error: 'Slug already exists' };
+    console.error('Error updating color:', error);
+    return { success: false, error: 'Failed to update color' };
   }
 }
 
 export async function deleteColor(id: string) {
   const user = await getCurrentUser();
-  if (!user) return { success: false, error: "Unauthorized" };
+  if (!user)
+    return { success: false, error: 'Unauthorized' };
 
   try {
     const oldColor = await db.query.colors.findFirst({ where: eq(colors.id, id) });
-    if (!oldColor) return { success: false, error: "Color not found" };
+    if (!oldColor)
+      return { success: false, error: 'Color not found' };
 
     await db.delete(colors).where(eq(colors.id, id));
 
     await db.insert(auditLogs).values({
       adminId: user.id,
-      entityType: "color",
+      entityType: 'color',
       entityId: id,
-      action: "delete",
+      action: 'delete',
       oldValue: oldColor,
     });
 
-    revalidatePath("/admin/attributes");
+    revalidatePath('/admin/attributes');
     return { success: true };
-  } catch (error) {
-    console.error("Error deleting color:", error);
-    return { success: false, error: "Failed to delete color" };
+  }
+  catch (error) {
+    console.error('Error deleting color:', error);
+    return { success: false, error: 'Failed to delete color' };
   }
 }
 
@@ -134,15 +148,17 @@ export async function getSizes() {
       orderBy: (sizes, { asc }) => [asc(sizes.sortOrder)],
     });
     return { success: true, data };
-  } catch (error) {
-    console.error("Error fetching sizes:", error);
-    return { success: false, error: "Failed to fetch sizes" };
+  }
+  catch (error) {
+    console.error('Error fetching sizes:', error);
+    return { success: false, error: 'Failed to fetch sizes' };
   }
 }
 
 export async function createSize(data: InsertSize) {
   const user = await getCurrentUser();
-  if (!user) return { success: false, error: "Unauthorized" };
+  if (!user)
+    return { success: false, error: 'Unauthorized' };
 
   const validated = insertSizeSchema.safeParse(data);
   if (!validated.success) {
@@ -154,25 +170,28 @@ export async function createSize(data: InsertSize) {
 
     await db.insert(auditLogs).values({
       adminId: user.id,
-      entityType: "size",
+      entityType: 'size',
       entityId: newSize.id,
-      action: "create",
+      action: 'create',
       newValue: newSize,
     });
 
-    revalidatePath("/admin/attributes");
+    revalidatePath('/admin/attributes');
     return { success: true, data: newSize };
-  } catch (error: unknown) {
+  }
+  catch (error: unknown) {
     const dbError = error as { code?: string };
-    if (dbError.code === "23505") return { success: false, error: "Slug already exists" };
-    console.error("Error creating size:", error);
-    return { success: false, error: "Failed to create size" };
+    if (dbError.code === '23505')
+      return { success: false, error: 'Slug already exists' };
+    console.error('Error creating size:', error);
+    return { success: false, error: 'Failed to create size' };
   }
 }
 
 export async function updateSize(id: string, data: InsertSize) {
   const user = await getCurrentUser();
-  if (!user) return { success: false, error: "Unauthorized" };
+  if (!user)
+    return { success: false, error: 'Unauthorized' };
 
   const validated = insertSizeSchema.safeParse(data);
   if (!validated.success) {
@@ -181,7 +200,8 @@ export async function updateSize(id: string, data: InsertSize) {
 
   try {
     const oldSize = await db.query.sizes.findFirst({ where: eq(sizes.id, id) });
-    if (!oldSize) return { success: false, error: "Size not found" };
+    if (!oldSize)
+      return { success: false, error: 'Size not found' };
 
     const [updatedSize] = await db
       .update(sizes)
@@ -191,46 +211,51 @@ export async function updateSize(id: string, data: InsertSize) {
 
     await db.insert(auditLogs).values({
       adminId: user.id,
-      entityType: "size",
+      entityType: 'size',
       entityId: id,
-      action: "update",
+      action: 'update',
       oldValue: oldSize,
       newValue: updatedSize,
     });
 
-    revalidatePath("/admin/attributes");
+    revalidatePath('/admin/attributes');
     return { success: true, data: updatedSize };
-  } catch (error: unknown) {
+  }
+  catch (error: unknown) {
     const dbError = error as { code?: string };
-    if (dbError.code === "23505") return { success: false, error: "Slug already exists" };
-    console.error("Error updating size:", error);
-    return { success: false, error: "Failed to update size" };
+    if (dbError.code === '23505')
+      return { success: false, error: 'Slug already exists' };
+    console.error('Error updating size:', error);
+    return { success: false, error: 'Failed to update size' };
   }
 }
 
 export async function deleteSize(id: string) {
   const user = await getCurrentUser();
-  if (!user) return { success: false, error: "Unauthorized" };
+  if (!user)
+    return { success: false, error: 'Unauthorized' };
 
   try {
     const oldSize = await db.query.sizes.findFirst({ where: eq(sizes.id, id) });
-    if (!oldSize) return { success: false, error: "Size not found" };
+    if (!oldSize)
+      return { success: false, error: 'Size not found' };
 
     await db.delete(sizes).where(eq(sizes.id, id));
 
     await db.insert(auditLogs).values({
       adminId: user.id,
-      entityType: "size",
+      entityType: 'size',
       entityId: id,
-      action: "delete",
+      action: 'delete',
       oldValue: oldSize,
     });
 
-    revalidatePath("/admin/attributes");
+    revalidatePath('/admin/attributes');
     return { success: true };
-  } catch (error) {
-    console.error("Error deleting size:", error);
-    return { success: false, error: "Failed to delete size" };
+  }
+  catch (error) {
+    console.error('Error deleting size:', error);
+    return { success: false, error: 'Failed to delete size' };
   }
 }
 
@@ -243,15 +268,17 @@ export async function getGenders() {
       orderBy: (genders, { asc }) => [asc(genders.label)],
     });
     return { success: true, data };
-  } catch (error) {
-    console.error("Error fetching genders:", error);
-    return { success: false, error: "Failed to fetch genders" };
+  }
+  catch (error) {
+    console.error('Error fetching genders:', error);
+    return { success: false, error: 'Failed to fetch genders' };
   }
 }
 
 export async function createGender(data: InsertGender) {
   const user = await getCurrentUser();
-  if (!user) return { success: false, error: "Unauthorized" };
+  if (!user)
+    return { success: false, error: 'Unauthorized' };
 
   const validated = insertGenderSchema.safeParse(data);
   if (!validated.success) {
@@ -263,25 +290,28 @@ export async function createGender(data: InsertGender) {
 
     await db.insert(auditLogs).values({
       adminId: user.id,
-      entityType: "gender",
+      entityType: 'gender',
       entityId: newGender.id,
-      action: "create",
+      action: 'create',
       newValue: newGender,
     });
 
-    revalidatePath("/admin/attributes");
+    revalidatePath('/admin/attributes');
     return { success: true, data: newGender };
-  } catch (error: unknown) {
+  }
+  catch (error: unknown) {
     const dbError = error as { code?: string };
-    if (dbError.code === "23505") return { success: false, error: "Slug already exists" };
-    console.error("Error creating gender:", error);
-    return { success: false, error: "Failed to create gender" };
+    if (dbError.code === '23505')
+      return { success: false, error: 'Slug already exists' };
+    console.error('Error creating gender:', error);
+    return { success: false, error: 'Failed to create gender' };
   }
 }
 
 export async function updateGender(id: string, data: InsertGender) {
   const user = await getCurrentUser();
-  if (!user) return { success: false, error: "Unauthorized" };
+  if (!user)
+    return { success: false, error: 'Unauthorized' };
 
   const validated = insertGenderSchema.safeParse(data);
   if (!validated.success) {
@@ -290,7 +320,8 @@ export async function updateGender(id: string, data: InsertGender) {
 
   try {
     const oldGender = await db.query.genders.findFirst({ where: eq(genders.id, id) });
-    if (!oldGender) return { success: false, error: "Gender not found" };
+    if (!oldGender)
+      return { success: false, error: 'Gender not found' };
 
     const [updatedGender] = await db
       .update(genders)
@@ -300,46 +331,51 @@ export async function updateGender(id: string, data: InsertGender) {
 
     await db.insert(auditLogs).values({
       adminId: user.id,
-      entityType: "gender",
+      entityType: 'gender',
       entityId: id,
-      action: "update",
+      action: 'update',
       oldValue: oldGender,
       newValue: updatedGender,
     });
 
-    revalidatePath("/admin/attributes");
+    revalidatePath('/admin/attributes');
     return { success: true, data: updatedGender };
-  } catch (error: unknown) {
+  }
+  catch (error: unknown) {
     const dbError = error as { code?: string };
-    if (dbError.code === "23505") return { success: false, error: "Slug already exists" };
-    console.error("Error updating gender:", error);
-    return { success: false, error: "Failed to update gender" };
+    if (dbError.code === '23505')
+      return { success: false, error: 'Slug already exists' };
+    console.error('Error updating gender:', error);
+    return { success: false, error: 'Failed to update gender' };
   }
 }
 
 export async function deleteGender(id: string) {
   const user = await getCurrentUser();
-  if (!user) return { success: false, error: "Unauthorized" };
+  if (!user)
+    return { success: false, error: 'Unauthorized' };
 
   try {
     const oldGender = await db.query.genders.findFirst({ where: eq(genders.id, id) });
-    if (!oldGender) return { success: false, error: "Gender not found" };
+    if (!oldGender)
+      return { success: false, error: 'Gender not found' };
 
     await db.delete(genders).where(eq(genders.id, id));
 
     await db.insert(auditLogs).values({
       adminId: user.id,
-      entityType: "gender",
+      entityType: 'gender',
       entityId: id,
-      action: "delete",
+      action: 'delete',
       oldValue: oldGender,
     });
 
-    revalidatePath("/admin/attributes");
+    revalidatePath('/admin/attributes');
     return { success: true };
-  } catch (error) {
-    console.error("Error deleting gender:", error);
-    return { success: false, error: "Failed to delete gender" };
+  }
+  catch (error) {
+    console.error('Error deleting gender:', error);
+    return { success: false, error: 'Failed to delete gender' };
   }
 }
 
@@ -358,106 +394,117 @@ export async function getProductOptions(productId: string) {
       orderBy: (options, { asc }) => [asc(options.sortOrder)],
     });
     return { success: true, data };
-  } catch (error) {
-    console.error("Error fetching product options:", error);
-    return { success: false, error: "Failed to fetch product options" };
+  }
+  catch (error) {
+    console.error('Error fetching product options:', error);
+    return { success: false, error: 'Failed to fetch product options' };
   }
 }
 
 export async function createProductOption(data: { productId: string; name: string; sortOrder: number }) {
   const user = await getCurrentUser();
-  if (!user) return { success: false, error: "Unauthorized" };
+  if (!user)
+    return { success: false, error: 'Unauthorized' };
 
   try {
     const [newOption] = await db.insert(productOptions).values(data).returning();
 
     await db.insert(auditLogs).values({
       adminId: user.id,
-      entityType: "product_option",
+      entityType: 'product_option',
       entityId: newOption.id,
-      action: "create",
+      action: 'create',
       newValue: newOption,
     });
 
-    revalidatePath("/admin/attributes");
+    revalidatePath('/admin/attributes');
     return { success: true, data: newOption };
-  } catch (error) {
-    console.error("Error creating product option:", error);
-    return { success: false, error: "Failed to create product option" };
+  }
+  catch (error) {
+    console.error('Error creating product option:', error);
+    return { success: false, error: 'Failed to create product option' };
   }
 }
 
 export async function deleteProductOption(id: string) {
   const user = await getCurrentUser();
-  if (!user) return { success: false, error: "Unauthorized" };
+  if (!user)
+    return { success: false, error: 'Unauthorized' };
 
   try {
     const oldOption = await db.query.productOptions.findFirst({ where: eq(productOptions.id, id) });
-    if (!oldOption) return { success: false, error: "Option not found" };
+    if (!oldOption)
+      return { success: false, error: 'Option not found' };
 
     await db.delete(productOptions).where(eq(productOptions.id, id));
 
     await db.insert(auditLogs).values({
       adminId: user.id,
-      entityType: "product_option",
+      entityType: 'product_option',
       entityId: id,
-      action: "delete",
+      action: 'delete',
       oldValue: oldOption,
     });
 
-    revalidatePath("/admin/attributes");
+    revalidatePath('/admin/attributes');
     return { success: true };
-  } catch (error) {
-    console.error("Error deleting product option:", error);
-    return { success: false, error: "Failed to delete product option" };
+  }
+  catch (error) {
+    console.error('Error deleting product option:', error);
+    return { success: false, error: 'Failed to delete product option' };
   }
 }
 
 export async function createProductOptionValue(data: { optionId: string; value: string; sortOrder: number }) {
   const user = await getCurrentUser();
-  if (!user) return { success: false, error: "Unauthorized" };
+  if (!user)
+    return { success: false, error: 'Unauthorized' };
 
   try {
     const [newValue] = await db.insert(productOptionValues).values(data).returning();
 
     await db.insert(auditLogs).values({
       adminId: user.id,
-      entityType: "product_option_value",
+      entityType: 'product_option_value',
       entityId: newValue.id,
-      action: "create",
-      newValue: newValue,
+      action: 'create',
+      newValue,
     });
 
-    revalidatePath("/admin/attributes");
+    revalidatePath('/admin/attributes');
     return { success: true, data: newValue };
-  } catch (error) {
-    console.error("Error creating option value:", error);
-    return { success: false, error: "Failed to create option value" };
+  }
+  catch (error) {
+    console.error('Error creating option value:', error);
+    return { success: false, error: 'Failed to create option value' };
   }
 }
 
 export async function deleteProductOptionValue(id: string) {
   const user = await getCurrentUser();
-  if (!user) return { success: false, error: "Unauthorized" };
+  if (!user)
+    return { success: false, error: 'Unauthorized' };
 
   try {
     const oldValue = await db.query.productOptionValues.findFirst({ where: eq(productOptionValues.id, id) });
-    if (!oldValue) return { success: false, error: "Value not found" };
+    if (!oldValue)
+      return { success: false, error: 'Value not found' };
 
     await db.delete(productOptionValues).where(eq(productOptionValues.id, id));
 
     await db.insert(auditLogs).values({
       adminId: user.id,
-      entityType: "product_option_value",
+      entityType: 'product_option_value',
       entityId: id,
-      action: "delete",
-      oldValue: oldValue,
+      action: 'delete',
+      oldValue,
     });
 
-    revalidatePath("/admin/attributes");
+    revalidatePath('/admin/attributes');
     return { success: true };
-  } catch (error) {
-    console.error("Error deleting option value:", error);
-    return { success: false, error: "Failed to delete option value" };
+  }
+  catch (error) {
+    console.error('Error deleting option value:', error);
+    return { success: false, error: 'Failed to delete option value' };
   }
 }

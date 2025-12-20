@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { History } from "lucide-react";
+import { History } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface AuditFeedProps {
   logs: {
@@ -16,14 +16,14 @@ export function DashboardAuditFeed({ logs }: AuditFeedProps) {
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-semibold">Audit Feed</CardTitle>
-            <History className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="text-base font-semibold">Audit Feed</CardTitle>
+          <History className="h-4 w-4 text-muted-foreground" />
         </div>
         <CardDescription>Recent admin activity.</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="relative space-y-4 before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-linear-to-b before:from-transparent before:via-slate-200 before:to-transparent">
-          {logs.map((log) => (
+          {logs.map(log => (
             <div key={log.id} className="relative flex items-center justify-between group">
               <div className="flex items-center gap-4">
                 <div className="flex items-center justify-center w-10 h-10 rounded-full border bg-white shadow-sm z-10">
@@ -31,7 +31,12 @@ export function DashboardAuditFeed({ logs }: AuditFeedProps) {
                 </div>
                 <div className="flex flex-col">
                   <p className="text-sm font-medium">
-                    <span className="font-bold">{log.adminName}</span> {log.action}d {log.entityType}
+                    <span className="font-bold">{log.adminName}</span>
+                    {' '}
+                    {log.action}
+                    d
+                    {' '}
+                    {log.entityType}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

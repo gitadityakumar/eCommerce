@@ -1,7 +1,7 @@
-import { getColors, getSizes, getGenders } from "@/actions/attributes";
-import { AttributeDashboard } from "./AttributeDashboard";
+import { getColors, getGenders, getSizes } from '@/actions/attributes';
+import { AttributeDashboard } from './AttributeDashboard';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 export default async function AttributesPage() {
   const [colorsRes, sizesRes, gendersRes] = await Promise.all([
@@ -16,10 +16,10 @@ export default async function AttributesPage() {
 
   return (
     <div className="container mx-auto py-6">
-      <AttributeDashboard 
-        initialColors={colors} 
-        initialSizes={sizes} 
-        initialGenders={genders} 
+      <AttributeDashboard
+        initialColors={colors}
+        initialSizes={sizes}
+        initialGenders={genders}
       />
     </div>
   );

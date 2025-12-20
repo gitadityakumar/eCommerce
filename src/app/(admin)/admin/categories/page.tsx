@@ -1,11 +1,11 @@
-import { getCategories } from "@/actions/categories";
-import { CategoryClient } from "./CategoryClient";
+import { getCategories } from '@/actions/categories';
+import { CategoryClient } from './CategoryClient';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 export default async function CategoriesPage() {
   const result = await getCategories();
-  
+
   const categories = result.success ? result.data || [] : [];
 
   return (

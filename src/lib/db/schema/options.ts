@@ -1,5 +1,5 @@
-import { pgTable, text, uuid, integer } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+import { integer, pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { products } from './products';
 
 export const productOptions = pgTable('product_options', {

@@ -1,30 +1,32 @@
-"use client";
+'use client';
 
-import { 
-  Bar, 
-  BarChart, 
-  CartesianGrid, 
-  XAxis, 
-} from "recharts";
+import type {
+  ChartConfig,
+} from '@/components/ui/chart';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  XAxis,
+} from 'recharts';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
-  ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
-import { formatINR } from "@/lib/currency";
+} from '@/components/ui/chart';
+import { formatINR } from '@/lib/currency';
 
 const chartConfig = {
   revenue: {
-    label: "Revenue",
-    color: "hsl(var(--chart-1))",
+    label: 'Revenue',
+    color: 'hsl(var(--chart-1))',
   },
 } satisfies ChartConfig;
 
@@ -35,7 +37,7 @@ interface SalesChartProps {
   }[];
 }
 
-export function DashboardSalesChart({ data }: SalesChartProps) {
+export function DashboardSalesTrendChart({ data }: SalesChartProps) {
   return (
     <Card className="col-span-1 md:col-span-2 lg:col-span-3">
       <CardHeader>
@@ -62,27 +64,27 @@ export function DashboardSalesChart({ data }: SalesChartProps) {
               minTickGap={32}
               tickFormatter={(value) => {
                 const date = new Date(value);
-                return date.toLocaleDateString("en-IN", {
-                  month: "short",
-                  day: "numeric",
+                return date.toLocaleDateString('en-IN', {
+                  month: 'short',
+                  day: 'numeric',
                 });
               }}
             />
             <ChartTooltip
-              content={
+              content={(
                 <ChartTooltipContent
                   className="w-[150px]"
                   nameKey="views"
                   labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("en-IN", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
+                    return new Date(value).toLocaleDateString('en-IN', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
                     });
                   }}
-                  formatter={(value) => formatINR(Number(value))}
+                  formatter={value => formatINR(Number(value))}
                 />
-              }
+              )}
             />
             <Bar dataKey="revenue" fill="var(--color-revenue)" radius={[4, 4, 0, 0]} />
           </BarChart>

@@ -50,7 +50,7 @@ export interface GetAllProductsResult {
 export async function getAllProducts(
   filters?: NormalizedProductfilters,
 ): Promise<GetAllProductsResult> {
-  const conds: SQL[] = [eq(products.isPublished, true)];
+  const conds: SQL[] = [eq(products.status, 'published')];
 
   if (filters?.search) {
     const pattern = `%${filters?.search}%`;
@@ -279,7 +279,7 @@ export async function getProduct(
       productBrandId: products.brandId,
       productCategoryId: products.categoryId,
       productGenderId: products.genderId,
-      isPublished: products.isPublished,
+      status: products.status,
       defaultVariantId: products.defaultVariantId,
       productCreatedAt: products.createdAt,
       productUpdatedAt: products.updatedAt,
@@ -349,7 +349,8 @@ number | null
     brandId: head.productBrandId ?? null,
     categoryId: head.productCategoryId ?? null,
     genderId: head.productGenderId ?? null,
-    isPublished: head.isPublished,
+    status: head.status,
+    isPublished: head.status === 'published',
     defaultVariantId: head.defaultVariantId ?? null,
     createdAt: head.productCreatedAt,
     updatedAt: head.productUpdatedAt,
@@ -531,7 +532,7 @@ string | null
     .leftJoin(v, eq(v.productId, products.id))
     .leftJoin(pi, eq(pi.productId, products.id))
     .where(
-      and(eq(products.isPublished, true), sql`${products.id} <> ${productId}`),
+      and(eq(products.status, 'published'), sql`${products.id} <> ${productId}`),
     )
     .groupBy(products.id, products.name, products.createdAt)
     .orderBy(desc(priority), desc(products.createdAt), asc(products.id))

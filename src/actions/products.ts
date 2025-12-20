@@ -1,10 +1,10 @@
 'use server';
 
-import { db } from "@/lib/db";
-import { products, genders, productImages, productVariants, inventoryLevels, colors, sizes } from "@/lib/db/schema";
-import { desc } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
-import { z } from "zod";
+import { desc } from 'drizzle-orm';
+import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
+import { db } from '@/lib/db';
+import { colors, genders, inventoryLevels, productImages, products, productVariants, sizes } from '@/lib/db/schema';
 
 const createProductSchema = z.object({
   name: z.string().min(1),
@@ -46,8 +46,9 @@ export async function getProducts() {
       orderBy: [desc(products.createdAt)],
     });
     return allProducts;
-  } catch (error) {
-    console.error("Error fetching products:", error);
+  }
+  catch (error) {
+    console.error('Error fetching products:', error);
     return [];
   }
 }
@@ -55,8 +56,9 @@ export async function getProducts() {
 export async function getCategories() {
   try {
     return await db.query.categories.findMany();
-  } catch (error) {
-    console.error("Error fetching categories:", error);
+  }
+  catch (error) {
+    console.error('Error fetching categories:', error);
     return [];
   }
 }
@@ -64,8 +66,9 @@ export async function getCategories() {
 export async function getBrands() {
   try {
     return await db.query.brands.findMany();
-  } catch (error) {
-    console.error("Error fetching brands:", error);
+  }
+  catch (error) {
+    console.error('Error fetching brands:', error);
     return [];
   }
 }
@@ -94,7 +97,7 @@ export async function createProduct(input: CreateProductInput) {
             url: img.url,
             isPrimary: img.isPrimary,
             sortOrder: index,
-          }))
+          })),
         );
       }
 
@@ -124,20 +127,22 @@ export async function createProduct(input: CreateProductInput) {
 
     revalidatePath('/admin/products');
     return { success: true, product: result };
-  } catch (error) {
-    console.error("Error creating product:", error);
+  }
+  catch (error) {
+    console.error('Error creating product:', error);
     if (error instanceof z.ZodError) {
       return { success: false, error: error.issues[0].message };
     }
-    return { success: false, error: "Failed to create product" };
+    return { success: false, error: 'Failed to create product' };
   }
 }
 
 export async function getGenders() {
   try {
     return await db.select().from(genders);
-  } catch (error) {
-    console.error("Error fetching genders:", error);
+  }
+  catch (error) {
+    console.error('Error fetching genders:', error);
     return [];
   }
 }
@@ -145,8 +150,9 @@ export async function getGenders() {
 export async function getColors() {
   try {
     return await db.select().from(colors);
-  } catch (error) {
-    console.error("Error fetching colors:", error);
+  }
+  catch (error) {
+    console.error('Error fetching colors:', error);
     return [];
   }
 }
@@ -154,8 +160,9 @@ export async function getColors() {
 export async function getSizes() {
   try {
     return await db.select().from(sizes);
-  } catch (error) {
-    console.error("Error fetching sizes:", error);
+  }
+  catch (error) {
+    console.error('Error fetching sizes:', error);
     return [];
   }
 }

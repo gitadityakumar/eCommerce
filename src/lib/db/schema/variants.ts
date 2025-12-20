@@ -1,13 +1,13 @@
 import { relations } from 'drizzle-orm';
-import { integer, jsonb, numeric, pgTable, real, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { jsonb, numeric, pgTable, real, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 import { cartItems } from './carts';
 import { colors } from './filters/colors';
 import { sizes } from './filters/sizes';
 import { productImages } from './images';
+import { productOptionValues } from './options';
 import { orderItems } from './orders';
 import { products } from './products';
-import { productOptionValues } from './options';
 
 export const productVariants = pgTable('product_variants', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -25,7 +25,7 @@ export const productVariants = pgTable('product_variants', {
 export const variantOptions = pgTable('variant_options', {
   variantId: uuid('variant_id').references(() => productVariants.id, { onDelete: 'cascade' }).notNull(),
   optionValueId: uuid('option_value_id').references(() => productOptionValues.id, { onDelete: 'cascade' }).notNull(),
-}, (t) => ({
+}, t => ({
   pk: [t.variantId, t.optionValueId],
 }));
 

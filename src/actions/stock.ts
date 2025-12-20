@@ -1,12 +1,12 @@
 'use server';
 
-import { db } from "@/lib/db";
-import { inventoryLevels, stockLedger, auditLogs } from "@/lib/db/schema";
-import { eq, sql } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
-import { z } from "zod";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { eq, sql } from 'drizzle-orm';
+import { revalidatePath } from 'next/cache';
+import { headers } from 'next/headers';
+import { z } from 'zod';
+import { auth } from '@/lib/auth';
+import { db } from '@/lib/db';
+import { auditLogs, inventoryLevels, stockLedger } from '@/lib/db/schema';
 
 const adjustStockSchema = z.object({
   variantId: z.string().uuid(),
@@ -23,7 +23,7 @@ export async function adjustStock(input: z.infer<typeof adjustStockSchema>) {
     });
 
     if (!session || session.user.role !== 'admin') {
-      return { success: false, error: "Unauthorized" };
+      return { success: false, error: 'Unauthorized' };
     }
 
     const validated = adjustStockSchema.parse(input);
@@ -37,7 +37,7 @@ export async function adjustStock(input: z.infer<typeof adjustStockSchema>) {
         .limit(1);
 
       if (!currentLevel) {
-        throw new Error("Inventory record not found for this variant");
+        throw new Error('Inventory record not found for this variant');
       }
 
       // 2. Update inventory level (Available stock)
@@ -75,12 +75,13 @@ export async function adjustStock(input: z.infer<typeof adjustStockSchema>) {
     revalidatePath('/admin/inventory');
     revalidatePath('/admin/products');
     return { success: true, inventory: result };
-  } catch (error) {
-    console.error("Error adjusting stock:", error);
+  }
+  catch (error) {
+    console.error('Error adjusting stock:', error);
     if (error instanceof z.ZodError) {
       return { success: false, error: error.issues[0].message };
     }
-    return { success: false, error: error instanceof Error ? error.message : "Failed to adjust stock" };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to adjust stock' };
   }
 }
 
@@ -93,14 +94,15 @@ export async function getInventory() {
             product: true,
             color: true,
             size: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     return inventory;
-  } catch (error) {
-    console.error("Error fetching inventory:", error);
+  }
+  catch (error) {
+    console.error('Error fetching inventory:', error);
     return [];
   }
 }

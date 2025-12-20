@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { toast } from "sonner";
-import { Package, Plus, Minus, AlertTriangle } from "lucide-react";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AlertTriangle, Minus, Package, Plus } from 'lucide-react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import * as z from 'zod';
 
-import { Button } from "@/components/ui/button";
+import { adjustStock } from '@/actions/stock';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -16,7 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -24,20 +25,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { adjustStock } from "@/actions/stock";
+} from '@/components/ui/select';
 
 const formSchema = z.object({
-  amount: z.coerce.number().int().refine((val) => val !== 0, {
-    message: "Amount must be greater than or less than 0",
+  amount: z.coerce.number().int().refine(val => val !== 0, {
+    message: 'Amount must be greater than or less than 0',
   }),
   reason: z.enum(['manual_adjustment', 'damage', 'restock', 'return']),
 });
@@ -64,7 +64,7 @@ export function StockAdjustmentModal({
     resolver: zodResolver(formSchema),
     defaultValues: {
       amount: 1,
-      reason: "manual_adjustment",
+      reason: 'manual_adjustment',
     },
   });
 
@@ -78,16 +78,19 @@ export function StockAdjustmentModal({
       });
 
       if (result.success) {
-        toast.success("Stock adjusted successfully");
+        toast.success('Stock adjusted successfully');
         setOpen(false);
         form.reset();
-      } else {
-        toast.error(result.error || "Failed to adjust stock");
       }
-    } catch (error) {
+      else {
+        toast.error(result.error || 'Failed to adjust stock');
+      }
+    }
+    catch (error) {
       console.error(error);
-      toast.error("Something went wrong");
-    } finally {
+      toast.error('Something went wrong');
+    }
+    finally {
       setLoading(false);
     }
   };
@@ -104,8 +107,18 @@ export function StockAdjustmentModal({
         <DialogHeader>
           <DialogTitle>Adjust Stock</DialogTitle>
           <DialogDescription>
-            Adjust inventory for <strong>{productName}</strong> ({sku}).
-            Current: {currentAvailable} available.
+            Adjust inventory for
+            {' '}
+            <strong>{productName}</strong>
+            {' '}
+            (
+            {sku}
+            ).
+            Current:
+            {' '}
+            {currentAvailable}
+            {' '}
+            available.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -118,24 +131,24 @@ export function StockAdjustmentModal({
                   <FormLabel>Adjustment Amount</FormLabel>
                   <FormControl>
                     <div className="flex items-center gap-2">
-                      <Button 
-                        type="button" 
-                        variant="ghost" 
-                        size="icon" 
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
                         onClick={() => field.onChange((field.value as number) - 1)}
                       >
                         <Minus className="h-4 w-4" />
                       </Button>
-                      <Input 
-                        type="number" 
-                        {...field} 
-                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                      <Input
+                        type="number"
+                        {...field}
+                        onChange={e => field.onChange(Number.parseInt(e.target.value) || 0)}
                         className="text-center font-bold"
                       />
-                      <Button 
-                        type="button" 
-                        variant="ghost" 
-                        size="icon" 
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
                         onClick={() => field.onChange((field.value as number) + 1)}
                       >
                         <Plus className="h-4 w-4" />
@@ -172,15 +185,20 @@ export function StockAdjustmentModal({
                 </FormItem>
               )}
             />
-            {form.watch("amount") < 0 && (
+            {form.watch('amount') < 0 && (
               <div className="flex items-center gap-2 p-2 rounded-md bg-amber-50 text-amber-900 text-xs border border-amber-200">
                 <AlertTriangle className="h-4 w-4 shrink-0" />
-                <span>Removing {Math.abs(form.watch("amount"))} units from available stock.</span>
+                <span>
+                  Removing
+                  {Math.abs(form.watch('amount'))}
+                  {' '}
+                  units from available stock.
+                </span>
               </div>
             )}
             <DialogFooter>
               <Button type="submit" disabled={loading} className="w-full">
-                {loading ? "Adjusting..." : "Confirm Adjustment"}
+                {loading ? 'Adjusting...' : 'Confirm Adjustment'}
               </Button>
             </DialogFooter>
           </form>
@@ -190,6 +208,6 @@ export function StockAdjustmentModal({
   );
 }
 
-function FormDescription({ children, className }: { children: React.ReactNode, className?: string }) {
-    return <p className={`text-sm text-muted-foreground ${className}`}>{children}</p>
+function FormDescription({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <p className={`text-sm text-muted-foreground ${className}`}>{children}</p>;
 }

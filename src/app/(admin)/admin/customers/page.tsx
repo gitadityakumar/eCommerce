@@ -1,13 +1,13 @@
-import { getCustomers } from "@/actions/users";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { format } from "date-fns";
-import Link from "next/link";
-import { Search, Eye, MailCheck, MailWarning } from "lucide-react";
+import { format } from 'date-fns';
+import { Eye, MailCheck, MailWarning, Search } from 'lucide-react';
+import Link from 'next/link';
+import { getCustomers } from '@/actions/users';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export default async function CustomersPage({
   searchParams,
@@ -77,7 +77,7 @@ export default async function CustomersPage({
             </Select>
             <Button type="submit">Filter</Button>
             <Button variant="ghost" asChild>
-                <Link href="/admin/customers">Reset</Link>
+              <Link href="/admin/customers">Reset</Link>
             </Button>
           </form>
         </div>
@@ -96,52 +96,62 @@ export default async function CustomersPage({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {customers.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
-                  No customers found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              customers.map((customer) => (
-                <TableRow key={customer.id} className="group">
-                  <TableCell>
-                    <Avatar className="h-9 w-9">
-                      <AvatarImage src={customer.image || undefined} />
-                      <AvatarFallback>{customer.name?.[0] || customer.email[0]}</AvatarFallback>
-                    </Avatar>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-col">
-                      <span className="font-medium text-slate-900 dark:text-slate-100">{customer.name || 'N/A'}</span>
-                      <span className="text-xs text-muted-foreground">{customer.email}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>{getRoleBadge(customer.role)}</TableCell>
-                  <TableCell>
-                    {customer.emailVerified ? (
-                      <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 gap-1 font-normal">
-                        <MailCheck className="h-3 w-3" /> Verified
-                      </Badge>
-                    ) : (
-                      <Badge variant="outline" className="text-yellow-600 border-yellow-200 bg-yellow-50 gap-1 font-normal">
-                        <MailWarning className="h-3 w-3" /> Pending
-                      </Badge>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {format(new Date(customer.createdAt), 'MMM dd, yyyy')}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm" asChild>
-                      <Link href={`/admin/customers/${customer.id}`}>
-                        <Eye className="mr-2 h-4 w-4" /> View
-                      </Link>
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
+            {customers.length === 0
+              ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="h-24 text-center">
+                      No customers found.
+                    </TableCell>
+                  </TableRow>
+                )
+              : (
+                  customers.map(customer => (
+                    <TableRow key={customer.id} className="group">
+                      <TableCell>
+                        <Avatar className="h-9 w-9">
+                          <AvatarImage src={customer.image || undefined} />
+                          <AvatarFallback>{customer.name?.[0] || customer.email[0]}</AvatarFallback>
+                        </Avatar>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-col">
+                          <span className="font-medium text-slate-900 dark:text-slate-100">{customer.name || 'N/A'}</span>
+                          <span className="text-xs text-muted-foreground">{customer.email}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>{getRoleBadge(customer.role)}</TableCell>
+                      <TableCell>
+                        {customer.emailVerified
+                          ? (
+                              <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 gap-1 font-normal">
+                                <MailCheck className="h-3 w-3" />
+                                {' '}
+                                Verified
+                              </Badge>
+                            )
+                          : (
+                              <Badge variant="outline" className="text-yellow-600 border-yellow-200 bg-yellow-50 gap-1 font-normal">
+                                <MailWarning className="h-3 w-3" />
+                                {' '}
+                                Pending
+                              </Badge>
+                            )}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {format(new Date(customer.createdAt), 'MMM dd, yyyy')}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button variant="ghost" size="sm" asChild>
+                          <Link href={`/admin/customers/${customer.id}`}>
+                            <Eye className="mr-2 h-4 w-4" />
+                            {' '}
+                            View
+                          </Link>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
           </TableBody>
         </Table>
       </div>

@@ -1,24 +1,15 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
-import { createCollection, updateCollection } from "@/actions/collections";
-import { Check, ChevronsUpDown, X } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Check, ChevronsUpDown, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import * as z from 'zod';
+import { createCollection, updateCollection } from '@/actions/collections';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -26,19 +17,28 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from '@/components/ui/command';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 
 const formSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, 'Name is required'),
   slug: z.string()
-    .min(1, "Slug is required")
-    .regex(/^[a-z0-9-]+$/, "Slug must only contain lowercase letters, numbers, and hyphens"),
+    .min(1, 'Slug is required')
+    .regex(/^[a-z0-9-]+$/, 'Slug must only contain lowercase letters, numbers, and hyphens'),
   productIds: z.array(z.string().uuid()),
 });
 
@@ -59,21 +59,21 @@ export function CollectionForm({ initialData, products, onSuccess, onCancel }: C
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
-      name: "",
-      slug: "",
+      name: '',
+      slug: '',
       productIds: [],
     },
   });
 
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
-      if (name === "name" && !initialData) {
+      if (name === 'name' && !initialData) {
         const slug = value.name
           ?.toLowerCase()
           .trim()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/^-+|-+$/g, "");
-        form.setValue("slug", slug || "", { shouldValidate: true });
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+        form.setValue('slug', slug || '', { shouldValidate: true });
       }
     });
     return () => subscription.unsubscribe();
@@ -85,44 +85,50 @@ export function CollectionForm({ initialData, products, onSuccess, onCancel }: C
       let res;
       if (initialData?.id) {
         res = await updateCollection(initialData.id, values);
-      } else {
+      }
+      else {
         res = await createCollection(values);
       }
 
       if (res.success) {
-        toast.success(initialData ? "Collection updated" : "Collection created");
+        toast.success(initialData ? 'Collection updated' : 'Collection created');
         form.reset();
         if (onSuccess) {
           onSuccess();
-        } else {
-          router.push("/admin/collections");
+        }
+        else {
+          router.push('/admin/collections');
           router.refresh();
         }
-      } else {
-        toast.error(typeof res.error === "string" ? res.error : "Something went wrong");
       }
-    } catch (error) {
+      else {
+        toast.error(typeof res.error === 'string' ? res.error : 'Something went wrong');
+      }
+    }
+    catch (error) {
       console.error(error);
-      toast.error("Something went wrong");
-    } finally {
+      toast.error('Something went wrong');
+    }
+    finally {
       setLoading(false);
     }
   };
 
-  const selectedProducts = form.watch("productIds");
+  const selectedProducts = form.watch('productIds');
 
   const toggleProduct = (productId: string) => {
-    const current = form.getValues("productIds");
+    const current = form.getValues('productIds');
     if (current.includes(productId)) {
-      form.setValue("productIds", current.filter((id) => id !== productId), { shouldValidate: true });
-    } else {
-      form.setValue("productIds", [...current, productId], { shouldValidate: true });
+      form.setValue('productIds', current.filter(id => id !== productId), { shouldValidate: true });
+    }
+    else {
+      form.setValue('productIds', [...current, productId], { shouldValidate: true });
     }
   };
 
   const removeProduct = (productId: string) => {
-    const current = form.getValues("productIds");
-    form.setValue("productIds", current.filter((id) => id !== productId), { shouldValidate: true });
+    const current = form.getValues('productIds');
+    form.setValue('productIds', current.filter(id => id !== productId), { shouldValidate: true });
   };
 
   return (
@@ -149,10 +155,10 @@ export function CollectionForm({ initialData, products, onSuccess, onCancel }: C
               <FormItem>
                 <FormLabel>Slug</FormLabel>
                 <FormControl>
-                  <Input 
-                    placeholder="summer-collection" 
-                    {...field} 
-                    onChange={(e) => field.onChange(e.target.value.toLowerCase().replace(/\s+/g, '-'))}
+                  <Input
+                    placeholder="summer-collection"
+                    {...field}
+                    onChange={e => field.onChange(e.target.value.toLowerCase().replace(/\s+/g, '-'))}
                   />
                 </FormControl>
                 <FormMessage />
@@ -169,10 +175,10 @@ export function CollectionForm({ initialData, products, onSuccess, onCancel }: C
               <FormLabel>Products</FormLabel>
               <div className="flex flex-wrap gap-2 mb-2">
                 {selectedProducts.map((id) => {
-                  const product = products.find((p) => p.id === id);
+                  const product = products.find(p => p.id === id);
                   return (
                     <Badge key={id} variant="secondary" className="flex items-center gap-1">
-                      {product?.name || "Unknown"}
+                      {product?.name || 'Unknown'}
                       <X
                         className="h-3 w-3 cursor-pointer"
                         onClick={() => removeProduct(id)}
@@ -192,7 +198,7 @@ export function CollectionForm({ initialData, products, onSuccess, onCancel }: C
                     >
                       {selectedProducts.length > 0
                         ? `${selectedProducts.length} products selected`
-                        : "Select products..."}
+                        : 'Select products...'}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </FormControl>
@@ -203,7 +209,7 @@ export function CollectionForm({ initialData, products, onSuccess, onCancel }: C
                     <CommandList>
                       <CommandEmpty>No product found.</CommandEmpty>
                       <CommandGroup>
-                        {products.map((product) => (
+                        {products.map(product => (
                           <CommandItem
                             key={product.id}
                             value={product.name}
@@ -213,10 +219,10 @@ export function CollectionForm({ initialData, products, onSuccess, onCancel }: C
                           >
                             <Check
                               className={cn(
-                                "mr-2 h-4 w-4",
+                                'mr-2 h-4 w-4',
                                 selectedProducts.includes(product.id)
-                                  ? "opacity-100"
-                                  : "opacity-0"
+                                  ? 'opacity-100'
+                                  : 'opacity-0',
                               )}
                             />
                             {product.name}
@@ -233,22 +239,23 @@ export function CollectionForm({ initialData, products, onSuccess, onCancel }: C
         />
 
         <div className="flex justify-end gap-2">
-          <Button 
-            type="button" 
-            variant="outline" 
+          <Button
+            type="button"
+            variant="outline"
             onClick={() => {
               if (onCancel) {
                 onCancel();
-              } else {
-                router.push("/admin/collections");
               }
-            }} 
+              else {
+                router.push('/admin/collections');
+              }
+            }}
             disabled={loading}
           >
             Cancel
           </Button>
           <Button type="submit" disabled={loading}>
-            {initialData ? "Update Collection" : "Create Collection"}
+            {initialData ? 'Update Collection' : 'Create Collection'}
           </Button>
         </div>
       </form>

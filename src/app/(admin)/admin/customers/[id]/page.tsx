@@ -1,12 +1,12 @@
-import { getCustomerById } from "@/actions/users";
-import { notFound } from "next/navigation";
-import { CustomerProfileHeader } from "@/components/admin/customers/CustomerProfileHeader";
-import { CustomerAddressCard } from "@/components/admin/customers/CustomerAddressCard";
-import { CustomerActivityTabs } from "@/components/admin/customers/CustomerActivityTabs";
-import { CustomerManagementControls } from "@/components/admin/customers/CustomerManagementControls";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
-import Link from "next/link";
+import { ChevronLeft } from 'lucide-react';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { getCustomerById } from '@/actions/users';
+import { CustomerActivityTabs } from '@/components/admin/customers/CustomerActivityTabs';
+import { CustomerAddressCard } from '@/components/admin/customers/CustomerAddressCard';
+import { CustomerManagementControls } from '@/components/admin/customers/CustomerManagementControls';
+import { CustomerProfileHeader } from '@/components/admin/customers/CustomerProfileHeader';
+import { Button } from '@/components/ui/button';
 
 interface CustomerDetailsPageProps {
   params: Promise<{
@@ -32,7 +32,10 @@ export default async function CustomerDetailsPage({ params }: CustomerDetailsPag
         </Button>
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Customer Details</h2>
-          <p className="text-muted-foreground">Detailed view and management for {customer.name || customer.email}</p>
+          <p className="text-muted-foreground">
+            Detailed view and management for
+            {customer.name || customer.email}
+          </p>
         </div>
       </div>
 
@@ -40,22 +43,23 @@ export default async function CustomerDetailsPage({ params }: CustomerDetailsPag
         name: customer.name,
         email: customer.email,
         image: customer.image,
-        role: customer.role as 'customer' | 'staff' | 'admin'
-      }} />
+        role: customer.role as 'customer' | 'staff' | 'admin',
+      }}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
-          <CustomerActivityTabs 
-            orders={customer.orders} 
-            reviews={customer.reviews} 
-            wishlist={customer.wishlists} 
+          <CustomerActivityTabs
+            orders={customer.orders}
+            reviews={customer.reviews}
+            wishlist={customer.wishlists}
           />
         </div>
         <div className="space-y-8">
-          <CustomerManagementControls 
-            userId={customer.id} 
-            initialRole={customer.role} 
-            initialVerified={customer.emailVerified} 
+          <CustomerManagementControls
+            userId={customer.id}
+            initialRole={customer.role}
+            initialVerified={customer.emailVerified}
           />
           <CustomerAddressCard addresses={customer.addresses} />
         </div>

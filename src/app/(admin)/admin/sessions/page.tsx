@@ -1,7 +1,7 @@
-import { getDashboardData } from "@/actions/dashboard";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Users, UserMinus, Globe, Shield } from "lucide-react";
+import { Globe, Shield, ShoppingCart, UserMinus, Users } from 'lucide-react';
+import { getDashboardData } from '@/actions/dashboard';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default async function SessionsPage() {
   const data = await getDashboardData();
@@ -60,29 +60,29 @@ export default async function SessionsPage() {
         <CardContent>
           <div className="space-y-4">
             <div className="flex items-center justify-between p-4 border rounded-lg">
-                <div className="flex items-center gap-4">
-                    <Users className="h-8 w-8 text-blue-500" />
-                    <div>
-                        <p className="font-semibold">Registered Users</p>
-                        <p className="text-sm text-muted-foreground">Authenticated sessions with user IDs</p>
-                    </div>
+              <div className="flex items-center gap-4">
+                <Users className="h-8 w-8 text-blue-500" />
+                <div>
+                  <p className="font-semibold">Registered Users</p>
+                  <p className="text-sm text-muted-foreground">Authenticated sessions with user IDs</p>
                 </div>
-                <Badge variant="secondary" className="text-lg px-4 py-1">
-                    {/* Simplified for now, in a real app we'd split these in the action */}
-                    Calculating...
-                </Badge>
+              </div>
+              <Badge variant="secondary" className="text-lg px-4 py-1">
+                {/* Simplified for now, in a real app we'd split these in the action */}
+                Calculating...
+              </Badge>
             </div>
             <div className="flex items-center justify-between p-4 border rounded-lg">
-                <div className="flex items-center gap-4">
-                    <UserMinus className="h-8 w-8 text-slate-400" />
-                    <div>
-                        <p className="font-semibold">Guest Visitors</p>
-                        <p className="text-sm text-muted-foreground">Anonymous tokens via session_tokens</p>
-                    </div>
+              <div className="flex items-center gap-4">
+                <UserMinus className="h-8 w-8 text-slate-400" />
+                <div>
+                  <p className="font-semibold">Guest Visitors</p>
+                  <p className="text-sm text-muted-foreground">Anonymous tokens via session_tokens</p>
                 </div>
-                <Badge variant="outline" className="text-lg px-4 py-1">
-                    Calculating...
-                </Badge>
+              </div>
+              <Badge variant="outline" className="text-lg px-4 py-1">
+                Calculating...
+              </Badge>
             </div>
           </div>
         </CardContent>
@@ -90,22 +90,22 @@ export default async function SessionsPage() {
 
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
         <Card>
-            <CardHeader>
-                <CardTitle>Traffic Windows</CardTitle>
-                <CardDescription>Estimated system load based on active sessions.</CardDescription>
-            </CardHeader>
-            <CardContent className="h-[200px] flex items-center justify-center text-muted-foreground italic">
-                {data.activeSessions > 50 ? "High traffic detected. Monitor server latency." : "System load is normal."}
-            </CardContent>
+          <CardHeader>
+            <CardTitle>Traffic Windows</CardTitle>
+            <CardDescription>Estimated system load based on active sessions.</CardDescription>
+          </CardHeader>
+          <CardContent className="h-[200px] flex items-center justify-center text-muted-foreground italic">
+            {data.activeSessions > 50 ? 'High traffic detected. Monitor server latency.' : 'System load is normal.'}
+          </CardContent>
         </Card>
         <Card>
-            <CardHeader>
-                <CardTitle>Bot Activity Check</CardTitle>
-                <CardDescription>Identifying potential automated sessions.</CardDescription>
-            </CardHeader>
-            <CardContent className="h-[200px] flex items-center justify-center text-muted-foreground italic text-center">
-                No suspicious burst activity from unique IP addresses in the last 60 minutes.
-            </CardContent>
+          <CardHeader>
+            <CardTitle>Bot Activity Check</CardTitle>
+            <CardDescription>Identifying potential automated sessions.</CardDescription>
+          </CardHeader>
+          <CardContent className="h-[200px] flex items-center justify-center text-muted-foreground italic text-center">
+            No suspicious burst activity from unique IP addresses in the last 60 minutes.
+          </CardContent>
         </Card>
       </div>
     </div>
@@ -113,6 +113,5 @@ export default async function SessionsPage() {
 }
 
 function ShoppingCartIcon({ className }: { className?: string }) {
-    return <ShoppingCart className={className} />
+  return <ShoppingCart className={className} />;
 }
-import { ShoppingCart } from "lucide-react";

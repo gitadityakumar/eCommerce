@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ColorTab } from "./ColorTab";
-import { SizeTab } from "./SizeTab";
-import { GenderTab } from "./GenderTab";
-import { ProductOptionsTab } from "./ProductOptionsTab";
-import { SelectColor } from "@/lib/db/schema/filters/colors";
-import { SelectSize } from "@/lib/db/schema/filters/sizes";
-import { SelectGender } from "@/lib/db/schema/filters/genders";
-import { IconPalette, IconRuler, IconGenderIntergender, IconSettings } from "@tabler/icons-react";
+import type { SelectColor } from '@/lib/db/schema/filters/colors';
+import type { SelectGender } from '@/lib/db/schema/filters/genders';
+import type { SelectSize } from '@/lib/db/schema/filters/sizes';
+import { IconGenderIntergender, IconPalette, IconRuler, IconSettings } from '@tabler/icons-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ColorTab } from './ColorTab';
+import { GenderTab } from './GenderTab';
+import { ProductOptionsTab } from './ProductOptionsTab';
+import { SizeTab } from './SizeTab';
 
 interface AttributeDashboardProps {
   initialColors: SelectColor[];

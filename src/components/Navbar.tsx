@@ -17,7 +17,7 @@ const NAV_LINKS = [
 ] as const;
 
 export default function Navbar() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const [active, setActive] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const { setTheme, resolvedTheme } = useTheme();

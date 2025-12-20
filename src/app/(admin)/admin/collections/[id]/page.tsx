@@ -1,11 +1,12 @@
-import { getCurrentUser } from "@/lib/auth/actions";
-import { redirect, notFound } from "next/navigation";
-import { getProducts } from "@/actions/products";
-import { getCollectionById } from "@/actions/collections";
-import { CollectionForm, FormValues } from "../CollectionForm";
-import { Library, ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import type { FormValues } from '../CollectionForm';
+import { ArrowLeft, Library } from 'lucide-react';
+import Link from 'next/link';
+import { notFound, redirect } from 'next/navigation';
+import { getCollectionById } from '@/actions/collections';
+import { getProducts } from '@/actions/products';
+import { Button } from '@/components/ui/button';
+import { getCurrentUser } from '@/lib/auth/actions';
+import { CollectionForm } from '../CollectionForm';
 
 interface EditCollectionPageProps {
   params: {
@@ -16,8 +17,8 @@ interface EditCollectionPageProps {
 export default async function EditCollectionPage({ params }: EditCollectionPageProps) {
   const user = await getCurrentUser();
 
-  if (!user || user.role !== "admin") {
-    redirect("/");
+  if (!user || user.role !== 'admin') {
+    redirect('/');
   }
 
   const { id } = params;
@@ -50,9 +51,9 @@ export default async function EditCollectionPage({ params }: EditCollectionPageP
       </div>
 
       <div className="bg-card border rounded-lg p-6 shadow-sm max-w-4xl">
-        <CollectionForm 
-          initialData={collectionRes.data as FormValues & { id: string }} 
-          products={products} 
+        <CollectionForm
+          initialData={collectionRes.data as FormValues & { id: string }}
+          products={products}
         />
       </div>
     </div>

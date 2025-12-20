@@ -1,12 +1,11 @@
-"use client";
+'use client';
 
-import { useState, useTransition } from "react";
-import { CollectionList } from "./CollectionList";
-import { Input } from "@/components/ui/input";
-import { Search, Library } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import Link from "next/link";
+import { Library, Plus, Search } from 'lucide-react';
+import Link from 'next/link';
+import { useState, useTransition } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { CollectionList } from './CollectionList';
 
 interface Collection {
   id: string;
@@ -23,10 +22,10 @@ interface CollectionClientProps {
 
 export function CollectionClient({ initialCollections }: CollectionClientProps) {
   const [isPending] = useTransition();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredCollections = initialCollections.filter((c) =>
-    c.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredCollections = initialCollections.filter(c =>
+    c.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -41,7 +40,7 @@ export function CollectionClient({ initialCollections }: CollectionClientProps) 
             Create and manage product collections for your store.
           </p>
         </div>
-        
+
         <div className="flex items-center gap-2 w-full md:w-auto">
           <div className="relative w-full md:w-72">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -49,7 +48,7 @@ export function CollectionClient({ initialCollections }: CollectionClientProps) 
               placeholder="Search collections..."
               className="pl-9"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
             />
           </div>
           <Button asChild className="gap-2">
@@ -61,9 +60,9 @@ export function CollectionClient({ initialCollections }: CollectionClientProps) 
         </div>
       </div>
 
-      <div className={isPending ? "opacity-50 pointer-events-none" : ""}>
-        <CollectionList 
-          data={filteredCollections} 
+      <div className={isPending ? 'opacity-50 pointer-events-none' : ''}>
+        <CollectionList
+          data={filteredCollections}
         />
       </div>
     </div>

@@ -4,10 +4,10 @@ import { z } from 'zod';
 import { addresses } from './addresses';
 import { users } from './user';
 import { productVariants } from './variants';
-import { payments } from './payments';
 
 export const orderStatusEnum = pgEnum('order_status', [
   'pending',
+  'processing',
   'paid',
   'partially_shipped',
   'shipped',
@@ -87,6 +87,7 @@ export const insertOrderSchema = z.object({
   status: z
     .enum([
       'pending',
+      'processing',
       'paid',
       'partially_shipped',
       'shipped',

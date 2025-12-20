@@ -1,11 +1,11 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatINR } from "@/lib/currency";
-import { 
-  IndianRupee, 
-  ShoppingBag, 
-  Users, 
-  Activity
-} from "lucide-react";
+import {
+  Activity,
+  IndianRupee,
+  ShoppingBag,
+  Users,
+} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { formatINR } from '@/lib/currency';
 
 interface KpiCardsProps {
   stats: {
@@ -20,38 +20,38 @@ interface KpiCardsProps {
 export function DashboardKpiCards({ stats }: KpiCardsProps) {
   const items = [
     {
-      title: "Total Revenue",
+      title: 'Total Revenue',
       value: formatINR(stats.totalRevenue),
-      description: "Total earnings (excl. cancelled)",
+      description: 'Total earnings (excl. cancelled)',
       icon: IndianRupee,
-      color: "text-emerald-500",
+      color: 'text-emerald-500',
     },
     {
-      title: "Total Orders",
+      title: 'Total Orders',
       value: stats.totalOrders.toLocaleString(),
-      description: "Lifetime orders placed",
+      description: 'Lifetime orders placed',
       icon: ShoppingBag,
-      color: "text-blue-500",
+      color: 'text-blue-500',
     },
     {
-      title: "Total Customers",
+      title: 'Total Customers',
       value: stats.totalCustomers.toLocaleString(),
-      description: "Registered customers",
+      description: 'Registered customers',
       icon: Users,
-      color: "text-violet-500",
+      color: 'text-violet-500',
     },
     {
-      title: "Active Sessions",
+      title: 'Active Sessions',
       value: stats.activeSessions.toLocaleString(),
-      description: "Users & Guests currently online",
+      description: 'Users & Guests currently online',
       icon: Activity,
-      color: "text-orange-500",
+      color: 'text-orange-500',
     },
   ];
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {items.map((item) => (
+      {items.map(item => (
         <Card key={item.title}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">

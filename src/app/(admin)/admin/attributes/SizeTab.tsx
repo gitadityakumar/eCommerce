@@ -1,40 +1,14 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { SelectSize, insertSizeSchema } from "@/lib/db/schema/filters/sizes";
-import { createSize, updateSize, deleteSize } from "@/actions/attributes";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormDescription,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { IconPlus, IconSearch, IconEdit, IconTrash, IconLoader2, IconSparkles } from "@tabler/icons-react";
+import type * as z from 'zod';
+import type { SelectSize } from '@/lib/db/schema/filters/sizes';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { IconEdit, IconLoader2, IconPlus, IconSearch, IconSparkles, IconTrash } from '@tabler/icons-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { createSize, deleteSize, updateSize } from '@/actions/attributes';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,7 +18,34 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { insertSizeSchema } from '@/lib/db/schema/filters/sizes';
 
 type FormValues = z.infer<typeof insertSizeSchema>;
 
@@ -54,7 +55,7 @@ interface SizeTabProps {
 
 export function SizeTab({ initialData }: SizeTabProps) {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [editingSize, setEditingSize] = useState<SelectSize | null>(null);
   const [sizeToDelete, setSizeToDelete] = useState<string | null>(null);
@@ -63,34 +64,35 @@ export function SizeTab({ initialData }: SizeTabProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(insertSizeSchema),
     defaultValues: {
-      name: "",
-      slug: "",
+      name: '',
+      slug: '',
       sortOrder: 0,
     },
   });
 
-  const name = form.watch("name");
+  const name = form.watch('name');
   const { dirtyFields } = form.formState;
 
   useEffect(() => {
-    if (editingSize) return;
-    
+    if (editingSize)
+      return;
+
     // Only auto-generate if the slug field hasn't been manually touched
     if (!dirtyFields.slug) {
-      const generatedSlug = (name || "")
+      const generatedSlug = (name || '')
         .toLowerCase()
         .trim()
-        .replace(/[^\w\s-]/g, "")
-        .replace(/\s+/g, "-")
-        .replace(/--+/g, "-");
-      form.setValue("slug", generatedSlug, { shouldValidate: true });
+        .replace(/[^\w\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-{2,}/g, '-');
+      form.setValue('slug', generatedSlug, { shouldValidate: true });
     }
   }, [name, form, editingSize, dirtyFields.slug]);
 
   const filteredData = initialData.filter(
-    (item) =>
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.slug.toLowerCase().includes(searchQuery.toLowerCase())
+    item =>
+      item.name.toLowerCase().includes(searchQuery.toLowerCase())
+      || item.slug.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const onSubmit = async (values: FormValues) => {
@@ -100,24 +102,27 @@ export function SizeTab({ initialData }: SizeTabProps) {
         : await createSize(values);
 
       if (result.success) {
-        toast.success(editingSize ? "Size updated" : "Size created");
+        toast.success(editingSize ? 'Size updated' : 'Size created');
         setIsOpen(false);
         setEditingSize(null);
         form.reset();
         router.refresh();
-      } else {
-        if (typeof result.error === "object") {
+      }
+      else {
+        if (typeof result.error === 'object') {
           Object.entries(result.error as Record<string, string[]>).forEach(([key, messages]) => {
             if (messages && messages.length > 0) {
               form.setError(key as keyof FormValues, { message: messages[0] });
             }
           });
-        } else {
+        }
+        else {
           toast.error(result.error);
         }
       }
-    } catch {
-      toast.error("Something went wrong");
+    }
+    catch {
+      toast.error('Something went wrong');
     }
   };
 
@@ -132,34 +137,39 @@ export function SizeTab({ initialData }: SizeTabProps) {
   };
 
   const handleDelete = async () => {
-    if (!sizeToDelete) return;
+    if (!sizeToDelete)
+      return;
     setIsDeleting(true);
     try {
       const result = await deleteSize(sizeToDelete);
       if (result.success) {
-        toast.success("Size deleted");
+        toast.success('Size deleted');
         router.refresh();
-      } else {
+      }
+      else {
         toast.error(result.error);
       }
-    } catch {
-      toast.error("Failed to delete size");
-    } finally {
+    }
+    catch {
+      toast.error('Failed to delete size');
+    }
+    finally {
       setIsDeleting(false);
       setSizeToDelete(null);
     }
   };
 
   const generateSlug = () => {
-    const name = form.getValues("name");
-    if (!name) return;
+    const name = form.getValues('name');
+    if (!name)
+      return;
     const slug = name
       .toLowerCase()
       .trim()
-      .replace(/[^\w\s-]/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/--+/g, "-");
-    form.setValue("slug", slug, { shouldValidate: true });
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-{2,}/g, '-');
+    form.setValue('slug', slug, { shouldValidate: true });
   };
 
   return (
@@ -171,14 +181,15 @@ export function SizeTab({ initialData }: SizeTabProps) {
             placeholder="Search sizes..."
             className="pl-9"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
           />
         </div>
         <Button onClick={() => {
           setEditingSize(null);
-          form.reset({ name: "", slug: "", sortOrder: 0 });
+          form.reset({ name: '', slug: '', sortOrder: 0 });
           setIsOpen(true);
-        }}>
+        }}
+        >
           <IconPlus className="mr-2 size-4" />
           Add Size
         </Button>
@@ -195,36 +206,38 @@ export function SizeTab({ initialData }: SizeTabProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredData.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={4} className="h-24 text-center">
-                  No sizes found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredData.map((size) => (
-                <TableRow key={size.id}>
-                  <TableCell className="font-mono">{size.sortOrder}</TableCell>
-                  <TableCell className="font-medium">{size.name}</TableCell>
-                  <TableCell className="font-mono text-xs">{size.slug}</TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button variant="ghost" size="icon" onClick={() => handleEdit(size)}>
-                        <IconEdit size={16} />
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="text-destructive hover:bg-destructive/10"
-                        onClick={() => setSizeToDelete(size.id)}
-                      >
-                        <IconTrash size={16} />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
+            {filteredData.length === 0
+              ? (
+                  <TableRow>
+                    <TableCell colSpan={4} className="h-24 text-center">
+                      No sizes found.
+                    </TableCell>
+                  </TableRow>
+                )
+              : (
+                  filteredData.map(size => (
+                    <TableRow key={size.id}>
+                      <TableCell className="font-mono">{size.sortOrder}</TableCell>
+                      <TableCell className="font-medium">{size.name}</TableCell>
+                      <TableCell className="font-mono text-xs">{size.slug}</TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button variant="ghost" size="icon" onClick={() => handleEdit(size)}>
+                            <IconEdit size={16} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-destructive hover:bg-destructive/10"
+                            onClick={() => setSizeToDelete(size.id)}
+                          >
+                            <IconTrash size={16} />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
           </TableBody>
         </Table>
       </div>
@@ -232,11 +245,11 @@ export function SizeTab({ initialData }: SizeTabProps) {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>{editingSize ? "Edit Size" : "Add New Size"}</DialogTitle>
+            <DialogTitle>{editingSize ? 'Edit Size' : 'Add New Size'}</DialogTitle>
             <DialogDescription>
-              {editingSize 
-                ? "Update the details of your size attribute." 
-                : "Create a new size attribute for your products."}
+              {editingSize
+                ? 'Update the details of your size attribute.'
+                : 'Create a new size attribute for your products.'}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
@@ -263,9 +276,9 @@ export function SizeTab({ initialData }: SizeTabProps) {
                     <FormItem>
                       <FormLabel className="flex items-center justify-between">
                         Slug
-                        <Button 
-                          type="button" 
-                          variant="ghost" 
+                        <Button
+                          type="button"
+                          variant="ghost"
                           className="h-auto p-0 text-xs text-primary hover:bg-transparent"
                           onClick={generateSlug}
                         >
@@ -289,11 +302,11 @@ export function SizeTab({ initialData }: SizeTabProps) {
                     <FormItem>
                       <FormLabel>Sort Order</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
+                        <Input
+                          type="number"
                           min={0}
-                          {...field} 
-                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)} 
+                          {...field}
+                          onChange={e => field.onChange(Number.parseInt(e.target.value) || 0)}
                         />
                       </FormControl>
                       <FormDescription>Used for ordering sizes in the UI.</FormDescription>
@@ -305,7 +318,7 @@ export function SizeTab({ initialData }: SizeTabProps) {
                 <div className="flex gap-2 pt-4">
                   <Button type="submit" className="flex-1" disabled={form.formState.isSubmitting}>
                     {form.formState.isSubmitting && <IconLoader2 className="mr-2 size-4 animate-spin" />}
-                    {editingSize ? "Save Changes" : "Create Size"}
+                    {editingSize ? 'Save Changes' : 'Create Size'}
                   </Button>
                   <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
                     Cancel
@@ -317,7 +330,7 @@ export function SizeTab({ initialData }: SizeTabProps) {
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={!!sizeToDelete} onOpenChange={(open) => !open && setSizeToDelete(null)}>
+      <AlertDialog open={!!sizeToDelete} onOpenChange={open => !open && setSizeToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
@@ -327,7 +340,7 @@ export function SizeTab({ initialData }: SizeTabProps) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={(e) => {
                 e.preventDefault();
                 handleDelete();
@@ -335,7 +348,7 @@ export function SizeTab({ initialData }: SizeTabProps) {
               disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isDeleting ? "Deleting..." : "Delete Size"}
+              {isDeleting ? 'Deleting...' : 'Delete Size'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

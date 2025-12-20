@@ -1,6 +1,6 @@
-import { db } from "@/lib/db";
-import { auditLogs, users } from "@/lib/db/schema";
-import { eq, desc, and } from "drizzle-orm";
+import { and, desc, eq } from 'drizzle-orm';
+import { db } from '@/lib/db';
+import { auditLogs, users } from '@/lib/db/schema';
 
 export async function getAuditLogs(params?: { entityType?: string; action?: string; limit?: number }) {
   try {
@@ -31,31 +31,33 @@ export async function getAuditLogs(params?: { entityType?: string; action?: stri
       .limit(params?.limit || 50);
 
     return logs;
-  } catch (error) {
-    console.error("Error fetching audit logs:", error);
+  }
+  catch (error) {
+    console.error('Error fetching audit logs:', error);
     return [];
   }
 }
 
 export async function getEntityHistory(entityType: string, entityId: string) {
-    try {
-        const history = await db
-            .select({
-                id: auditLogs.id,
-                adminName: users.name,
-                action: auditLogs.action,
-                oldValue: auditLogs.oldValue,
-                newValue: auditLogs.newValue,
-                createdAt: auditLogs.createdAt,
-            })
-            .from(auditLogs)
-            .leftJoin(users, eq(auditLogs.adminId, users.id))
-            .where(and(eq(auditLogs.entityType, entityType), eq(auditLogs.entityId, entityId)))
-            .orderBy(desc(auditLogs.createdAt));
-        
-        return history;
-    } catch (error) {
-        console.error("Error fetching entity history:", error);
-        return [];
-    }
+  try {
+    const history = await db
+      .select({
+        id: auditLogs.id,
+        adminName: users.name,
+        action: auditLogs.action,
+        oldValue: auditLogs.oldValue,
+        newValue: auditLogs.newValue,
+        createdAt: auditLogs.createdAt,
+      })
+      .from(auditLogs)
+      .leftJoin(users, eq(auditLogs.adminId, users.id))
+      .where(and(eq(auditLogs.entityType, entityType), eq(auditLogs.entityId, entityId)))
+      .orderBy(desc(auditLogs.createdAt));
+
+    return history;
+  }
+  catch (error) {
+    console.error('Error fetching entity history:', error);
+    return [];
+  }
 }

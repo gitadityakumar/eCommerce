@@ -1,7 +1,7 @@
 import { integer, numeric, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
-import { users } from './user';
 import { orders } from './orders';
+import { users } from './user';
 
 export const discountTypeEnum = pgEnum('discount_type', ['percentage', 'fixed']);
 

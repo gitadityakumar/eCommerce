@@ -1,9 +1,10 @@
+/* eslint-disable no-console */
 import { db } from './index';
-import { orders, orderItems, addresses, payments, users, productVariants, fulfillments } from './schema';
+import { addresses, fulfillments, orderItems, orders, payments, productVariants, users } from './schema';
 
 async function seedOrders() {
   console.log('--- Order Seeding Refinement ---');
-  
+
   // 1. Cleanup existing test data to ensure consistency
   console.log('Cleaning up existing orders, items, payments, and fulfillments...');
   await db.delete(fulfillments);
@@ -32,7 +33,7 @@ async function seedOrders() {
     city: 'Consistency City',
     state: 'CC',
     country: 'Reality',
-    postalCode: '12345'
+    postalCode: '12345',
   }).returning();
 
   // 3. Define Logical Scenarios
@@ -71,7 +72,7 @@ async function seedOrders() {
         orderId: order.id,
         productVariantId: variant.id,
         quantity: 1,
-        priceAtPurchase: variant.price
+        priceAtPurchase: variant.price,
       });
     }
 

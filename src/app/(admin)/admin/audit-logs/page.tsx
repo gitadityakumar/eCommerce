@@ -1,14 +1,14 @@
-import { getAuditLogs } from "@/actions/audit";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { AuditDiffViewer } from "./_components/AuditDiffViewer";
+import { History, Package, ShoppingCart, Tag, User } from 'lucide-react';
+import { getAuditLogs } from '@/actions/audit';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
-import { History, User, Tag, Package, ShoppingCart } from "lucide-react";
+} from '@/components/ui/accordion';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { AuditDiffViewer } from './_components/AuditDiffViewer';
 
 export default async function AuditLogsPage() {
   const logs = await getAuditLogs();
@@ -41,7 +41,7 @@ export default async function AuditLogsPage() {
         </CardHeader>
         <CardContent>
           <Accordion type="single" collapsible className="w-full">
-            {logs.map((log) => (
+            {logs.map(log => (
               <AccordionItem key={log.id} value={log.id}>
                 <AccordionTrigger className="hover:no-underline py-4">
                   <div className="flex items-center gap-4 text-left w-full">
@@ -56,7 +56,10 @@ export default async function AuditLogsPage() {
                         </Badge>
                       </div>
                       <p className="text-xs text-muted-foreground truncate">
-                        {log.entityType} ID: {log.entityId}
+                        {log.entityType}
+                        {' '}
+                        ID:
+                        {log.entityId}
                       </p>
                     </div>
                     <div className="text-right pr-4">

@@ -1,9 +1,11 @@
 import { relations } from 'drizzle-orm';
-import { boolean, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 import { brands } from './brands';
 import { categories } from './categories';
 import { genders } from './filters/genders';
+import * as imagesSchema from './images';
+import * as variantsSchema from './variants';
 
 export const productStatusEnum = pgEnum('product_status', ['draft', 'published', 'archived']);
 
@@ -33,8 +35,8 @@ export const productsRelations = relations(products, ({ one, many }) => ({
     fields: [products.brandId],
     references: [brands.id],
   }),
-  variants: many(productVariants),
-  images: many(productImages),
+  variants: many(variantsSchema.productVariants),
+  images: many(imagesSchema.productImages),
 }));
 
 export const insertProductSchema = z.object({

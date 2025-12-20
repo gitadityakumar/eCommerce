@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import Link from "next/link";
-import { getCoupons } from "@/lib/actions/coupons";
-import { CouponTable } from "./CouponTable";
+import { Plus } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { getCoupons } from '@/lib/actions/coupons';
+import { CouponTable } from './CouponTable';
 
 export default async function CouponsPage() {
   const { data: coupons, error } = await getCoupons();
@@ -26,13 +26,15 @@ export default async function CouponsPage() {
         </div>
       </div>
       <div className="w-full">
-        {error ? (
-          <div className="rounded-md bg-destructive/15 p-4 text-destructive text-sm">
-            {error}
-          </div>
-        ) : (
-          <CouponTable data={coupons || []} />
-        )}
+        {error
+          ? (
+              <div className="rounded-md bg-destructive/15 p-4 text-destructive text-sm">
+                {error}
+              </div>
+            )
+          : (
+              <CouponTable data={coupons || []} />
+            )}
       </div>
     </div>
   );

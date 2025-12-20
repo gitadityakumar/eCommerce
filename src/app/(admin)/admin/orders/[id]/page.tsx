@@ -1,8 +1,8 @@
-import { getOrderById } from "@/actions/orders";
-import { OrderDetailsUI } from "@/components/admin/orders/OrderDetailsUI";
-import { notFound } from "next/navigation";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import Link from "next/link";
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { getOrderById } from '@/actions/orders';
+import { OrderDetailsUI } from '@/components/admin/orders/OrderDetailsUI';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 
 interface PageProps {
   params: Promise<{ id: string }>;

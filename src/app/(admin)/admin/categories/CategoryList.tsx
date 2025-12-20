@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { SelectCategory } from "@/lib/db/schema/categories";
-import { 
-  IconEdit, 
-  IconTrash, 
-  IconChevronRight, 
+import type { SelectCategory } from '@/lib/db/schema/categories';
+import {
   IconChevronDown,
+  IconChevronRight,
+  IconEdit,
   IconFolder,
-  IconFolderOpen
-} from "@tabler/icons-react";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
+  IconFolderOpen,
+  IconTrash,
+} from '@tabler/icons-react';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 interface CategoryWithChildren extends SelectCategory {
   children?: CategoryWithChildren[];
@@ -27,8 +27,8 @@ export function CategoryList({ categories, onEdit, onDelete, searchQuery }: Cate
   // Build a tree from the flat list
   const buildTree = (list: SelectCategory[], parentId: string | null = null): CategoryWithChildren[] => {
     return list
-      .filter((item) => item.parentId === parentId)
-      .map((item) => ({
+      .filter(item => item.parentId === parentId)
+      .map(item => ({
         ...item,
         children: buildTree(list, item.id),
       }));
@@ -38,18 +38,19 @@ export function CategoryList({ categories, onEdit, onDelete, searchQuery }: Cate
 
   // Filter tree based on search query
   const filterTree = (tree: CategoryWithChildren[]): CategoryWithChildren[] => {
-    if (!searchQuery) return tree;
+    if (!searchQuery)
+      return tree;
 
     return tree
-      .map((node) => ({
+      .map(node => ({
         ...node,
         children: filterTree(node.children || []),
       }))
       .filter(
-        (node) =>
-          node.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          node.slug.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (node.children && node.children.length > 0)
+        node =>
+          node.name.toLowerCase().includes(searchQuery.toLowerCase())
+          || node.slug.toLowerCase().includes(searchQuery.toLowerCase())
+          || (node.children && node.children.length > 0),
       );
   };
 
@@ -61,7 +62,7 @@ export function CategoryList({ categories, onEdit, onDelete, searchQuery }: Cate
         <IconFolder className="size-12 mb-4 text-muted-foreground" />
         <h3 className="text-lg font-medium">No categories found</h3>
         <p className="text-sm text-muted-foreground mt-1">
-          {searchQuery ? "Try searching for something else." : "Get started by creating your first category."}
+          {searchQuery ? 'Try searching for something else.' : 'Get started by creating your first category.'}
         </p>
       </div>
     );
@@ -75,13 +76,13 @@ export function CategoryList({ categories, onEdit, onDelete, searchQuery }: Cate
         <div className="text-right">Actions</div>
       </div>
       <div className="divide-y">
-        {filteredTree.map((node) => (
-          <CategoryItem 
-            key={node.id} 
-            node={node} 
-            level={0} 
-            onEdit={onEdit} 
-            onDelete={onDelete} 
+        {filteredTree.map(node => (
+          <CategoryItem
+            key={node.id}
+            node={node}
+            level={0}
+            onEdit={onEdit}
+            onDelete={onDelete}
             isSearching={!!searchQuery}
           />
         ))}
@@ -106,36 +107,40 @@ function CategoryItem({ node, level, onEdit, onDelete, isSearching }: CategoryIt
     <div className="bg-card hover:bg-muted/30 transition-colors">
       <div className="grid grid-cols-[1fr_200px_120px] gap-4 p-4 text-sm items-center">
         <div className="flex items-center gap-2" style={{ paddingLeft: `${level * 24}px` }}>
-          {hasChildren ? (
-            <button 
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="p-1 hover:bg-muted rounded text-muted-foreground"
-            >
-              {isExpanded ? <IconChevronDown size={16} /> : <IconChevronRight size={16} />}
-            </button>
-          ) : (
-            <div className="w-6" /> // Spacer
-          )}
-          {hasChildren ? (
-            isExpanded ? <IconFolderOpen size={18} className="text-primary" /> : <IconFolder size={18} className="text-primary" />
-          ) : (
-            <IconFolder size={18} className="text-muted-foreground/60" />
-          )}
+          {hasChildren
+            ? (
+                <button
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="p-1 hover:bg-muted rounded text-muted-foreground"
+                >
+                  {isExpanded ? <IconChevronDown size={16} /> : <IconChevronRight size={16} />}
+                </button>
+              )
+            : (
+                <div className="w-6" /> // Spacer
+              )}
+          {hasChildren
+            ? (
+                isExpanded ? <IconFolderOpen size={18} className="text-primary" /> : <IconFolder size={18} className="text-primary" />
+              )
+            : (
+                <IconFolder size={18} className="text-muted-foreground/60" />
+              )}
           <span className="font-medium">{node.name}</span>
         </div>
         <div className="text-muted-foreground font-mono text-xs">{node.slug}</div>
         <div className="flex justify-end gap-1">
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             className="size-8"
             onClick={() => onEdit(node)}
           >
             <IconEdit size={16} />
           </Button>
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             className="size-8 text-destructive hover:text-destructive hover:bg-destructive/10"
             onClick={() => onDelete(node.id)}
           >
@@ -145,13 +150,13 @@ function CategoryItem({ node, level, onEdit, onDelete, isSearching }: CategoryIt
       </div>
       {hasChildren && isExpanded && (
         <div className="divide-y border-t bg-muted/5">
-          {node.children!.map((child) => (
-            <CategoryItem 
-              key={child.id} 
-              node={child} 
-              level={level + 1} 
-              onEdit={onEdit} 
-              onDelete={onDelete} 
+          {node.children!.map(child => (
+            <CategoryItem
+              key={child.id}
+              node={child}
+              level={level + 1}
+              onEdit={onEdit}
+              onDelete={onDelete}
               isSearching={isSearching}
             />
           ))}

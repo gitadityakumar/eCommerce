@@ -1,16 +1,16 @@
-import { getInventory } from "@/actions/stock";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { StockAdjustmentModal } from "./_components/StockAdjustmentModal";
-import { Package, Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Package, Search } from 'lucide-react';
+import { getInventory } from '@/actions/stock';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { StockAdjustmentModal } from './_components/StockAdjustmentModal';
 
 export default async function InventoryPage() {
   const inventory = await getInventory();
@@ -61,7 +61,10 @@ export default async function InventoryPage() {
                     <div className="flex flex-col">
                       <span className="font-medium">{item.variant.product.name}</span>
                       <span className="text-xs text-muted-foreground">
-                        {item.variant.color?.name || 'No Color'} / {item.variant.size?.name || 'No Size'}
+                        {item.variant.color?.name || 'No Color'}
+                        {' '}
+                        /
+                        {item.variant.size?.name || 'No Size'}
                       </span>
                     </div>
                   </TableCell>
@@ -78,16 +81,20 @@ export default async function InventoryPage() {
                     {total}
                   </TableCell>
                   <TableCell className="text-right">
-                    {isOutOfStock ? (
-                      <Badge variant="destructive">Out of Stock</Badge>
-                    ) : isLowStock ? (
-                      <Badge variant="outline" className="text-amber-600 border-amber-200 bg-amber-50">Low Stock</Badge>
-                    ) : (
-                      <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50">In Stock</Badge>
-                    )}
+                    {isOutOfStock
+                      ? (
+                          <Badge variant="destructive">Out of Stock</Badge>
+                        )
+                      : isLowStock
+                        ? (
+                            <Badge variant="outline" className="text-amber-600 border-amber-200 bg-amber-50">Low Stock</Badge>
+                          )
+                        : (
+                            <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50">In Stock</Badge>
+                          )}
                   </TableCell>
                   <TableCell className="text-right">
-                    <StockAdjustmentModal 
+                    <StockAdjustmentModal
                       variantId={item.variantId}
                       sku={item.variant.sku}
                       productName={item.variant.product.name}

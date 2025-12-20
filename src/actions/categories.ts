@@ -1,27 +1,29 @@
-"use server";
+'use server';
 
-import { db } from "@/lib/db";
-import { categories, auditLogs } from "@/lib/db/schema";
-import { insertCategorySchema, type InsertCategory } from "@/lib/db/schema/categories";
-import { getCurrentUser } from "@/lib/auth/actions";
-import { eq } from "drizzle-orm";
-import { revalidatePath, unstable_noStore as noStore } from "next/cache";
+import type { InsertCategory } from '@/lib/db/schema/categories';
+import { eq } from 'drizzle-orm';
+import { unstable_noStore as noStore, revalidatePath } from 'next/cache';
+import { getCurrentUser } from '@/lib/auth/actions';
+import { db } from '@/lib/db';
+import { auditLogs, categories } from '@/lib/db/schema';
+import { insertCategorySchema } from '@/lib/db/schema/categories';
 
 export async function getCategories() {
   noStore();
   try {
     const allCategories = await db.query.categories.findMany();
     return { success: true, data: allCategories };
-  } catch (error: unknown) {
-    console.error("Error fetching categories:", error);
-    return { success: false, error: "Failed to fetch categories" };
+  }
+  catch (error: unknown) {
+    console.error('Error fetching categories:', error);
+    return { success: false, error: 'Failed to fetch categories' };
   }
 }
 
 export async function createCategory(data: InsertCategory) {
   const user = await getCurrentUser();
   if (!user) {
-    return { success: false, error: "Unauthorized. Please log in." };
+    return { success: false, error: 'Unauthorized. Please log in.' };
   }
 
   const validatedFields = insertCategorySchema.safeParse(data);
@@ -37,29 +39,30 @@ export async function createCategory(data: InsertCategory) {
     if (user) {
       await db.insert(auditLogs).values({
         adminId: user.id,
-        entityType: "category",
+        entityType: 'category',
         entityId: newCategory.id,
-        action: "create",
+        action: 'create',
         newValue: newCategory,
       });
     }
 
-    revalidatePath("/admin/categories", "page");
+    revalidatePath('/admin/categories', 'page');
     return { success: true, data: newCategory };
-  } catch (error: unknown) {
+  }
+  catch (error: unknown) {
     const dbError = error as { code?: string };
-    if (dbError.code === "23505") {
-      return { success: false, error: "A category with this slug already exists" };
+    if (dbError.code === '23505') {
+      return { success: false, error: 'A category with this slug already exists' };
     }
-    console.error("Error creating category:", error);
-    return { success: false, error: "Failed to create category" };
+    console.error('Error creating category:', error);
+    return { success: false, error: 'Failed to create category' };
   }
 }
 
 export async function updateCategory(id: string, data: InsertCategory) {
   const user = await getCurrentUser();
   if (!user) {
-    return { success: false, error: "Unauthorized" };
+    return { success: false, error: 'Unauthorized' };
   }
 
   const validatedFields = insertCategorySchema.safeParse(data);
@@ -74,7 +77,7 @@ export async function updateCategory(id: string, data: InsertCategory) {
     });
 
     if (!oldCategory) {
-      return { success: false, error: "Category not found" };
+      return { success: false, error: 'Category not found' };
     }
 
     const [updatedCategory] = await db
@@ -86,29 +89,30 @@ export async function updateCategory(id: string, data: InsertCategory) {
     // Log the action
     await db.insert(auditLogs).values({
       adminId: user.id,
-      entityType: "category",
+      entityType: 'category',
       entityId: updatedCategory.id,
-      action: "update",
+      action: 'update',
       oldValue: oldCategory,
       newValue: updatedCategory,
     });
 
-    revalidatePath("/admin/categories", "page");
+    revalidatePath('/admin/categories', 'page');
     return { success: true, data: updatedCategory };
-  } catch (error: unknown) {
+  }
+  catch (error: unknown) {
     const dbError = error as { code?: string };
-    if (dbError.code === "23505") {
-      return { success: false, error: "A category with this slug already exists" };
+    if (dbError.code === '23505') {
+      return { success: false, error: 'A category with this slug already exists' };
     }
-    console.error("Error updating category:", error);
-    return { success: false, error: "Failed to update category" };
+    console.error('Error updating category:', error);
+    return { success: false, error: 'Failed to update category' };
   }
 }
 
 export async function deleteCategory(id: string) {
   const user = await getCurrentUser();
   if (!user) {
-    return { success: false, error: "Unauthorized" };
+    return { success: false, error: 'Unauthorized' };
   }
 
   try {
@@ -117,7 +121,7 @@ export async function deleteCategory(id: string) {
     });
 
     if (!oldCategory) {
-      return { success: false, error: "Category not found" };
+      return { success: false, error: 'Category not found' };
     }
 
     await db.delete(categories).where(eq(categories.id, id));
@@ -125,16 +129,17 @@ export async function deleteCategory(id: string) {
     // Log the action
     await db.insert(auditLogs).values({
       adminId: user.id,
-      entityType: "category",
+      entityType: 'category',
       entityId: id,
-      action: "delete",
+      action: 'delete',
       oldValue: oldCategory,
     });
 
-    revalidatePath("/admin/categories", "page");
+    revalidatePath('/admin/categories', 'page');
     return { success: true };
-  } catch (error) {
-    console.error("Error deleting category:", error);
-    return { success: false, error: "Failed to delete category" };
+  }
+  catch (error) {
+    console.error('Error deleting category:', error);
+    return { success: false, error: 'Failed to delete category' };
   }
 }

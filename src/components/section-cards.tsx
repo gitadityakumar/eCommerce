@@ -10,14 +10,31 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
-export function SectionCards() {
+interface SectionCardsProps {
+  stats?: {
+    totalRevenue: number;
+    totalOrders: number;
+    totalCustomers: number;
+    lowStockAlerts: number;
+  };
+}
+
+const defaultStats = {
+  totalRevenue: 12845.50,
+  totalOrders: 456,
+  totalCustomers: 890,
+  lowStockAlerts: 12,
+};
+
+export function SectionCards({ stats = defaultStats }: SectionCardsProps) {
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>Total Revenue</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            ${stats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            $
+            {stats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">

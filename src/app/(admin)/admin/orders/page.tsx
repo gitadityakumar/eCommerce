@@ -1,5 +1,5 @@
-import { getOrders } from "@/actions/orders";
-import { OrdersTable } from "@/components/admin/orders/OrdersTable";
+import { getOrders } from '@/actions/orders';
+import { OrdersTable } from '@/components/admin/orders/OrdersTable';
 
 export default async function OrdersPage() {
   const orders = await getOrders();

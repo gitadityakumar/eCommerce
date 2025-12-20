@@ -1,11 +1,18 @@
 'use server';
 
-import { db } from "@/lib/db";
-import { 
-  orders, users, products, productVariants, inventoryLevels, 
-  carts, sessions, guests, auditLogs 
-} from "@/lib/db/schema";
-import { sql, eq, ne, gte, desc, and } from "drizzle-orm";
+import { and, desc, eq, gte, ne, sql } from 'drizzle-orm';
+import { db } from '@/lib/db';
+import {
+  auditLogs,
+  carts,
+  guests,
+  inventoryLevels,
+  orders,
+  products,
+  productVariants,
+  sessions,
+  users,
+} from '@/lib/db/schema';
 
 export interface DashboardStats {
   totalRevenue: number;
@@ -46,7 +53,7 @@ export async function getDashboardData(dateRange?: { from: Date; to: Date }): Pr
 
     const dateFilter = and(
       gte(orders.createdAt, fromDate),
-      sql`${orders.createdAt} <= ${toDate}`
+      sql`${orders.createdAt} <= ${toDate}`,
     );
 
     // 1. KPI Stats
@@ -143,34 +150,35 @@ export async function getDashboardData(dateRange?: { from: Date; to: Date }): Pr
       activeSessions: Number(activeUserSessions[0]?.count || 0) + Number(activeGuestSessions[0]?.count || 0),
       lowStockItems: lowStockItems.map(item => ({
         ...item,
-        productName: item.productName || 'Unknown Product'
+        productName: item.productName || 'Unknown Product',
       })),
       recentOrders: recentOrders.map(order => ({
         ...order,
-        customerName: order.customerName || 'Guest'
+        customerName: order.customerName || 'Guest',
       })),
       salesTrends: salesTrends.map(trend => ({
         ...trend,
-        revenue: Number(trend.revenue)
+        revenue: Number(trend.revenue),
       })),
       auditFeed: auditFeed.map(log => ({
         ...log,
-        adminName: log.adminName || 'System'
+        adminName: log.adminName || 'System',
       })),
     };
-  } catch (error) {
-    console.error("Error fetching dashboard data:", error);
+  }
+  catch (error) {
+    console.error('Error fetching dashboard data:', error);
     throw error;
   }
 }
 
 // Keep the old one for compatibility if needed, but point to new data structure or just keep as is
 export async function getDashboardStats() {
-    const data = await getDashboardData();
-    return {
-        totalRevenue: data.totalRevenue,
-        totalOrders: data.totalOrders,
-        totalCustomers: data.totalCustomers,
-        lowStockAlerts: data.lowStockItems.length,
-    };
+  const data = await getDashboardData();
+  return {
+    totalRevenue: data.totalRevenue,
+    totalOrders: data.totalOrders,
+    totalCustomers: data.totalCustomers,
+    lowStockAlerts: data.lowStockItems.length,
+  };
 }

@@ -1,8 +1,8 @@
-import { CouponForm } from "../CouponForm";
+import { CouponForm } from '../CouponForm';
 
 export const metadata = {
-  title: "Create New Coupon | Admin Panel",
-  description: "Create and manage store discounts and promotions.",
+  title: 'Create New Coupon | Admin Panel',
+  description: 'Create and manage store discounts and promotions.',
 };
 
 export default function CreateCouponPage() {

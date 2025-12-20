@@ -1,14 +1,17 @@
-"use client"
+'use client';
 
-import * as React from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm, useFieldArray } from "react-hook-form"
-import * as z from "zod"
-import { useRouter } from "next/navigation"
-import { toast } from "sonner"
-import { IconPlus, IconTrash, IconCirclePlus } from "@tabler/icons-react"
+import type { CreateProductInput } from '@/actions/products';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { IconCirclePlus, IconPlus, IconTrash } from '@tabler/icons-react';
+import { useRouter } from 'next/navigation';
+import * as React from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
-import { Button } from "@/components/ui/button"
+import * as z from 'zod';
+import { createProduct } from '@/actions/products';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -16,60 +19,58 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { createProduct, type CreateProductInput } from "@/actions/products"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface Category {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 interface Brand {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 interface Gender {
-  id: string
-  label: string
+  id: string;
+  label: string;
 }
 
 interface Color {
-  id: string
-  name: string
-  hexCode: string
+  id: string;
+  name: string;
+  hexCode: string;
 }
 
 interface Size {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 const formSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters."),
-  slug: z.string().min(2, "Slug must be at least 2 characters."),
-  description: z.string().min(10, "Description must be at least 10 characters."),
-  categoryId: z.string().min(1, "Category is required."),
-  brandId: z.string().min(1, "Brand is required."),
-  genderId: z.string().min(1, "Gender is required."),
-  status: z.enum(["draft", "published", "archived"]),
+  name: z.string().min(2, 'Name must be at least 2 characters.'),
+  slug: z.string().min(2, 'Slug must be at least 2 characters.'),
+  description: z.string().min(10, 'Description must be at least 10 characters.'),
+  categoryId: z.string().min(1, 'Category is required.'),
+  brandId: z.string().min(1, 'Brand is required.'),
+  genderId: z.string().min(1, 'Gender is required.'),
+  status: z.enum(['draft', 'published', 'archived']),
   images: z.array(z.object({
-    url: z.string().url("Invalid image URL"),
+    url: z.string().url('Invalid image URL'),
     isPrimary: z.boolean(),
-  })).min(1, "At least one image is required"),
+  })).min(1, 'At least one image is required'),
   variants: z.array(z.object({
-    sku: z.string().min(1, "SKU is required"),
-    price: z.string().min(1, "Price is required"),
+    sku: z.string().min(1, 'SKU is required'),
+    price: z.string().min(1, 'Price is required'),
     salePrice: z.string().optional().nullable(),
     weight: z.number().optional().nullable(),
 
@@ -84,107 +85,106 @@ const formSchema = z.object({
       .partial()
       .optional()
       .nullable(),
-  })).min(1, "At least one variant is required"),
-})
+  })).min(1, 'At least one variant is required'),
+});
 
-type FormValues = z.infer<typeof formSchema>
+type FormValues = z.infer<typeof formSchema>;
 
 interface ProductFormProps {
-  categories: Category[]
-  brands: Brand[]
-  genders: Gender[]
-  colors: Color[]
-  sizes: Size[]
+  categories: Category[];
+  brands: Brand[];
+  genders: Gender[];
+  colors: Color[];
+  sizes: Size[];
 }
 
 export function ProductForm({ categories, brands, genders, colors, sizes }: ProductFormProps) {
-  const router = useRouter()
-  const [isPending, setIsPending] = React.useState(false)
+  const router = useRouter();
+  const [isPending, setIsPending] = React.useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      slug: "",
-      description: "",
-      categoryId: "",
-      brandId: "",
-      genderId: "",
-      status: "draft",
-      images: [{ url: "", isPrimary: true }],
+      name: '',
+      slug: '',
+      description: '',
+      categoryId: '',
+      brandId: '',
+      genderId: '',
+      status: 'draft',
+      images: [{ url: '', isPrimary: true }],
       variants: [{
-        sku: "",
-        price: "",
+        sku: '',
+        price: '',
         salePrice: null,
         weight: null,
 
         colorId: null,
         sizeId: null,
-        dimensions: null
+        dimensions: null,
       }],
     },
-  })
+  });
 
   const { fields: imageFields, append: appendImage, remove: removeImage } = useFieldArray({
-    name: "images",
+    name: 'images',
     control: form.control,
-  })
+  });
 
   const { fields: variantFields, append: appendVariant, remove: removeVariant } = useFieldArray({
-    name: "variants",
+    name: 'variants',
     control: form.control,
-  })
+  });
 
   async function onSubmit(values: FormValues) {
-    console.log("onSubmit started with values:", values)
     // @ts-expect-error - Debugging form submission
-    window.submitStarted = true
-    setIsPending(true)
-    
+    window.submitStarted = true;
+    setIsPending(true);
+
     // Map "none" string back to null for database
     const submitValues = {
       ...values,
       variants: values.variants.map(v => ({
         ...v,
-        colorId: v.colorId === "none" ? null : v.colorId,
-        sizeId: v.sizeId === "none" ? null : v.sizeId,
-      }))
-    }
+        colorId: v.colorId === 'none' ? null : v.colorId,
+        sizeId: v.sizeId === 'none' ? null : v.sizeId,
+      })),
+    };
 
-    console.log("Calling createProduct server action...")
     try {
-      const result = await createProduct(submitValues as CreateProductInput)
-      console.log("createProduct result:", result)
+      const result = await createProduct(submitValues as CreateProductInput);
       // @ts-expect-error - Debugging form submission result
-      window.lastSubmitResult = result
-      setIsPending(false)
+      window.lastSubmitResult = result;
+      setIsPending(false);
 
       if (result.success) {
-        toast.success("Product created successfully")
-        router.push("/admin/products")
-      } else {
-        toast.error(result.error || "Failed to create product")
+        toast.success('Product created successfully');
+        router.push('/admin/products');
       }
-    } catch (error) {
-      console.error("Error calling createProduct:", error)
-      toast.error("An unexpected error occurred")
-      setIsPending(false)
+      else {
+        toast.error(result.error || 'Failed to create product');
+      }
+    }
+    catch (error) {
+      console.error('Error calling createProduct:', error);
+      toast.error('An unexpected error occurred');
+      setIsPending(false);
     }
   }
 
   // Auto-generate slug from name
   React.useEffect(() => {
     const subscription = form.watch((value, { name }) => {
-      if (name === "name" && value.name) {
+      if (name === 'name' && value.name) {
         const slug = value.name
           .toLowerCase()
-          .replace(/[^\w\s-]/g, "")
-          .replace(/\s+/g, "-")
-        form.setValue("slug", slug, { shouldValidate: true })
+          .replace(/[^\w\s-]/g, '')
+          .replace(/\s+/g, '-');
+        form.setValue('slug', slug, { shouldValidate: true });
       }
-    })
-    return () => subscription.unsubscribe()
-  }, [form])
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
 
   return (
     <div className="px-4 lg:px-6 pb-12">
@@ -261,7 +261,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {categories.map((cat) => (
+                              {categories.map(cat => (
                                 <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
                               ))}
                             </SelectContent>
@@ -283,7 +283,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {brands.map((brand) => (
+                              {brands.map(brand => (
                                 <SelectItem key={brand.id} value={brand.id}>{brand.name}</SelectItem>
                               ))}
                             </SelectContent>
@@ -292,7 +292,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                         </FormItem>
                       )}
                     />
-                     <FormField
+                    <FormField
                       control={form.control}
                       name="genderId"
                       render={({ field }) => (
@@ -305,7 +305,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {genders.map((g) => (
+                              {genders.map(g => (
                                 <SelectItem key={g.id} value={g.id}>{g.label}</SelectItem>
                               ))}
                             </SelectContent>
@@ -356,7 +356,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                         name={`images.${index}.url`}
                         render={({ field }) => (
                           <FormItem className="flex-1">
-                            <FormLabel className={index !== 0 ? "sr-only" : ""}>Image URL</FormLabel>
+                            <FormLabel className={index !== 0 ? 'sr-only' : ''}>Image URL</FormLabel>
                             <FormControl>
                               <Input placeholder="https://example.com/image.jpg" {...field} />
                             </FormControl>
@@ -369,22 +369,22 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                         name={`images.${index}.isPrimary`}
                         render={({ field }) => (
                           <FormItem className="flex items-center gap-2 mb-2">
-                             <FormControl>
-                               <input 
-                                 type="checkbox" 
-                                 checked={field.value} 
-                                 onChange={field.onChange}
-                                 className="size-4"
-                               />
-                             </FormControl>
-                             <FormLabel className="mt-0! text-sm">Primary</FormLabel>
+                            <FormControl>
+                              <input
+                                type="checkbox"
+                                checked={field.value}
+                                onChange={field.onChange}
+                                className="size-4"
+                              />
+                            </FormControl>
+                            <FormLabel className="mt-0! text-sm">Primary</FormLabel>
                           </FormItem>
                         )}
                       />
-                      <Button 
-                        type="button" 
-                        variant="ghost" 
-                        size="icon" 
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
                         onClick={() => removeImage(index)}
                         disabled={imageFields.length === 1}
                         className="mb-1"
@@ -393,12 +393,12 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                       </Button>
                     </div>
                   ))}
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
                     className="mt-2"
-                    onClick={() => appendImage({ url: "", isPrimary: false })}
+                    onClick={() => appendImage({ url: '', isPrimary: false })}
                   >
                     <IconPlus className="mr-2 size-4" />
                     Add Image URL
@@ -414,19 +414,19 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                     <CardTitle>Variants</CardTitle>
                     <CardDescription>Manage SKUs, pricing, and stock for each variation.</CardDescription>
                   </div>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => appendVariant({ 
-                      sku: "", 
-                      price: "", 
-                      salePrice: null, 
-                      weight: null, 
-              
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => appendVariant({
+                      sku: '',
+                      price: '',
+                      salePrice: null,
+                      weight: null,
+
                       colorId: null,
                       sizeId: null,
-                      dimensions: null
+                      dimensions: null,
                     })}
                   >
                     <IconCirclePlus className="mr-2 size-4" />
@@ -437,17 +437,17 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                   {variantFields.map((field, index) => (
                     <div key={field.id} className="space-y-4 p-4 border rounded-lg relative">
                       {variantFields.length > 1 && (
-                        <Button 
-                          type="button" 
-                          variant="ghost" 
-                          size="icon" 
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
                           onClick={() => removeVariant(index)}
                           className="absolute top-2 right-2"
                         >
                           <IconTrash className="size-4 text-destructive" />
                         </Button>
                       )}
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <FormField
                           control={form.control}
@@ -482,7 +482,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                             <FormItem>
                               <FormLabel>Sale Price (Optional)</FormLabel>
                               <FormControl>
-                                <Input placeholder="7999.00" {...field} value={field.value || ""} />
+                                <Input placeholder="7999.00" {...field} value={field.value || ''} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -496,9 +496,9 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                           control={form.control}
                           name={`variants.${index}.colorId`}
                           render={({ field }) => (
-                              <FormItem>
-                            <FormLabel>Color (Optional)</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
+                            <FormItem>
+                              <FormLabel>Color (Optional)</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
                                 <FormControl>
                                   <SelectTrigger>
                                     <SelectValue placeholder="Select color" />
@@ -506,12 +506,12 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                                 </FormControl>
                                 <SelectContent>
                                   <SelectItem value="none">None</SelectItem>
-                                  {colors.map((color) => (
+                                  {colors.map(color => (
                                     <SelectItem key={color.id} value={color.id}>
                                       <div className="flex items-center gap-2">
-                                        <div 
-                                          className="size-4 rounded-full border" 
-                                          style={{ backgroundColor: color.hexCode }} 
+                                        <div
+                                          className="size-4 rounded-full border"
+                                          style={{ backgroundColor: color.hexCode }}
                                         />
                                         {color.name}
                                       </div>
@@ -527,17 +527,17 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                           control={form.control}
                           name={`variants.${index}.sizeId`}
                           render={({ field }) => (
-                              <FormItem>
-                            <FormLabel>Size (Optional)</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
+                            <FormItem>
+                              <FormLabel>Size (Optional)</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
                                 <FormControl>
                                   <SelectTrigger>
                                     <SelectValue placeholder="Select size" />
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                   <SelectItem value="none">None</SelectItem>
-                                  {sizes.map((size) => (
+                                  <SelectItem value="none">None</SelectItem>
+                                  {sizes.map(size => (
                                     <SelectItem key={size.id} value={size.id}>{size.name}</SelectItem>
                                   ))}
                                 </SelectContent>
@@ -549,14 +549,14 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                         <FormField
+                        <FormField
                           control={form.control}
                           name={`variants.${index}.weight`}
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Weight (kg) (Optional)</FormLabel>
                               <FormControl>
-                                <Input type="number" step="0.01" {...field} value={field.value ?? ""} />
+                                <Input type="number" step="0.01" {...field} value={field.value ?? ''} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -569,7 +569,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                             <FormItem>
                               <FormLabel>Length (Optional)</FormLabel>
                               <FormControl>
-                                <Input type="number" {...field} value={field.value ?? ""} />
+                                <Input type="number" {...field} value={field.value ?? ''} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -582,7 +582,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                             <FormItem>
                               <FormLabel>Width (Optional)</FormLabel>
                               <FormControl>
-                                <Input type="number" {...field} value={field.value ?? ""} />
+                                <Input type="number" {...field} value={field.value ?? ''} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -595,7 +595,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                             <FormItem>
                               <FormLabel>Height (Optional)</FormLabel>
                               <FormControl>
-                                <Input type="number" {...field} value={field.value ?? ""} />
+                                <Input type="number" {...field} value={field.value ?? ''} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -610,20 +610,20 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
           </Tabs>
 
           <div className="flex justify-end gap-4">
-            <Button 
-              type="button" 
-              variant="outline" 
+            <Button
+              type="button"
+              variant="outline"
               onClick={() => router.back()}
               disabled={isPending}
             >
               Cancel
             </Button>
             <Button type="submit" disabled={isPending}>
-              {isPending ? "Creating..." : "Create Product"}
+              {isPending ? 'Creating...' : 'Create Product'}
             </Button>
           </div>
         </form>
       </Form>
     </div>
-  )
+  );
 }

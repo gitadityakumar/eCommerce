@@ -19,6 +19,6 @@
     "hooks": "@/hooks"
   },
   "registries": {
-     "@basecn": "https://basecn.dev/r/{name}"
+    "@basecn": "https://basecn.dev/r/{name}"
   }
 }

@@ -1,12 +1,12 @@
 'use server';
 
-import { db } from "@/lib/db";
-import { users, orders, auditLogs, userRoleEnum } from "@/lib/db/schema";
-import { eq, or, ilike, desc, and } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
-import { z } from "zod";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { and, desc, eq, ilike, or } from 'drizzle-orm';
+import { revalidatePath } from 'next/cache';
+import { headers } from 'next/headers';
+import { z } from 'zod';
+import { auth } from '@/lib/auth';
+import { db } from '@/lib/db';
+import { auditLogs, orders, userRoleEnum, users } from '@/lib/db/schema';
 
 const updateCustomerRoleSchema = z.object({
   userId: z.string().uuid(),
@@ -37,8 +37,9 @@ export async function getCustomers(search?: string, role?: string, verified?: bo
     });
 
     return customers;
-  } catch (error) {
-    console.error("Error fetching customers:", error);
+  }
+  catch (error) {
+    console.error('Error fetching customers:', error);
     return [];
   }
 }
@@ -56,19 +57,20 @@ export async function getCustomerById(id: string) {
         reviews: {
           with: {
             product: true,
-          }
+          },
         },
         wishlists: {
           with: {
             product: true,
-          }
+          },
         },
       },
     });
 
     return customer;
-  } catch (error) {
-    console.error("Error fetching customer by id:", error);
+  }
+  catch (error) {
+    console.error('Error fetching customer by id:', error);
     return null;
   }
 }
@@ -80,7 +82,7 @@ export async function updateCustomerRole(userId: string, role: z.infer<typeof up
     });
 
     if (!session || session.user.role !== 'admin') {
-      return { success: false, error: "Unauthorized" };
+      return { success: false, error: 'Unauthorized' };
     }
 
     const validated = updateCustomerRoleSchema.parse({ userId, role });
@@ -92,7 +94,8 @@ export async function updateCustomerRole(userId: string, role: z.infer<typeof up
         .where(eq(users.id, validated.userId))
         .limit(1);
 
-      if (!currentUser) throw new Error("User not found");
+      if (!currentUser)
+        throw new Error('User not found');
 
       const [updatedUser] = await tx
         .update(users)
@@ -115,12 +118,13 @@ export async function updateCustomerRole(userId: string, role: z.infer<typeof up
     revalidatePath(`/admin/customers/${userId}`);
     revalidatePath('/admin/customers');
     return { success: true, user: result };
-  } catch (error) {
-    console.error("Error updating customer role:", error);
+  }
+  catch (error) {
+    console.error('Error updating customer role:', error);
     if (error instanceof z.ZodError) {
       return { success: false, error: error.issues[0].message };
     }
-    return { success: false, error: "Failed to update customer role" };
+    return { success: false, error: 'Failed to update customer role' };
   }
 }
 
@@ -131,7 +135,7 @@ export async function updateCustomerVerification(userId: string, emailVerified: 
     });
 
     if (!session || session.user.role !== 'admin') {
-      return { success: false, error: "Unauthorized" };
+      return { success: false, error: 'Unauthorized' };
     }
 
     const validated = updateCustomerVerificationSchema.parse({ userId, emailVerified });
@@ -143,7 +147,8 @@ export async function updateCustomerVerification(userId: string, emailVerified: 
         .where(eq(users.id, validated.userId))
         .limit(1);
 
-      if (!currentUser) throw new Error("User not found");
+      if (!currentUser)
+        throw new Error('User not found');
 
       const [updatedUser] = await tx
         .update(users)
@@ -166,11 +171,12 @@ export async function updateCustomerVerification(userId: string, emailVerified: 
     revalidatePath(`/admin/customers/${userId}`);
     revalidatePath('/admin/customers');
     return { success: true, user: result };
-  } catch (error) {
-    console.error("Error updating customer verification:", error);
+  }
+  catch (error) {
+    console.error('Error updating customer verification:', error);
     if (error instanceof z.ZodError) {
       return { success: false, error: error.issues[0].message };
     }
-    return { success: false, error: "Failed to update customer verification" };
+    return { success: false, error: 'Failed to update customer verification' };
   }
 }

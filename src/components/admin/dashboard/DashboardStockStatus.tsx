@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { AlertTriangle, Package } from "lucide-react";
-import { StockAdjustmentModal } from "../../inventory/_components/StockAdjustmentModal";
+import { AlertTriangle, Package } from 'lucide-react';
+import { StockAdjustmentModal } from '@/app/(admin)/admin/inventory/_components/StockAdjustmentModal';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface StockStatusProps {
   items: {
@@ -16,14 +16,14 @@ export function DashboardStockStatus({ items }: StockStatusProps) {
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-semibold">Low Stock Items</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="text-base font-semibold">Low Stock Items</CardTitle>
+          <Package className="h-4 w-4 text-muted-foreground" />
         </div>
         <CardDescription>Items needing immediate attention.</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {items.map((item) => (
+          {items.map(item => (
             <div key={item.id} className="flex items-center gap-3">
               <div className={`p-2 rounded-full ${item.available === 0 ? 'bg-rose-100' : 'bg-amber-100'}`}>
                 <AlertTriangle className={`h-4 w-4 ${item.available === 0 ? 'text-rose-600' : 'text-amber-600'}`} />
@@ -38,7 +38,7 @@ export function DashboardStockStatus({ items }: StockStatusProps) {
                 </span>
                 <span className="text-[10px] text-muted-foreground uppercase">Left</span>
               </div>
-              <StockAdjustmentModal 
+              <StockAdjustmentModal
                 variantId={item.id}
                 sku={item.sku}
                 productName={item.productName}
