@@ -7,7 +7,6 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu } from '@/components/ui/navbar-menu';
-// import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
   { label: 'Men', href: '/products?gender=men' },
@@ -18,14 +17,13 @@ const NAV_LINKS = [
 ] as const;
 
 export default function Navbar() {
-  // eslint-disable-next-line unused-imports/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [active, setActive] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
-  // fixed top-0 w-full z-50 border-b border-white/5 bg-black/50 backdrop-blur-md transition-all duration-500
 
   return (
     <div className="sticky top-0 z-50 w-full h-15 border-b border-white/5  bg-black/85 backdrop-blur-md transition-all duaration-500 flex items-center justify-center">

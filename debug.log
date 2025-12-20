@@ -1,0 +1,5 @@
+2025-12-19T09:53:30.709Z: getCategories called
+2025-12-19T09:53:31.099Z: Fetched 3 categories
+2025-12-19T09:53:37.337Z: createCategory called with: {"name":"Final Debug Category","slug":"final-debug-category","parentId":null}
+2025-12-19T09:53:37.343Z: User found: null
+2025-12-19T09:53:37.344Z: Unauthorized attempt to create category

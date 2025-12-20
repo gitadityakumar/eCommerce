@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { integer, numeric, pgEnum, pgTable, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { integer, numeric, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 import { addresses } from './addresses';
 import { users } from './user';

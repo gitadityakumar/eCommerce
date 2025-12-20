@@ -121,4 +121,4 @@ export default function CampaignShowcase() {
       </div>
     </section>
   );
-};
+}

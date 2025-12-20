@@ -2,11 +2,10 @@ import { relations } from 'drizzle-orm';
 import { integer, jsonb, numeric, pgTable, real, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 import { cartItems } from './carts';
-import { colors } from './filters/colors';
-import { sizes } from './filters/sizes';
 import { productImages } from './images';
 import { orderItems } from './orders';
 import { products } from './products';
+import { productOptionValues } from './options';
 
 export const productVariants = pgTable('product_variants', {
   id: uuid('id').primaryKey().defaultRandom(),

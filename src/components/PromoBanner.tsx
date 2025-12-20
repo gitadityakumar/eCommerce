@@ -43,4 +43,4 @@ export default function PromoBanner() {
       </motion.div>
     </section>
   );
-};
+}
