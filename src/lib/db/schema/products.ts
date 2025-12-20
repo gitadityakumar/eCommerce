@@ -5,15 +5,17 @@ import { brands } from './brands';
 import { categories } from './categories';
 import { genders } from './filters/genders';
 
+export const productStatusEnum = pgEnum('product_status', ['draft', 'published', 'archived']);
+
 export const products = pgTable('products', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
+  slug: text('slug').notNull().unique(),
   description: text('description').notNull(),
   categoryId: uuid('category_id').references(() => categories.id, { onDelete: 'set null' }),
   genderId: uuid('gender_id').references(() => genders.id, { onDelete: 'set null' }),
   brandId: uuid('brand_id').references(() => brands.id, { onDelete: 'set null' }),
-  isPublished: boolean('is_published').notNull().default(false),
-  defaultVariantId: uuid('default_variant_id'),
+  status: productStatusEnum('status').notNull().default('draft'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -35,12 +37,12 @@ export const productsRelations = relations(products, ({ one }) => ({
 
 export const insertProductSchema = z.object({
   name: z.string().min(1),
+  slug: z.string().min(1),
   description: z.string().min(1),
   categoryId: z.string().uuid().optional().nullable(),
   genderId: z.string().uuid().optional().nullable(),
   brandId: z.string().uuid().optional().nullable(),
-  isPublished: z.boolean().optional(),
-  defaultVariantId: z.string().uuid().optional().nullable(),
+  status: z.enum(['draft', 'published', 'archived']).optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
 });

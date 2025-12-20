@@ -5,16 +5,37 @@ import { addresses } from './addresses';
 import { users } from './user';
 import { productVariants } from './variants';
 
-export const orderStatusEnum = pgEnum('order_status', ['pending', 'paid', 'shipped', 'delivered', 'cancelled']);
+export const orderStatusEnum = pgEnum('order_status', [
+  'pending',
+  'paid',
+  'partially_shipped',
+  'shipped',
+  'delivered',
+  'cancelled',
+  'returned',
+  'refunded',
+  'failed',
+]);
 
 export const orders = pgTable('orders', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id').references(() => users.id, { onDelete: 'set null' }),
   status: orderStatusEnum('status').notNull().default('pending'),
-  totalAmount: numeric('total_amount', { precision: 10, scale: 2 }).notNull(),
+  totalAmount: numeric('total_amount', { precision: 15, scale: 2 }).notNull(), // INR precision
   shippingAddressId: uuid('shipping_address_id').references(() => addresses.id, { onDelete: 'set null' }),
   billingAddressId: uuid('billing_address_id').references(() => addresses.id, { onDelete: 'set null' }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const fulfillments = pgTable('fulfillments', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orderId: uuid('order_id').references(() => orders.id, { onDelete: 'cascade' }).notNull(),
+  trackingNumber: text('tracking_number'),
+  carrier: text('carrier'),
+  status: text('status').notNull().default('pending'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 export const orderItems = pgTable('order_items', {
@@ -22,7 +43,7 @@ export const orderItems = pgTable('order_items', {
   orderId: uuid('order_id').references(() => orders.id, { onDelete: 'cascade' }).notNull(),
   productVariantId: uuid('product_variant_id').references(() => productVariants.id, { onDelete: 'restrict' }).notNull(),
   quantity: integer('quantity').notNull().default(1),
-  priceAtPurchase: numeric('price_at_purchase', { precision: 10, scale: 2 }).notNull(),
+  priceAtPurchase: numeric('price_at_purchase', { precision: 15, scale: 2 }).notNull(), // INR precision
 });
 
 export const ordersRelations = relations(orders, ({ many, one }) => ({
@@ -39,6 +60,14 @@ export const ordersRelations = relations(orders, ({ many, one }) => ({
     references: [addresses.id],
   }),
   items: many(orderItems),
+  fulfillments: many(fulfillments),
+}));
+
+export const fulfillmentsRelations = relations(fulfillments, ({ one }) => ({
+  order: one(orders, {
+    fields: [fulfillments.orderId],
+    references: [orders.id],
+  }),
 }));
 
 export const orderItemsRelations = relations(orderItems, ({ one }) => ({
@@ -54,11 +83,24 @@ export const orderItemsRelations = relations(orderItems, ({ one }) => ({
 
 export const insertOrderSchema = z.object({
   userId: z.string().uuid().optional().nullable(),
-  status: z.enum(['pending', 'paid', 'shipped', 'delivered', 'cancelled']).optional(),
+  status: z
+    .enum([
+      'pending',
+      'paid',
+      'partially_shipped',
+      'shipped',
+      'delivered',
+      'cancelled',
+      'returned',
+      'refunded',
+      'failed',
+    ])
+    .optional(),
   totalAmount: z.number(),
   shippingAddressId: z.string().uuid().optional().nullable(),
   billingAddressId: z.string().uuid().optional().nullable(),
   createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
 });
 export const selectOrderSchema = insertOrderSchema.extend({
   id: z.string().uuid(),
