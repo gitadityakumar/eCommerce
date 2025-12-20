@@ -1,35 +1,37 @@
-"use client";
-import React, { useState } from "react";
+'use client';
 import {
-  motion,
   AnimatePresence,
-  useScroll,
+  motion,
   useMotionValueEvent,
-} from "framer-motion";
-import { cn } from "@/lib/utils";
+  useScroll,
+} from 'framer-motion';
+import React, { useState } from 'react';
+import { cn } from '@/lib/utils';
 
-export const FloatingNav = ({
+export function FloatingNav({
   children,
   className,
 }: {
   children: React.ReactNode;
   className?: string;
-}) => {
+}) {
   const { scrollYProgress } = useScroll();
 
   const [visible, setVisible] = useState(true);
 
-  useMotionValueEvent(scrollYProgress, "change", (current) => {
+  useMotionValueEvent(scrollYProgress, 'change', (current) => {
     // Check if current is not undefined and is a number
-    if (typeof current === "number") {
+    if (typeof current === 'number') {
       const direction = current! - scrollYProgress.getPrevious()!;
 
       if (scrollYProgress.get() < 0.05) {
         setVisible(true);
-      } else {
+      }
+      else {
         if (direction < 0) {
           setVisible(true);
-        } else {
+        }
+        else {
           setVisible(false);
         }
       }
@@ -51,12 +53,12 @@ export const FloatingNav = ({
           duration: 0.2,
         }}
         className={cn(
-          "flex fixed top-5 inset-x-0 mx-auto z-[5000] items-center justify-center space-x-4",
-          className
+          'flex fixed top-5 inset-x-0 mx-auto z-[5000] items-center justify-center space-x-4',
+          className,
         )}
       >
         {children}
       </motion.div>
     </AnimatePresence>
   );
-};
+}

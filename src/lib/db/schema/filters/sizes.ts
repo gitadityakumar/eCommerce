@@ -1,6 +1,6 @@
-import { pgTable, text, integer, uuid } from 'drizzle-orm/pg-core';
-import { z } from 'zod';
 import { relations } from 'drizzle-orm';
+import { integer, pgTable, text, uuid } from 'drizzle-orm/pg-core';
+import { z } from 'zod';
 import { productVariants } from '../variants';
 
 export const sizes = pgTable('sizes', {

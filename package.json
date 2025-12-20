@@ -6,8 +6,8 @@
     "dev": "next dev ",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
@@ -58,6 +58,7 @@
     "zustand": "^5.0.7"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^6.7.1",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
@@ -65,7 +66,7 @@
     "@types/react-dom": "^19.2.3",
     "babel-plugin-react-compiler": "^1.0.0",
     "drizzle-kit": "^0.31.8",
-    "eslint": "^9",
+    "eslint": "^9.39.2",
     "eslint-config-next": "15.4.6",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",

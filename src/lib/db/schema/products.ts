@@ -1,9 +1,9 @@
-import { pgTable, text, timestamp, uuid, pgEnum } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+import { boolean, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
+import { brands } from './brands';
 import { categories } from './categories';
 import { genders } from './filters/genders';
-import { brands } from './brands';
 
 export const productStatusEnum = pgEnum('product_status', ['draft', 'published', 'archived']);
 

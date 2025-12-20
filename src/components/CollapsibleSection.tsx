@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { ChevronDown } from 'lucide-react';
+import { useState } from 'react';
 
 export interface CollapsibleSectionProps {
   title: string;
@@ -16,14 +16,14 @@ export default function CollapsibleSection({
   children,
   defaultOpen = false,
   rightMeta,
-  className = "",
+  className = '',
 }: CollapsibleSectionProps) {
   const [open, setOpen] = useState(defaultOpen);
 
   return (
     <section className={`border-b border-light-300 dark:border-dark-300 ${className}`}>
       <button
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => setOpen(o => !o)}
         className="flex w-full items-center justify-between gap-4 py-5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-dark-500] dark:focus-visible:ring-[--color-light-500]"
         aria-expanded={open}
       >
@@ -31,7 +31,7 @@ export default function CollapsibleSection({
         <span className="flex items-center gap-2">
           {rightMeta}
           <ChevronDown
-            className={`h-5 w-5 text-dark-900 dark:text-light-900 transition-transform ${open ? "rotate-180" : ""}`}
+            className={`h-5 w-5 text-dark-900 dark:text-light-900 transition-transform ${open ? 'rotate-180' : ''}`}
             aria-hidden="true"
           />
         </span>

@@ -1,12 +1,13 @@
-"use client";
-import React from "react";
-import { motion, Transition } from "framer-motion";
-import Link from "next/link";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
+'use client';
+import type { Transition } from 'framer-motion';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
+import React from 'react';
+import { cn } from '@/lib/utils';
 
 const transition: Transition = {
-  type: "spring",
+  type: 'spring',
   mass: 0.5,
   damping: 11.5,
   stiffness: 100,
@@ -14,7 +15,7 @@ const transition: Transition = {
   restSpeed: 0.001,
 };
 
-export const MenuItem = ({
+export function MenuItem({
   setActive,
   active,
   item,
@@ -24,7 +25,7 @@ export const MenuItem = ({
   active: string | null;
   item: string;
   children?: React.ReactNode;
-}) => {
+}) {
   return (
     <div onMouseEnter={() => setActive(item)} className="relative ">
       <motion.p
@@ -59,9 +60,9 @@ export const MenuItem = ({
       )}
     </div>
   );
-};
+}
 
-export const Menu = ({
+export function Menu({
   setActive,
   children,
   className,
@@ -69,21 +70,21 @@ export const Menu = ({
   setActive: (item: string | null) => void;
   children: React.ReactNode;
   className?: string;
-}) => {
+}) {
   return (
     <nav
       onMouseLeave={() => setActive(null)} // resets the state
       className={cn(
-        "relative rounded-full border border-transparent dark:bg-black dark:border-white/[0.2] bg-white shadow-input flex justify-center space-x-4 px-8 py-6 ",
-        className
+        'relative rounded-full border border-transparent dark:bg-black dark:border-white/[0.2] bg-white shadow-input flex justify-center space-x-4 px-8 py-6 ',
+        className,
       )}
     >
       {children}
     </nav>
   );
-};
+}
 
-export const ProductItem = ({
+export function ProductItem({
   title,
   description,
   href,
@@ -93,7 +94,7 @@ export const ProductItem = ({
   description: string;
   href: string;
   src: string;
-}) => {
+}) {
   return (
     <Link href={href} className="flex space-x-2">
       <Image
@@ -113,9 +114,9 @@ export const ProductItem = ({
       </div>
     </Link>
   );
-};
+}
 
-export const HoveredLink = ({ children, ...rest }: React.ComponentProps<typeof Link>) => {
+export function HoveredLink({ children, ...rest }: React.ComponentProps<typeof Link>) {
   return (
     <Link
       {...rest}
@@ -124,4 +125,4 @@ export const HoveredLink = ({ children, ...rest }: React.ComponentProps<typeof L
       {children}
     </Link>
   );
-};
+}
