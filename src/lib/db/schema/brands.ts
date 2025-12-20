@@ -1,7 +1,5 @@
-import { relations } from 'drizzle-orm';
 import { pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
-import { products } from './products';
 
 export const brands = pgTable('brands', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -9,10 +7,6 @@ export const brands = pgTable('brands', {
   slug: text('slug').notNull().unique(),
   logoUrl: text('logo_url'),
 });
-
-export const brandsRelations = relations(brands, ({ many }) => ({
-  products: many(products),
-}));
 
 export const insertBrandSchema = z.object({
   name: z.string().min(1),

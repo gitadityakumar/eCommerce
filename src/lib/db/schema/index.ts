@@ -16,6 +16,7 @@ export * from './options';
 export * from './orders';
 export * from './payments';
 export * from './products';
+export * from './relations';
 export * from './reviews';
 export * from './session';
 export * from './user';

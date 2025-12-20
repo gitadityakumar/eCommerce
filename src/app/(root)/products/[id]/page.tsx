@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { Card, CollapsibleSection, ProductGallery, SizePicker } from '@/components';
 import ColorSwatches from '@/components/ColorSwatches';
-import { getProduct, getProductReviews, getRecommendedProducts } from '@/lib/actions/product';
+import { getProductReviews, getRecommendedProducts } from '@/lib/actions/product';
+import { getStorefrontProduct } from '@/lib/actions/storefront';
 
 interface GalleryVariant { color: string; images: string[] }
 
@@ -35,7 +36,7 @@ async function ReviewsSection({ productId }: { productId: string }) {
   const reviews: Review[] = await getProductReviews(productId);
   const count = reviews.length;
   const avg
-    = count > 0 ? (reviews.reduce((s, r) => s + r.rating, 0) / count) : 0;
+    = count > 0 ? ((reviews || []).reduce((s, r) => s + (r?.rating || 0), 0) / count) : 0;
 
   return (
     <CollapsibleSection
@@ -65,7 +66,7 @@ async function ReviewsSection({ productId }: { productId: string }) {
                     </span>
                   </div>
                   {r.title && <p className="text-body-medium text-foreground">{r.title}</p>}
-                  {r.content && <p className="mt-1 line-clamp-[8] text-body text-muted-foreground">{r.content}</p>}
+                  {r.content && <p className="mt-1 line-clamp-8 text-body text-muted-foreground">{r.content}</p>}
                   <p className="mt-2 text-caption text-muted-foreground">{new Date(r.createdAt).toLocaleDateString()}</p>
                 </li>
               ))}
@@ -99,9 +100,9 @@ async function AlsoLikeSection({ productId }: { productId: string }) {
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const data = await getProduct(id);
+  const product = await getStorefrontProduct(id);
 
-  if (!data) {
+  if (!product) {
     return (
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <nav className="py-4 text-caption text-muted-foreground">
@@ -119,7 +120,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     );
   }
 
-  const { product, variants, images } = data;
+  const { variants, images } = product;
 
   const galleryVariants: GalleryVariant[] = variants.map((v) => {
     const imgs = images
@@ -143,8 +144,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     };
   }).filter(gv => gv.images.length > 0);
 
-  const defaultVariant
-    = variants.find(v => v.id === product.defaultVariantId) || variants[0];
+  const defaultVariant = variants[0];
 
   const basePrice = defaultVariant ? Number(defaultVariant.price) : null;
   const salePrice = defaultVariant?.salePrice ? Number(defaultVariant.salePrice) : null;

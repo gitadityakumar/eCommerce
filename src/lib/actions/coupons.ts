@@ -3,6 +3,7 @@
 import type { InsertCoupon } from '@/lib/db/schema/coupons';
 import { desc, eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
 import { getCurrentUser } from '@/lib/auth/actions';
 import { db } from '@/lib/db';
 import { coupons, insertCouponSchema } from '@/lib/db/schema/coupons';
@@ -42,9 +43,8 @@ export async function createCoupon(data: InsertCoupon) {
   }
   catch (error: unknown) {
     console.error('Error creating coupon:', error);
-    if (error instanceof Error && error.name === 'ZodError') {
-      // @ts-expect-error - zod error structure
-      return { error: error.errors[0].message };
+    if (error instanceof z.ZodError) {
+      return { error: error.flatten().fieldErrors };
     }
     return { error: 'Failed to create coupon. Please try again.' };
   }

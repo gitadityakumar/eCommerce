@@ -99,7 +99,16 @@ export function CouponForm() {
         router.push('/admin/coupons');
       }
       else {
-        toast.error(result.error || 'Failed to create coupon');
+        if (result.error && typeof result.error === 'object') {
+          Object.entries(result.error as Record<string, string[]>).forEach(([key, messages]) => {
+            if (messages && messages.length > 0) {
+              form.setError(key as keyof CouponFormValues, { message: messages[0] });
+            }
+          });
+        }
+        else {
+          toast.error((result.error as unknown as string) || 'Failed to create coupon');
+        }
       }
     }
     catch {

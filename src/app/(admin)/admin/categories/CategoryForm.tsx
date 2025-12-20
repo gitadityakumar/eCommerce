@@ -96,7 +96,7 @@ export function CategoryForm({ categories, editingCategory, onSuccess, onCancel 
         }
       }
       else {
-        if (typeof result.error === 'object') {
+        if (result.error && typeof result.error === 'object') {
           // Handle Zod errors if any
           Object.entries(result.error as Record<string, string[]>).forEach(([key, messages]) => {
             if (messages && messages.length > 0) {

@@ -280,7 +280,7 @@ export async function getProduct(
       productCategoryId: products.categoryId,
       productGenderId: products.genderId,
       status: products.status,
-      defaultVariantId: products.defaultVariantId,
+      // defaultVariantId: products.defaultVariantId,
       productCreatedAt: products.createdAt,
       productUpdatedAt: products.updatedAt,
 

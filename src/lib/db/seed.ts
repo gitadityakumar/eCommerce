@@ -4,7 +4,10 @@ import { basename, join } from 'node:path';
 import { eq } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import {
+  auditLogs,
   brands,
+  cartItems,
+  carts,
   categories,
   collections,
   colors,
@@ -18,11 +21,17 @@ import {
   insertProductSchema,
   insertSizeSchema,
   insertVariantSchema,
+  inventoryLevels,
+  orderItems,
+  orders,
   productCollections,
   productImages,
   products,
   productVariants,
+  reviews,
   sizes,
+  stockLedger,
+  wishlists,
 } from '@/lib/db/schema';
 
 type ProductRow = typeof products.$inferSelect;
@@ -50,6 +59,32 @@ function randInt(min: number, max: number) {
 
 async function seed() {
   try {
+    log('Cleaning database...');
+    // Delete child tables first
+    await db.delete(stockLedger);
+    await db.delete(inventoryLevels);
+    await db.delete(orderItems);
+    await db.delete(cartItems);
+    await db.delete(productCollections);
+    await db.delete(productImages);
+    await db.delete(reviews);
+    await db.delete(wishlists);
+    await db.delete(auditLogs);
+
+    // Delete parent tables
+    await db.delete(productVariants);
+    await db.delete(products);
+
+    // Delete other related tables
+    await db.delete(carts);
+    await db.delete(orders);
+    await db.delete(collections);
+    await db.delete(categories);
+    await db.delete(brands);
+    await db.delete(sizes);
+    await db.delete(colors);
+    await db.delete(genders);
+
     log('Seeding filters: genders, colors, sizes');
 
     const genderRows = [

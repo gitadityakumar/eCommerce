@@ -108,7 +108,7 @@ export function ColorTab({ initialData }: ColorTabProps) {
         router.refresh();
       }
       else {
-        if (typeof result.error === 'object') {
+        if (result.error && typeof result.error === 'object') {
           Object.entries(result.error as Record<string, string[]>).forEach(([key, messages]) => {
             if (messages && messages.length > 0) {
               form.setError(key as keyof FormValues, { message: messages[0] });

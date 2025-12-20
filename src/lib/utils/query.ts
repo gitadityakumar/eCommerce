@@ -32,18 +32,20 @@ export function withUpdatedParams(
   const current = parseQuery(currentSearch);
   const next: QueryObject = { ...current };
 
-  Object.entries(updates).forEach(([key, value]) => {
-    if (
-      value === undefined
-      || value === null
-      || (Array.isArray(value) && value.length === 0)
-    ) {
-      delete next[key];
-    }
-    else {
-      next[key] = value as QueryValue;
-    }
-  });
+  if (updates && typeof updates === 'object') {
+    Object.entries(updates).forEach(([key, value]) => {
+      if (
+        value === undefined
+        || value === null
+        || (Array.isArray(value) && value.length === 0)
+      ) {
+        delete next[key];
+      }
+      else {
+        next[key] = value as QueryValue;
+      }
+    });
+  }
 
   const search = stringifyQuery(next);
   return search ? `${pathname}?${search}` : pathname;
