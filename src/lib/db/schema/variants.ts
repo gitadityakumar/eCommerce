@@ -1,13 +1,12 @@
-import { pgTable, text, timestamp, uuid, numeric, jsonb, real } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+import { integer, jsonb, numeric, pgTable, real, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
-import { products } from './products';
-import { productImages } from './images';
-import { orderItems } from './orders';
 import { cartItems } from './carts';
-import { productOptionValues } from './options';
 import { colors } from './filters/colors';
 import { sizes } from './filters/sizes';
+import { productImages } from './images';
+import { orderItems } from './orders';
+import { products } from './products';
 
 export const productVariants = pgTable('product_variants', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -35,14 +34,6 @@ export const productVariantsRelations = relations(productVariants, ({ one, many 
     references: [products.id],
   }),
   optionValues: many(variantOptions),
-  color: one(colors, {
-    fields: [productVariants.colorId],
-    references: [colors.id],
-  }),
-  size: one(sizes, {
-    fields: [productVariants.sizeId],
-    references: [sizes.id],
-  }),
   images: many(productImages),
   orderItems: many(orderItems),
   cartItems: many(cartItems),

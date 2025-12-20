@@ -26,27 +26,28 @@ export const useCartStore = create<CartState>()(
       total: 0,
       addItem: (item) => {
         const items = get().items;
-        const existingItem = items.find((i) => i.id === item.id);
-        
+        const existingItem = items.find(i => i.id === item.id);
+
         if (existingItem) {
           set({
-            items: items.map((i) =>
-              i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+            items: items.map(i =>
+              i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i,
             ),
           });
-        } else {
+        }
+        else {
           set({
             items: [...items, { ...item, quantity: 1 }],
           });
         }
-        
+
         // Update total
         const newItems = get().items;
         const total = newItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
         set({ total });
       },
       removeItem: (id) => {
-        const items = get().items.filter((item) => item.id !== id);
+        const items = get().items.filter(item => item.id !== id);
         const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
         set({ items, total });
       },
@@ -55,9 +56,9 @@ export const useCartStore = create<CartState>()(
           get().removeItem(id);
           return;
         }
-        
-        const items = get().items.map((item) =>
-          item.id === id ? { ...item, quantity } : item
+
+        const items = get().items.map(item =>
+          item.id === id ? { ...item, quantity } : item,
         );
         const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
         set({ items, total });
@@ -67,6 +68,6 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: 'cart-storage',
-    }
-  )
+    },
+  ),
 );

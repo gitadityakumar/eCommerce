@@ -1,14 +1,13 @@
-import { pgEnum, pgTable, uuid, timestamp, numeric, integer, text } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+import { integer, numeric, pgEnum, pgTable, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
-import { users } from './user';
 import { addresses } from './addresses';
+import { users } from './user';
 import { productVariants } from './variants';
 import { payments } from './payments';
 
 export const orderStatusEnum = pgEnum('order_status', [
   'pending',
-  'processing',
   'paid',
   'partially_shipped',
   'shipped',
@@ -63,7 +62,6 @@ export const ordersRelations = relations(orders, ({ many, one }) => ({
   }),
   items: many(orderItems),
   fulfillments: many(fulfillments),
-  payments: many(payments),
 }));
 
 export const fulfillmentsRelations = relations(fulfillments, ({ one }) => ({

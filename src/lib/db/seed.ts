@@ -1,19 +1,36 @@
+import type { InsertProduct, InsertProductImage, InsertVariant } from '@/lib/db/schema';
+import { cpSync, existsSync, mkdirSync } from 'node:fs';
+import { basename, join } from 'node:path';
+import { eq } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import {
-  genders, colors, sizes, brands, categories, collections, productCollections,
-  products, productVariants, productImages,
-  insertGenderSchema, insertColorSchema, insertSizeSchema, insertBrandSchema,
-  insertCategorySchema, insertCollectionSchema, insertProductSchema, insertVariantSchema, insertProductImageSchema,
-  type InsertProduct, type InsertVariant, type InsertProductImage,
+  brands,
+  categories,
+  collections,
+  colors,
+  genders,
+  insertBrandSchema,
+  insertCategorySchema,
+  insertCollectionSchema,
+  insertColorSchema,
+  insertGenderSchema,
+  insertProductImageSchema,
+  insertProductSchema,
+  insertSizeSchema,
+  insertVariantSchema,
+  productCollections,
+  productImages,
+  products,
+  productVariants,
+  sizes,
 } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
-import { mkdirSync, existsSync, cpSync } from 'fs';
-import { join, basename } from 'path';
+
 type ProductRow = typeof products.$inferSelect;
 type VariantRow = typeof productVariants.$inferSelect;
 
 type RGBHex = `#${string}`;
 
+// eslint-disable-next-line no-console
 const log = (...args: unknown[]) => console.log('[seed]', ...args);
 const err = (...args: unknown[]) => console.error('[seed:error]', ...args);
 
@@ -42,7 +59,8 @@ async function seed() {
     ];
     for (const row of genderRows) {
       const exists = await db.select().from(genders).where(eq(genders.slug, row.slug)).limit(1);
-      if (!exists.length) await db.insert(genders).values(row);
+      if (!exists.length)
+        await db.insert(genders).values(row);
     }
 
     const colorRows = [
@@ -52,10 +70,11 @@ async function seed() {
       { name: 'Blue', slug: 'blue', hexCode: '#1E3A8A' as RGBHex },
       { name: 'Green', slug: 'green', hexCode: '#10B981' as RGBHex },
       { name: 'Gray', slug: 'gray', hexCode: '#6B7280' as RGBHex },
-    ].map((c) => insertColorSchema.parse(c));
+    ].map(c => insertColorSchema.parse(c));
     for (const row of colorRows) {
       const exists = await db.select().from(colors).where(eq(colors.slug, row.slug)).limit(1);
-      if (!exists.length) await db.insert(colors).values(row);
+      if (!exists.length)
+        await db.insert(colors).values(row);
     }
 
     const sizeRows = [
@@ -65,17 +84,19 @@ async function seed() {
       { name: '10', slug: '10', sortOrder: 3 },
       { name: '11', slug: '11', sortOrder: 4 },
       { name: '12', slug: '12', sortOrder: 5 },
-    ].map((s) => insertSizeSchema.parse(s));
+    ].map(s => insertSizeSchema.parse(s));
     for (const row of sizeRows) {
       const exists = await db.select().from(sizes).where(eq(sizes.slug, row.slug)).limit(1);
-      if (!exists.length) await db.insert(sizes).values(row);
+      if (!exists.length)
+        await db.insert(sizes).values(row);
     }
 
     log('Seeding brand: Nike');
     const brand = insertBrandSchema.parse({ name: 'Nike', slug: 'nike', logoUrl: undefined });
     {
       const exists = await db.select().from(brands).where(eq(brands.slug, brand.slug)).limit(1);
-      if (!exists.length) await db.insert(brands).values(brand);
+      if (!exists.length)
+        await db.insert(brands).values(brand);
     }
 
     log('Seeding categories');
@@ -83,20 +104,22 @@ async function seed() {
       { name: 'Shoes', slug: 'shoes', parentId: null },
       { name: 'Running Shoes', slug: 'running-shoes', parentId: null },
       { name: 'Lifestyle', slug: 'lifestyle', parentId: null },
-    ].map((c) => insertCategorySchema.parse(c));
+    ].map(c => insertCategorySchema.parse(c));
     for (const row of catRows) {
       const exists = await db.select().from(categories).where(eq(categories.slug, row.slug)).limit(1);
-      if (!exists.length) await db.insert(categories).values(row);
+      if (!exists.length)
+        await db.insert(categories).values(row);
     }
 
     log('Seeding collections');
     const collectionRows = [
-      insertCollectionSchema.parse({ name: "Summer '25", slug: 'summer-25' }),
+      insertCollectionSchema.parse({ name: 'Summer \'25', slug: 'summer-25' }),
       insertCollectionSchema.parse({ name: 'New Arrivals', slug: 'new-arrivals' }),
     ];
     for (const row of collectionRows) {
       const exists = await db.select().from(collections).where(eq(collections.slug, row.slug)).limit(1);
-      if (!exists.length) await db.insert(collections).values(row);
+      if (!exists.length)
+        await db.insert(collections).values(row);
     }
 
     const allGenders = await db.select().from(genders);
@@ -118,9 +141,21 @@ async function seed() {
     const productNames = Array.from({ length: 15 }, (_, i) => `Nike Air Max ${i + 1}`);
 
     const sourceImages = [
-      'shoe-1.jpg','shoe-2.webp','shoe-3.webp','shoe-4.webp','shoe-5.avif',
-      'shoe-6.avif','shoe-7.avif','shoe-8.avif','shoe-9.avif','shoe-10.avif',
-      'shoe-11.avif','shoe-12.avif','shoe-13.avif','shoe-14.avif','shoe-15.avif',
+      'shoe-1.jpg',
+      'shoe-2.webp',
+      'shoe-3.webp',
+      'shoe-4.webp',
+      'shoe-5.avif',
+      'shoe-6.avif',
+      'shoe-7.avif',
+      'shoe-8.avif',
+      'shoe-9.avif',
+      'shoe-10.avif',
+      'shoe-11.avif',
+      'shoe-12.avif',
+      'shoe-13.avif',
+      'shoe-14.avif',
+      'shoe-15.avif',
     ];
 
     log('Creating products with variants and images');
@@ -167,8 +202,8 @@ async function seed() {
           const retV = await db.insert(productVariants).values(variant as InsertVariant).returning();
           const created = (retV as VariantRow[])[0];
           variantIds.push(created.id);
-          if (!defaultVariantId) defaultVariantId = created.id;
-
+          if (!defaultVariantId)
+            defaultVariantId = created.id;
         }
       }
 
@@ -191,7 +226,8 @@ async function seed() {
           isPrimary: true,
         });
         await db.insert(productImages).values(img);
-      } catch (e) {
+      }
+      catch (e) {
         err('Failed to copy product image', { src, dest, e });
       }
 
@@ -207,8 +243,10 @@ async function seed() {
     }
 
     log('Seeding complete');
-  } catch (e) {
+  }
+  catch (e) {
     err(e);
+
     process.exitCode = 1;
   }
 }

@@ -1,18 +1,18 @@
-"use server";
+'use server';
 
-import {cookies, headers} from "next/headers";
-import { z } from "zod";
-import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { guests } from "@/lib/db/schema/index";
-import { and, eq, lt } from "drizzle-orm";
-import { randomUUID } from "crypto";
+import { randomUUID } from 'node:crypto';
+import { and, eq, lt } from 'drizzle-orm';
+import { cookies, headers } from 'next/headers';
+import { z } from 'zod';
+import { auth } from '@/lib/auth';
+import { db } from '@/lib/db';
+import { guests } from '@/lib/db/schema/index';
 
 const COOKIE_OPTIONS = {
   httpOnly: true as const,
   secure: true as const,
-  sameSite: "strict" as const,
-  path: "/" as const,
+  sameSite: 'strict' as const,
+  path: '/' as const,
   maxAge: 60 * 60 * 24 * 7, // 7 days
 };
 
@@ -22,7 +22,7 @@ const nameSchema = z.string().min(1).max(100);
 
 export async function createGuestSession() {
   const cookieStore = await cookies();
-  const existing = (await cookieStore).get("guest_session");
+  const existing = (await cookieStore).get('guest_session');
   if (existing?.value) {
     return { ok: true, sessionToken: existing.value };
   }
@@ -36,13 +36,13 @@ export async function createGuestSession() {
     expiresAt,
   });
 
-  (await cookieStore).set("guest_session", sessionToken, COOKIE_OPTIONS);
+  (await cookieStore).set('guest_session', sessionToken, COOKIE_OPTIONS);
   return { ok: true, sessionToken };
 }
 
 export async function guestSession() {
   const cookieStore = await cookies();
-  const token = (await cookieStore).get("guest_session")?.value;
+  const token = (await cookieStore).get('guest_session')?.value;
   if (!token) {
     return { sessionToken: null };
   }
@@ -65,7 +65,7 @@ export async function signUp(formData: FormData) {
     name: formData.get('name') as string,
     email: formData.get('email') as string,
     password: formData.get('password') as string,
-  }
+  };
 
   const data = signUpSchema.parse(rawData);
 
@@ -90,7 +90,7 @@ export async function signIn(formData: FormData) {
   const rawData = {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
-  }
+  };
 
   const data = signInSchema.parse(rawData);
 
@@ -108,12 +108,13 @@ export async function signIn(formData: FormData) {
 export async function getCurrentUser() {
   try {
     const session = await auth.api.getSession({
-      headers: await headers()
-    })
+      headers: await headers(),
+    });
 
     return session?.user ?? null;
-  } catch (e) {
-    console.log(e);
+  }
+  catch (e) {
+    console.error(e);
     return null;
   }
 }
@@ -130,9 +131,10 @@ export async function mergeGuestCartWithUserCart() {
 
 async function migrateGuestToUser() {
   const cookieStore = await cookies();
-  const token = (await cookieStore).get("guest_session")?.value;
-  if (!token) return;
+  const token = (await cookieStore).get('guest_session')?.value;
+  if (!token)
+    return;
 
   await db.delete(guests).where(eq(guests.sessionToken, token));
-  (await cookieStore).delete("guest_session");
+  (await cookieStore).delete('guest_session');
 }

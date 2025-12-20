@@ -1,7 +1,5 @@
-import Image from "next/image";
-import Link from "next/link";
-
-
+import Image from 'next/image';
+import Link from 'next/link';
 
 export interface CardProps {
   title: string;
@@ -16,8 +14,6 @@ export interface CardProps {
   className?: string;
 }
 
-
-
 export default function Card({
   title,
   description,
@@ -28,10 +24,10 @@ export default function Card({
   price,
   href,
 
-  className = "",
+  className = '',
 }: CardProps) {
-  const displayPrice =
-    price === undefined ? undefined : typeof price === "number" ? `$${price.toFixed(2)}` : price;
+  const displayPrice
+    = price === undefined ? undefined : typeof price === 'number' ? `$${price.toFixed(2)}` : price;
   const content = (
     <article
       className={`group rounded-xl bg-light-100 dark:bg-dark-800 ring-1 ring-light-300 dark:ring-dark-300 transition-colors hover:ring-dark-500 dark:hover:ring-light-500 ${className}`}
@@ -54,22 +50,24 @@ export default function Card({
         {subtitle && <p className="text-body text-dark-700 dark:text-light-700">{subtitle}</p>}
         {meta && (
           <p className="mt-1 text-caption text-dark-700 dark:text-light-700">
-            {Array.isArray(meta) ? meta.join(" • ") : meta}
+            {Array.isArray(meta) ? meta.join(' • ') : meta}
           </p>
         )}
       </div>
     </article>
   );
 
-  return href ? (
-    <Link
-      href={href}
-      aria-label={title}
-      className="block rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-dark-500] dark:focus-visible:ring-[--color-light-500]"
-    >
-      {content}
-    </Link>
-  ) : (
-    content
-  );
+  return href
+    ? (
+        <Link
+          href={href}
+          aria-label={title}
+          className="block rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[--color-dark-500] dark:focus-visible:ring-[--color-light-500]"
+        >
+          {content}
+        </Link>
+      )
+    : (
+        content
+      );
 }

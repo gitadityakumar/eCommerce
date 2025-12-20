@@ -1,12 +1,10 @@
-import { drizzle } from "drizzle-orm/neon-serverless";
-import { Pool, neonConfig } from "@neondatabase/serverless";
-import * as schema from "./schema/index";
-import * as dotenv from "dotenv";
-import ws from "ws";
+import { neon } from '@neondatabase/serverless';
+import * as dotenv from 'dotenv';
+import { drizzle } from 'drizzle-orm/neon-http';
 
-dotenv.config({ path: ".env.local" });
+import * as schema from './schema/index';
 
-neonConfig.webSocketConstructor = ws;
+dotenv.config({ path: '.env.local' });
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
-export const db = drizzle(pool, { schema });
+const sql = neon(process.env.DATABASE_URL!);
+export const db = drizzle(sql, { schema });

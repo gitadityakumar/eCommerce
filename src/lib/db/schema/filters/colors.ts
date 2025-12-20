@@ -1,6 +1,6 @@
+import { relations } from 'drizzle-orm';
 import { pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
-import { relations } from 'drizzle-orm';
 import { productVariants } from '../variants';
 
 export const colors = pgTable('colors', {
@@ -17,7 +17,7 @@ export const colorsRelations = relations(colors, ({ many }) => ({
 export const insertColorSchema = z.object({
   name: z.string().min(1),
   slug: z.string().min(1),
-  hexCode: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+  hexCode: z.string().regex(/^#[0-9A-F]{6}$/i),
 });
 export const selectColorSchema = insertColorSchema.extend({
   id: z.string().uuid(),

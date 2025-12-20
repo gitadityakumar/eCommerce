@@ -1,5 +1,5 @@
-import { pgEnum, pgTable, timestamp, uuid, text, jsonb } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+import { pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 import { orders } from './orders';
 

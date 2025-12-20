@@ -1,5 +1,5 @@
-import { pgTable, text, uuid, foreignKey } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+import { foreignKey, pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 
 export const categories = pgTable('categories', {
@@ -7,7 +7,7 @@ export const categories = pgTable('categories', {
   name: text('name').notNull(),
   slug: text('slug').notNull().unique(),
   parentId: uuid('parent_id'),
-}, (t) => ({
+}, t => ({
   parentFk: foreignKey({
     columns: [t.parentId],
     foreignColumns: [t.id],

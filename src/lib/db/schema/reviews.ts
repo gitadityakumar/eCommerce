@@ -1,5 +1,5 @@
-import { pgTable, text, timestamp, uuid, integer } from 'drizzle-orm/pg-core';
 import { relations, sql } from 'drizzle-orm';
+import { integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 import { products } from './products';
 import { users } from './user';
@@ -11,7 +11,7 @@ export const reviews = pgTable('reviews', {
   rating: integer('rating').notNull(),
   comment: text('comment'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-}, (t) => ({
+}, t => ({
   ratingRange: sql`CHECK (${t.rating.name} BETWEEN 1 AND 5)`,
 }));
 

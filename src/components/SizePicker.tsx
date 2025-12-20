@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 
-const SIZES = ["5", "5.5", "6", "6.5", "7", "7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"];
+const SIZES = ['5', '5.5', '6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '11.5', '12'];
 
 export interface SizePickerProps {
   className?: string;
 }
 
-export default function SizePicker({ className = "" }: SizePickerProps) {
+export default function SizePicker({ className = '' }: SizePickerProps) {
   const [selected, setSelected] = useState<string | null>(null);
 
   return (
@@ -28,7 +28,7 @@ export default function SizePicker({ className = "" }: SizePickerProps) {
               key={s}
               onClick={() => setSelected(isActive ? null : s)}
               className={`rounded-lg border px-3 py-3 text-center text-body transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                isActive ? "border-primary text-primary" : "border-input text-muted-foreground hover:border-ring"
+                isActive ? 'border-primary text-primary' : 'border-input text-muted-foreground hover:border-ring'
               }`}
               aria-pressed={isActive}
             >
