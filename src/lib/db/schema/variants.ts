@@ -7,6 +7,7 @@ import { sizes } from './filters/sizes';
 import { productImages } from './images';
 import { orderItems } from './orders';
 import { products } from './products';
+import { productOptionValues } from './options';
 
 export const productVariants = pgTable('product_variants', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -37,6 +38,14 @@ export const productVariantsRelations = relations(productVariants, ({ one, many 
   images: many(productImages),
   orderItems: many(orderItems),
   cartItems: many(cartItems),
+  color: one(colors, {
+    fields: [productVariants.colorId],
+    references: [colors.id],
+  }),
+  size: one(sizes, {
+    fields: [productVariants.sizeId],
+    references: [sizes.id],
+  }),
 }));
 
 export const variantOptionsRelations = relations(variantOptions, ({ one }) => ({

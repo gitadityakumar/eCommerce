@@ -3,7 +3,6 @@ export * from './addresses';
 export * from './brands';
 export * from './carts';
 export * from './categories';
-
 export * from './collections';
 export * from './coupons';
 export * from './filters/colors';
@@ -17,7 +16,9 @@ export * from './products';
 export * from './reviews';
 export * from './session';
 export * from './user';
-
 export * from './variants';
 export * from './verification';
 export * from './wishlists';
+export * from './options';
+export * from './inventory';
+export * from './audit_logs';

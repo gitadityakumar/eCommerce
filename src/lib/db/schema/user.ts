@@ -1,4 +1,11 @@
-import { boolean, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
+import { boolean, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { addresses } from './addresses';
+import { orders } from './orders';
+import { reviews } from './reviews';
+import { wishlists } from './wishlists';
+
+export const userRoleEnum = pgEnum('user_role', ['customer', 'staff', 'admin']);
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
