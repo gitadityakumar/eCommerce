@@ -11,7 +11,7 @@ export const brands = pgTable('brands', {
 export const insertBrandSchema = z.object({
   name: z.string().min(1),
   slug: z.string().min(1),
-  logoUrl: z.string().url().optional().nullable(),
+  logoUrl: z.string().url().optional().or(z.literal('')).nullable(),
 });
 export const selectBrandSchema = insertBrandSchema.extend({
   id: z.string().uuid(),

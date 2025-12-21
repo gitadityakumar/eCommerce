@@ -1,10 +1,12 @@
 'use client';
 
+import type { SelectBrand } from '@/lib/db/schema/brands';
 import type { SelectColor } from '@/lib/db/schema/filters/colors';
 import type { SelectGender } from '@/lib/db/schema/filters/genders';
 import type { SelectSize } from '@/lib/db/schema/filters/sizes';
-import { IconGenderIntergender, IconPalette, IconRuler, IconSettings } from '@tabler/icons-react';
+import { IconBuildingStore, IconGenderIntergender, IconPalette, IconRuler, IconSettings } from '@tabler/icons-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { BrandTab } from './BrandTab';
 import { ColorTab } from './ColorTab';
 import { GenderTab } from './GenderTab';
 import { ProductOptionsTab } from './ProductOptionsTab';
@@ -14,12 +16,14 @@ interface AttributeDashboardProps {
   initialColors: SelectColor[];
   initialSizes: SelectSize[];
   initialGenders: SelectGender[];
+  initialBrands: SelectBrand[];
 }
 
 export function AttributeDashboard({
   initialColors,
   initialSizes,
   initialGenders,
+  initialBrands,
 }: AttributeDashboardProps) {
   return (
     <div className="space-y-6">
@@ -44,6 +48,10 @@ export function AttributeDashboard({
             <IconGenderIntergender size={16} />
             Genders
           </TabsTrigger>
+          <TabsTrigger value="brands" className="flex items-center gap-2">
+            <IconBuildingStore size={16} />
+            Brands
+          </TabsTrigger>
           <TabsTrigger value="options" className="flex items-center gap-2">
             <IconSettings size={16} />
             Product Options
@@ -57,6 +65,9 @@ export function AttributeDashboard({
         </TabsContent>
         <TabsContent value="genders" className="space-y-4">
           <GenderTab initialData={initialGenders} />
+        </TabsContent>
+        <TabsContent value="brands" className="space-y-4">
+          <BrandTab initialData={initialBrands} />
         </TabsContent>
         <TabsContent value="options" className="space-y-4">
           <ProductOptionsTab />

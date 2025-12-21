@@ -82,6 +82,11 @@ const data = {
       icon: IconShoppingBag,
     },
     {
+      title: 'Coupons',
+      url: '/admin/coupons',
+      icon: IconGift,
+    },
+    {
       title: 'Inventory',
       url: '/admin/inventory',
       icon: IconArchive,

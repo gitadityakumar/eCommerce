@@ -1,5 +1,6 @@
 'use server';
 
+import type { InsertBrand } from '@/lib/db/schema/brands';
 import type { InsertColor } from '@/lib/db/schema/filters/colors';
 import type { InsertGender } from '@/lib/db/schema/filters/genders';
 import type { InsertSize } from '@/lib/db/schema/filters/sizes';
@@ -9,12 +10,14 @@ import { getCurrentUser } from '@/lib/auth/actions';
 import { db } from '@/lib/db';
 import {
   auditLogs,
+  brands,
   colors,
   genders,
   productOptions,
   productOptionValues,
   sizes,
 } from '@/lib/db/schema';
+import { insertBrandSchema } from '@/lib/db/schema/brands';
 import { insertColorSchema } from '@/lib/db/schema/filters/colors';
 import { insertGenderSchema } from '@/lib/db/schema/filters/genders';
 import { insertSizeSchema } from '@/lib/db/schema/filters/sizes';
@@ -136,6 +139,126 @@ export async function deleteColor(id: string) {
   catch (error) {
     console.error('Error deleting color:', error);
     return { success: false, error: 'Failed to delete color' };
+  }
+}
+
+// --- Brands ---
+
+export async function getBrands() {
+  noStore();
+  try {
+    const data = await db.query.brands.findMany({
+      orderBy: (brands, { asc }) => [asc(brands.name)],
+    });
+    return { success: true, data };
+  }
+  catch (error) {
+    console.error('Error fetching brands:', error);
+    return { success: false, error: 'Failed to fetch brands' };
+  }
+}
+
+export async function createBrand(data: InsertBrand) {
+  const user = await getCurrentUser();
+  if (!user)
+    return { success: false, error: 'Unauthorized' };
+
+  const validated = insertBrandSchema.safeParse(data);
+  if (!validated.success) {
+    return { success: false, error: validated.error.flatten().fieldErrors };
+  }
+
+  try {
+    const [newBrand] = await db.insert(brands).values(validated.data).returning();
+
+    await db.insert(auditLogs).values({
+      adminId: user.id,
+      entityType: 'brand',
+      entityId: newBrand.id,
+      action: 'create',
+      newValue: newBrand,
+    });
+
+    revalidatePath('/admin/attributes');
+    return { success: true, data: newBrand };
+  }
+  catch (error: unknown) {
+    const dbError = error as { code?: string };
+    if (dbError.code === '23505')
+      return { success: false, error: 'Slug already exists' };
+    console.error('Error creating brand:', error);
+    return { success: false, error: 'Failed to create brand' };
+  }
+}
+
+export async function updateBrand(id: string, data: InsertBrand) {
+  const user = await getCurrentUser();
+  if (!user)
+    return { success: false, error: 'Unauthorized' };
+
+  const validated = insertBrandSchema.safeParse(data);
+  if (!validated.success) {
+    return { success: false, error: validated.error.flatten().fieldErrors };
+  }
+
+  try {
+    const oldBrand = await db.query.brands.findFirst({ where: eq(brands.id, id) });
+    if (!oldBrand)
+      return { success: false, error: 'Brand not found' };
+
+    const [updatedBrand] = await db
+      .update(brands)
+      .set(validated.data)
+      .where(eq(brands.id, id))
+      .returning();
+
+    await db.insert(auditLogs).values({
+      adminId: user.id,
+      entityType: 'brand',
+      entityId: id,
+      action: 'update',
+      oldValue: oldBrand,
+      newValue: updatedBrand,
+    });
+
+    revalidatePath('/admin/attributes');
+    return { success: true, data: updatedBrand };
+  }
+  catch (error: unknown) {
+    const dbError = error as { code?: string };
+    if (dbError.code === '23505')
+      return { success: false, error: 'Slug already exists' };
+    console.error('Error updating brand:', error);
+    return { success: false, error: 'Failed to update brand' };
+  }
+}
+
+export async function deleteBrand(id: string) {
+  const user = await getCurrentUser();
+  if (!user)
+    return { success: false, error: 'Unauthorized' };
+
+  try {
+    const oldBrand = await db.query.brands.findFirst({ where: eq(brands.id, id) });
+    if (!oldBrand)
+      return { success: false, error: 'Brand not found' };
+
+    await db.delete(brands).where(eq(brands.id, id));
+
+    await db.insert(auditLogs).values({
+      adminId: user.id,
+      entityType: 'brand',
+      entityId: id,
+      action: 'delete',
+      oldValue: oldBrand,
+    });
+
+    revalidatePath('/admin/attributes');
+    return { success: true };
+  }
+  catch (error) {
+    console.error('Error deleting brand:', error);
+    return { success: false, error: 'Failed to delete brand' };
   }
 }
 
