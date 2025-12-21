@@ -29,7 +29,7 @@ export default function CollectionGallery() {
   ];
 
   return (
-    <section className="py-32 bg-[#100000]">
+    <section className="py-32 overflow-hidden bg-[#100000]">
       <div className="max-w-[1800px] mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

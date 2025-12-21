@@ -7,14 +7,14 @@ async function Home() {
 
   return (
     <>
-      <div className="">
+      <main className="w-full overflow-hidden">
         <HeroSection />
         <PhilosophySection />
         <CampaignShowcase />
         <SpotlightSection />
         <CollectionGallery />
         <PromoBanner />
-      </div>
+      </main>
       {/* <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 bg-background">
 <section aria-labelledby="latest" className="pb-12">
 <h2 id="latest" className="mb-6 text-heading-3 text-black font-medium dark:text-white-100">
