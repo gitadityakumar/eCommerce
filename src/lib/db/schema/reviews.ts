@@ -1,4 +1,4 @@
-import { relations, sql } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import { integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 import { products } from './products';
@@ -13,17 +13,6 @@ export const reviews = pgTable('reviews', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, t => ({
   ratingRange: sql`CHECK (${t.rating.name} BETWEEN 1 AND 5)`,
-}));
-
-export const reviewsRelations = relations(reviews, ({ one }) => ({
-  product: one(products, {
-    fields: [reviews.productId],
-    references: [products.id],
-  }),
-  user: one(users, {
-    fields: [reviews.userId],
-    references: [users.id],
-  }),
 }));
 
 export const insertReviewSchema = z.object({

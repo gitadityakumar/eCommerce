@@ -20,13 +20,13 @@ const createProductSchema = z.object({
   })).optional(),
   variants: z.array(z.object({
     sku: z.string().min(1),
-    price: z.string(),
-    salePrice: z.string().optional().nullable(),
-    weight: z.number().optional().nullable(),
+    price: z.string().refine(val => !Number.isNaN(Number(val)) && Number(val) >= 0, 'Price must be at least 0'),
+    salePrice: z.string().optional().nullable().refine(val => !val || (!Number.isNaN(Number(val)) && Number(val) >= 0), 'Sale price must be at least 0'),
+    weight: z.number().min(0, 'Weight cannot be negative').optional().nullable(),
     dimensions: z.object({
-      length: z.number(),
-      width: z.number(),
-      height: z.number(),
+      length: z.number().min(0),
+      width: z.number().min(0),
+      height: z.number().min(0),
     }).partial().optional().nullable(),
     availableStock: z.number().int().min(0).default(0),
     colorId: z.string().uuid().optional().nullable(),
@@ -126,6 +126,7 @@ export async function createProduct(input: CreateProductInput) {
     });
 
     revalidatePath('/admin/products');
+    revalidatePath('/admin/inventory');
     return { success: true, product: result };
   }
   catch (error) {

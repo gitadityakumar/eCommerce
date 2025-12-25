@@ -236,6 +236,13 @@ async function seed() {
           });
           const retV = await db.insert(productVariants).values(variant as InsertVariant).returning();
           const created = (retV as VariantRow[])[0];
+
+          await db.insert(inventoryLevels).values({
+            variantId: created.id,
+            available: randInt(5, 50),
+            reserved: 0,
+          });
+
           variantIds.push(created.id);
           if (!defaultVariantId)
             defaultVariantId = created.id;

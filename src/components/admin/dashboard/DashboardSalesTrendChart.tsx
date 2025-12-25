@@ -3,6 +3,7 @@
 import type {
   ChartConfig,
 } from '@/components/ui/chart';
+import { format } from 'date-fns';
 import {
   Bar,
   BarChart,
@@ -64,10 +65,7 @@ export function DashboardSalesTrendChart({ data }: SalesChartProps) {
               minTickGap={32}
               tickFormatter={(value) => {
                 const date = new Date(value);
-                return date.toLocaleDateString('en-IN', {
-                  month: 'short',
-                  day: 'numeric',
-                });
+                return format(date, 'MMM dd');
               }}
             />
             <ChartTooltip
@@ -76,11 +74,7 @@ export function DashboardSalesTrendChart({ data }: SalesChartProps) {
                   className="w-[150px]"
                   nameKey="views"
                   labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString('en-IN', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                    });
+                    return format(new Date(value), 'MMM dd, yyyy');
                   }}
                   formatter={value => formatINR(Number(value))}
                 />

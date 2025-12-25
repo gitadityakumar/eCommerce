@@ -1,4 +1,3 @@
-import { relations } from 'drizzle-orm';
 import { integer, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { productVariants } from './variants';
 
@@ -28,17 +27,3 @@ export const stockLedger = pgTable('stock_ledger', {
   referenceId: uuid('reference_id'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
-
-export const inventoryLevelsRelations = relations(inventoryLevels, ({ one }) => ({
-  variant: one(productVariants, {
-    fields: [inventoryLevels.variantId],
-    references: [productVariants.id],
-  }),
-}));
-
-export const stockLedgerRelations = relations(stockLedger, ({ one }) => ({
-  variant: one(productVariants, {
-    fields: [stockLedger.variantId],
-    references: [productVariants.id],
-  }),
-}));

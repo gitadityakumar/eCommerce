@@ -26,7 +26,7 @@ export default async function ProductsPage({
   );
   (sp.price ? (Array.isArray(sp.price) ? sp.price : [sp.price]) : []).forEach((p) => {
     const [min, max] = String(p).split('-');
-    const label = min && max ? `$${min} - $${max}` : min && !max ? `Over $${min}` : `$0 - $${max}`;
+    const label = min && max ? `₹${min} - ₹${max}` : min && !max ? `Over ₹${min}` : `₹0 - ₹${max}`;
     activeBadges.push(label);
   });
 
@@ -68,7 +68,7 @@ export default async function ProductsPage({
                   {products.map((p) => {
                     const price
                       = p.minPrice !== null && p.maxPrice !== null && p.minPrice !== p.maxPrice
-                        ? `$${p.minPrice.toFixed(2)} - $${p.maxPrice.toFixed(2)}`
+                        ? `₹${p.minPrice.toFixed(2)} - ₹${p.maxPrice.toFixed(2)}`
                         : p.minPrice !== null
                           ? p.minPrice
                           : undefined;

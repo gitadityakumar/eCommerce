@@ -1,4 +1,3 @@
-import { relations } from 'drizzle-orm';
 import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 import { products } from './products';
@@ -15,21 +14,6 @@ export const productCollections = pgTable('product_collections', {
   productId: uuid('product_id').references(() => products.id, { onDelete: 'cascade' }).notNull(),
   collectionId: uuid('collection_id').references(() => collections.id, { onDelete: 'cascade' }).notNull(),
 });
-
-export const collectionsRelations = relations(collections, ({ many }) => ({
-  junctions: many(productCollections),
-}));
-
-export const productCollectionsRelations = relations(productCollections, ({ one }) => ({
-  collection: one(collections, {
-    fields: [productCollections.collectionId],
-    references: [collections.id],
-  }),
-  product: one(products, {
-    fields: [productCollections.productId],
-    references: [products.id],
-  }),
-}));
 
 export const insertCollectionSchema = z.object({
   name: z.string().min(1),

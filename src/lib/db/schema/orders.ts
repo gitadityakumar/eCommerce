@@ -1,4 +1,3 @@
-import { relations } from 'drizzle-orm';
 import { integer, numeric, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 import { addresses } from './addresses';
@@ -46,41 +45,6 @@ export const orderItems = pgTable('order_items', {
   quantity: integer('quantity').notNull().default(1),
   priceAtPurchase: numeric('price_at_purchase', { precision: 15, scale: 2 }).notNull(), // INR precision
 });
-
-export const ordersRelations = relations(orders, ({ many, one }) => ({
-  user: one(users, {
-    fields: [orders.userId],
-    references: [users.id],
-  }),
-  shippingAddress: one(addresses, {
-    fields: [orders.shippingAddressId],
-    references: [addresses.id],
-  }),
-  billingAddress: one(addresses, {
-    fields: [orders.billingAddressId],
-    references: [addresses.id],
-  }),
-  items: many(orderItems),
-  fulfillments: many(fulfillments),
-}));
-
-export const fulfillmentsRelations = relations(fulfillments, ({ one }) => ({
-  order: one(orders, {
-    fields: [fulfillments.orderId],
-    references: [orders.id],
-  }),
-}));
-
-export const orderItemsRelations = relations(orderItems, ({ one }) => ({
-  order: one(orders, {
-    fields: [orderItems.orderId],
-    references: [orders.id],
-  }),
-  variant: one(productVariants, {
-    fields: [orderItems.productVariantId],
-    references: [productVariants.id],
-  }),
-}));
 
 export const insertOrderSchema = z.object({
   userId: z.string().uuid().optional().nullable(),

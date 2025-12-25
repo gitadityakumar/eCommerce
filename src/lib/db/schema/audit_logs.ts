@@ -1,4 +1,3 @@
-import { relations } from 'drizzle-orm';
 import { jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { users } from './user';
 
@@ -12,10 +11,3 @@ export const auditLogs = pgTable('audit_logs', {
   newValue: jsonb('new_value'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
-
-export const auditLogsRelations = relations(auditLogs, ({ one }) => ({
-  admin: one(users, {
-    fields: [auditLogs.adminId],
-    references: [users.id],
-  }),
-}));

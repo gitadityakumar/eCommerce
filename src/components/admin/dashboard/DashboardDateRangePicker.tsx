@@ -24,10 +24,20 @@ export function DashboardDateRangePicker({
   const fromParam = searchParams.get('from');
   const toParam = searchParams.get('to');
 
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: fromParam ? new Date(fromParam) : addDays(new Date(), -30),
-    to: toParam ? new Date(toParam) : new Date(),
+  const [date, setDate] = React.useState<DateRange | undefined>(() => {
+    return fromParam && toParam
+      ? { from: new Date(fromParam), to: new Date(toParam) }
+      : undefined;
   });
+
+  React.useEffect(() => {
+    if (!fromParam || !toParam) {
+      setDate({
+        from: addDays(new Date(), -30),
+        to: new Date(),
+      });
+    }
+  }, [fromParam, toParam]);
 
   const handleSelect = (range: DateRange | undefined) => {
     setDate(range);

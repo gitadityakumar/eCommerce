@@ -1,4 +1,3 @@
-import { relations } from 'drizzle-orm';
 import { boolean, integer, pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 import { products } from './products';
@@ -12,17 +11,6 @@ export const productImages = pgTable('product_images', {
   sortOrder: integer('sort_order').notNull().default(0),
   isPrimary: boolean('is_primary').notNull().default(false),
 });
-
-export const productImagesRelations = relations(productImages, ({ one }) => ({
-  product: one(products, {
-    fields: [productImages.productId],
-    references: [products.id],
-  }),
-  variant: one(productVariants, {
-    fields: [productImages.variantId],
-    references: [productVariants.id],
-  }),
-}));
 
 export const insertProductImageSchema = z.object({
   productId: z.string().uuid(),

@@ -29,26 +29,38 @@ export async function adjustStock(input: z.infer<typeof adjustStockSchema>) {
     const validated = adjustStockSchema.parse(input);
 
     const result = await db.transaction(async (tx) => {
-      // 1. Get current inventory level
+      // 1. Get current inventory level (if exists)
       const [currentLevel] = await tx
         .select()
         .from(inventoryLevels)
         .where(eq(inventoryLevels.variantId, validated.variantId))
         .limit(1);
 
-      if (!currentLevel) {
-        throw new Error('Inventory record not found for this variant');
-      }
+      const oldAvailable = currentLevel?.available ?? 0;
 
-      // 2. Update inventory level (Available stock)
-      const [updatedLevel] = await tx
-        .update(inventoryLevels)
-        .set({
-          available: sql`${inventoryLevels.available} + ${validated.amount}`,
-          updatedAt: new Date(),
-        })
-        .where(eq(inventoryLevels.variantId, validated.variantId))
-        .returning();
+      // 2. Upsert inventory level
+      let updatedLevel;
+      if (currentLevel) {
+        [updatedLevel] = await tx
+          .update(inventoryLevels)
+          .set({
+            available: sql`${inventoryLevels.available} + ${validated.amount}`,
+            updatedAt: new Date(),
+          })
+          .where(eq(inventoryLevels.variantId, validated.variantId))
+          .returning();
+      }
+      else {
+        [updatedLevel] = await tx
+          .insert(inventoryLevels)
+          .values({
+            variantId: validated.variantId,
+            available: validated.amount,
+            reserved: 0,
+            updatedAt: new Date(),
+          })
+          .returning();
+      }
 
       // 3. Create Stock Ledger entry
       await tx.insert(stockLedger).values({
@@ -65,7 +77,7 @@ export async function adjustStock(input: z.infer<typeof adjustStockSchema>) {
         entityType: 'inventory',
         entityId: validated.variantId,
         action: 'adjust_stock',
-        oldValue: { available: currentLevel.available },
+        oldValue: { available: oldAvailable },
         newValue: { available: updatedLevel.available, reason: validated.reason },
       });
 
@@ -87,19 +99,27 @@ export async function adjustStock(input: z.infer<typeof adjustStockSchema>) {
 
 export async function getInventory() {
   try {
-    const inventory = await db.query.inventoryLevels.findMany({
+    const variants = await db.query.productVariants.findMany({
       with: {
-        variant: {
-          with: {
-            product: true,
-            color: true,
-            size: true,
-          },
-        },
+        product: true,
+        color: true,
+        size: true,
+        inventory: true,
       },
     });
 
-    return inventory;
+    return variants.map(v => ({
+      variantId: v.id,
+      available: v.inventory?.available ?? 0,
+      reserved: v.inventory?.reserved ?? 0,
+      updatedAt: v.inventory?.updatedAt ?? v.createdAt,
+      variant: {
+        ...v,
+        product: v.product,
+        color: v.color,
+        size: v.size,
+      },
+    }));
   }
   catch (error) {
     console.error('Error fetching inventory:', error);

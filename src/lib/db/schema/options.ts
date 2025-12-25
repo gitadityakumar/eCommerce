@@ -1,4 +1,3 @@
-import { relations } from 'drizzle-orm';
 import { integer, pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { products } from './products';
 
@@ -15,18 +14,3 @@ export const productOptionValues = pgTable('product_option_values', {
   value: text('value').notNull(), // e.g., 'Red', 'Large', 'Cotton'
   sortOrder: integer('sort_order').notNull().default(0),
 });
-
-export const productOptionsRelations = relations(productOptions, ({ one, many }) => ({
-  product: one(products, {
-    fields: [productOptions.productId],
-    references: [products.id],
-  }),
-  values: many(productOptionValues),
-}));
-
-export const productOptionValuesRelations = relations(productOptionValues, ({ one }) => ({
-  option: one(productOptions, {
-    fields: [productOptionValues.optionId],
-    references: [productOptions.id],
-  }),
-}));

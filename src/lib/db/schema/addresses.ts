@@ -1,4 +1,3 @@
-import { relations } from 'drizzle-orm';
 import { boolean, pgEnum, pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 import { users } from './user';
@@ -17,13 +16,6 @@ export const addresses = pgTable('addresses', {
   postalCode: text('postal_code').notNull(),
   isDefault: boolean('is_default').notNull().default(false),
 });
-
-export const addressesRelations = relations(addresses, ({ one }) => ({
-  user: one(users, {
-    fields: [addresses.userId],
-    references: [users.id],
-  }),
-}));
 
 export const insertAddressSchema = z.object({
   userId: z.string().uuid(),

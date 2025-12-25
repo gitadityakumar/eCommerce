@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { formatINR } from '@/lib/utils';
+import { formatINR } from '@/lib/currency';
 
 interface RecentOrdersProps {
   orders: {

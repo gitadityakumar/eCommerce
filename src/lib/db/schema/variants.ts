@@ -1,12 +1,8 @@
-import { relations } from 'drizzle-orm';
 import { jsonb, numeric, pgTable, real, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
-import { cartItems } from './carts';
 import { colors } from './filters/colors';
 import { sizes } from './filters/sizes';
-import { productImages } from './images';
 import { productOptionValues } from './options';
-import { orderItems } from './orders';
 import { products } from './products';
 
 export const productVariants = pgTable('product_variants', {
@@ -27,36 +23,6 @@ export const variantOptions = pgTable('variant_options', {
   optionValueId: uuid('option_value_id').references(() => productOptionValues.id, { onDelete: 'cascade' }).notNull(),
 }, t => ({
   pk: [t.variantId, t.optionValueId],
-}));
-
-export const productVariantsRelations = relations(productVariants, ({ one, many }) => ({
-  product: one(products, {
-    fields: [productVariants.productId],
-    references: [products.id],
-  }),
-  optionValues: many(variantOptions),
-  images: many(productImages),
-  orderItems: many(orderItems),
-  cartItems: many(cartItems),
-  color: one(colors, {
-    fields: [productVariants.colorId],
-    references: [colors.id],
-  }),
-  size: one(sizes, {
-    fields: [productVariants.sizeId],
-    references: [sizes.id],
-  }),
-}));
-
-export const variantOptionsRelations = relations(variantOptions, ({ one }) => ({
-  variant: one(productVariants, {
-    fields: [variantOptions.variantId],
-    references: [productVariants.id],
-  }),
-  optionValue: one(productOptionValues, {
-    fields: [variantOptions.optionValueId],
-    references: [productOptionValues.id],
-  }),
 }));
 
 export const insertVariantSchema = z.object({

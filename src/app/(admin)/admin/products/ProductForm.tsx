@@ -2,7 +2,7 @@
 
 import type { CreateProductInput } from '@/actions/products';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { IconCirclePlus, IconPlus, IconTrash } from '@tabler/icons-react';
+import { IconCirclePlus, IconTrash } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 
 import * as z from 'zod';
 import { createProduct } from '@/actions/products';
+import SortableImageUpload from '@/components/file-upload/sortable';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -70,19 +71,19 @@ const formSchema = z.object({
   })).min(1, 'At least one image is required'),
   variants: z.array(z.object({
     sku: z.string().min(1, 'SKU is required'),
-    price: z.string().min(1, 'Price is required'),
-    salePrice: z.string().optional().nullable(),
-    weight: z.number().optional().nullable(),
+    price: z.string().min(1, 'Price is required').refine(val => !Number.isNaN(Number(val)) && Number(val) >= 0, 'Price must be at least 0'),
+    salePrice: z.string().optional().nullable().refine(val => !val || (!Number.isNaN(Number(val)) && Number(val) >= 0), 'Sale price must be at least 0'),
+    weight: z.coerce.number().min(0, 'Weight cannot be negative').optional().nullable(),
+    availableStock: z.coerce.number().int().min(0).default(0),
 
     colorId: z.string().uuid().optional().nullable(),
     sizeId: z.string().uuid().optional().nullable(),
     dimensions: z
       .object({
-        length: z.number(),
-        width: z.number(),
-        height: z.number(),
+        length: z.coerce.number().min(0, 'Length cannot be negative').optional().nullable(),
+        width: z.coerce.number().min(0, 'Width cannot be negative').optional().nullable(),
+        height: z.coerce.number().min(0, 'Height cannot be negative').optional().nullable(),
       })
-      .partial()
       .optional()
       .nullable(),
   })).min(1, 'At least one variant is required'),
@@ -118,17 +119,12 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
         price: '',
         salePrice: null,
         weight: null,
-
+        availableStock: 0,
         colorId: null,
         sizeId: null,
         dimensions: null,
       }],
     },
-  });
-
-  const { fields: imageFields, append: appendImage, remove: removeImage } = useFieldArray({
-    name: 'images',
-    control: form.control,
   });
 
   const { fields: variantFields, append: appendVariant, remove: removeVariant } = useFieldArray({
@@ -159,7 +155,9 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
 
       if (result.success) {
         toast.success('Product created successfully');
+        form.reset();
         router.push('/admin/products');
+        router.refresh();
       }
       else {
         toast.error(result.error || 'Failed to create product');
@@ -171,6 +169,20 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
       setIsPending(false);
     }
   }
+
+  const onFormError = (errors: any) => {
+    console.error('Form Validation Errors:', errors);
+    const errorMessages = Object.values(errors)
+      .map((err: any) => err.message || (err.root?.message))
+      .filter(Boolean);
+
+    if (errorMessages.length > 0) {
+      toast.error(`Please fix the following: ${errorMessages[0]}`);
+    }
+    else {
+      toast.error('Form validation failed. Please check all fields.');
+    }
+  };
 
   // Auto-generate slug from name
   React.useEffect(() => {
@@ -189,7 +201,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
   return (
     <div className="px-4 lg:px-6 pb-12">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(onSubmit, onFormError)} className="space-y-8">
           <Tabs defaultValue="general" className="w-full">
             <TabsList className="grid w-full grid-cols-3 mb-8">
               <TabsTrigger value="general">General Info</TabsTrigger>
@@ -348,61 +360,28 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                   <CardTitle>Product Media</CardTitle>
                   <CardDescription>Add images for your product. The first one will be the primary image.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  {imageFields.map((field, index) => (
-                    <div key={field.id} className="flex gap-4 items-end">
-                      <FormField
-                        control={form.control}
-                        name={`images.${index}.url`}
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormLabel className={index !== 0 ? 'sr-only' : ''}>Image URL</FormLabel>
-                            <FormControl>
-                              <Input placeholder="https://example.com/image.jpg" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`images.${index}.isPrimary`}
-                        render={({ field }) => (
-                          <FormItem className="flex items-center gap-2 mb-2">
-                            <FormControl>
-                              <input
-                                type="checkbox"
-                                checked={field.value}
-                                onChange={field.onChange}
-                                className="size-4"
-                              />
-                            </FormControl>
-                            <FormLabel className="mt-0! text-sm">Primary</FormLabel>
-                          </FormItem>
-                        )}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeImage(index)}
-                        disabled={imageFields.length === 1}
-                        className="mb-1"
-                      >
-                        <IconTrash className="size-4 text-destructive" />
-                      </Button>
-                    </div>
-                  ))}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="mt-2"
-                    onClick={() => appendImage({ url: '', isPrimary: false })}
-                  >
-                    <IconPlus className="mr-2 size-4" />
-                    Add Image URL
-                  </Button>
+                <CardContent>
+                  <SortableImageUpload
+                    onUploadComplete={(uploadedImages) => {
+                      const formImages = uploadedImages
+                        .filter(img => img.status === 'completed')
+                        .map(img => ({
+                          url: img.preview, // The public URL is stored in preview after upload
+                          isPrimary: false, // Default logic, can be refined
+                        }));
+
+                      if (formImages.length > 0) {
+                        formImages[0].isPrimary = true;
+                      }
+
+                      form.setValue('images', formImages, { shouldValidate: true });
+                    }}
+                  />
+                  {form.formState.errors.images && (
+                    <p className="text-sm font-medium text-destructive mt-2">
+                      {form.formState.errors.images.message}
+                    </p>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
@@ -423,7 +402,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                       price: '',
                       salePrice: null,
                       weight: null,
-
+                      availableStock: 0,
                       colorId: null,
                       sizeId: null,
                       dimensions: null,
@@ -469,7 +448,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                             <FormItem>
                               <FormLabel>Price (INR)</FormLabel>
                               <FormControl>
-                                <Input placeholder="9999.00" {...field} />
+                                <Input type="number" step="0.01" min="0" placeholder="9999.00" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -477,18 +456,17 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                         />
                         <FormField
                           control={form.control}
-                          name={`variants.${index}.salePrice`}
+                          name={`variants.${index}.availableStock`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Sale Price (Optional)</FormLabel>
+                              <FormLabel>Initial Stock</FormLabel>
                               <FormControl>
-                                <Input placeholder="7999.00" {...field} value={field.value || ''} />
+                                <Input type="number" min="0" placeholder="0" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
-
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -556,7 +534,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                             <FormItem>
                               <FormLabel>Weight (kg) (Optional)</FormLabel>
                               <FormControl>
-                                <Input type="number" step="0.01" {...field} value={field.value ?? ''} />
+                                <Input type="number" step="0.01" min="0" {...field} value={field.value ?? ''} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -569,7 +547,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                             <FormItem>
                               <FormLabel>Length (Optional)</FormLabel>
                               <FormControl>
-                                <Input type="number" {...field} value={field.value ?? ''} />
+                                <Input type="number" min="0" {...field} value={field.value ?? ''} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -582,7 +560,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                             <FormItem>
                               <FormLabel>Width (Optional)</FormLabel>
                               <FormControl>
-                                <Input type="number" {...field} value={field.value ?? ''} />
+                                <Input type="number" min="0" {...field} value={field.value ?? ''} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -595,7 +573,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                             <FormItem>
                               <FormLabel>Height (Optional)</FormLabel>
                               <FormControl>
-                                <Input type="number" {...field} value={field.value ?? ''} />
+                                <Input type="number" min="0" {...field} value={field.value ?? ''} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>

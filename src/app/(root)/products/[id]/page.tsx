@@ -12,7 +12,7 @@ interface GalleryVariant { color: string; images: string[] }
 function formatPrice(price: number | null | undefined) {
   if (price === null || price === undefined)
     return undefined;
-  return `$${price.toFixed(2)}`;
+  return `₹${price.toFixed(2)}`;
 }
 
 function NotFoundBlock() {

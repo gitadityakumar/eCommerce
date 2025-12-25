@@ -1,4 +1,3 @@
-import { relations } from 'drizzle-orm';
 import { jsonb, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 import { orders } from './orders';
@@ -15,13 +14,6 @@ export const payments = pgTable('payments', {
   transactionId: text('transaction_id'),
   rawPayload: jsonb('raw_payload'),
 });
-
-export const paymentsRelations = relations(payments, ({ one }) => ({
-  order: one(orders, {
-    fields: [payments.orderId],
-    references: [orders.id],
-  }),
-}));
 
 export const insertPaymentSchema = z.object({
   orderId: z.string().uuid(),

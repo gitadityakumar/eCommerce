@@ -1,7 +1,5 @@
-import { relations } from 'drizzle-orm';
 import { pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
-import { productVariants } from '../variants';
 
 export const colors = pgTable('colors', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -9,10 +7,6 @@ export const colors = pgTable('colors', {
   slug: text('slug').notNull().unique(),
   hexCode: text('hex_code').notNull(),
 });
-
-export const colorsRelations = relations(colors, ({ many }) => ({
-  variants: many(productVariants),
-}));
 
 export const insertColorSchema = z.object({
   name: z.string().min(1),
