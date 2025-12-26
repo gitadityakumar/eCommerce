@@ -2,6 +2,7 @@ import { Card } from '@/components';
 import Filters from '@/components/Filters';
 import Sort from '@/components/Sort';
 import { getAllProducts } from '@/lib/actions/product';
+import { getFilterOptions } from '@/lib/actions/storefront';
 import { parseFilterParams } from '@/lib/utils/query';
 
 type SearchParams = Record<string, string | string[] | undefined>;
@@ -14,7 +15,10 @@ export default async function ProductsPage({
   const sp = await searchParams;
 
   const parsed = parseFilterParams(sp);
-  const { products, totalCount } = await getAllProducts(parsed);
+  const [{ products, totalCount }, filterOptions] = await Promise.all([
+    getAllProducts(parsed),
+    getFilterOptions(),
+  ]);
 
   const activeBadges: string[] = [];
   (sp.gender ? (Array.isArray(sp.gender) ? sp.gender : [sp.gender]) : []).forEach(g =>
@@ -55,7 +59,11 @@ export default async function ProductsPage({
       )}
 
       <section className="grid grid-cols-1 gap-6 md:grid-cols-[240px_1fr]">
-        <Filters />
+        <Filters
+          genders={filterOptions.genders}
+          sizes={filterOptions.sizes}
+          colors={filterOptions.colors}
+        />
         <div>
           {products.length === 0
             ? (

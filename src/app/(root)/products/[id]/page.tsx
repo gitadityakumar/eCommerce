@@ -1,13 +1,16 @@
 import type { RecommendedProduct, Review } from '@/lib/actions/product';
-import { Heart, ShoppingBag, Star } from 'lucide-react';
+import { Heart, Star } from 'lucide-react';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { Card, CollapsibleSection, ProductGallery, SizePicker } from '@/components';
-import ColorSwatches from '@/components/ColorSwatches';
+import AddToBagButton from '@/components/AddToBagButton';
+import ColorSelector from '@/components/ColorSelector';
+import ProductStateInitializer from '@/components/ProductStateInitializer';
+import StockBadge from '@/components/StockBadge';
 import { getProductReviews, getRecommendedProducts } from '@/lib/actions/product';
 import { getStorefrontProduct } from '@/lib/actions/storefront';
 
-interface GalleryVariant { color: string; images: string[] }
+interface GalleryVariant { color: string; hexCode: string | null; images: string[] }
 
 function formatPrice(price: number | null | undefined) {
   if (price === null || price === undefined)
@@ -140,6 +143,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
     return {
       color: v.color?.name || 'Default',
+      hexCode: v.color?.hexCode || null,
       images: imgs.length ? imgs : fallback,
     };
   }).filter(gv => gv.images.length > 0);
@@ -158,7 +162,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
       : null;
 
   const subtitle
-    = product.gender?.label ? `${product.gender.label} Shoes` : undefined;
+    = product.gender?.label ? `${product.gender.label}` : undefined;
 
   return (
     <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -197,16 +201,15 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 )}
               </>
             )}
+            <StockBadge productId={product.id} variants={variants} galleryVariants={galleryVariants} />
           </div>
 
-          <ColorSwatches productId={product.id} variants={galleryVariants} />
-          <SizePicker />
+          <ProductStateInitializer productId={product.id} variants={variants} galleryVariants={galleryVariants} />
+          <ColorSelector productId={product.id} variants={galleryVariants} allVariants={variants} />
+          <SizePicker productId={product.id} variants={variants} galleryVariants={galleryVariants} />
 
           <div className="flex flex-col gap-3">
-            <button className="flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-4 text-body-medium text-primary-foreground transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-              <ShoppingBag className="h-5 w-5" />
-              Add to Bag
-            </button>
+            <AddToBagButton productId={product.id} name={product.name} variants={variants} galleryVariants={galleryVariants} />
             <button className="flex items-center justify-center gap-2 rounded-full border border-input px-6 py-4 text-body-medium text-foreground transition hover:border-ring focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <Heart className="h-5 w-5" />
               Favorite

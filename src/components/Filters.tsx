@@ -1,12 +1,10 @@
 'use client';
 
+import type { SelectColor, SelectGender, SelectSize } from '@/lib/db/schema';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { getArrayParam, removeParams, toggleArrayParam } from '@/lib/utils/query';
 
-const GENDERS = ['men', 'women', 'unisex'] as const;
-const SIZES = ['XS', 'S', 'M', 'L', 'XL'] as const;
-const COLORS = ['black', 'white', 'red', 'green', 'blue', 'grey'] as const;
 const PRICES = [
   { id: '0-50', label: '₹0 - ₹50' },
   { id: '50-100', label: '₹50 - ₹100' },
@@ -16,7 +14,13 @@ const PRICES = [
 
 type GroupKey = 'gender' | 'size' | 'color' | 'price';
 
-export default function Filters() {
+interface FiltersProps {
+  genders: SelectGender[];
+  sizes: SelectSize[];
+  colors: SelectColor[];
+}
+
+export default function Filters({ genders, sizes, colors }: FiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -101,19 +105,19 @@ export default function Filters() {
 
         <Group title={`Gender ${activeCounts.gender ? `(${activeCounts.gender})` : ''}`} k="gender">
           <ul className="space-y-2">
-            {GENDERS.map((g) => {
-              const checked = getArrayParam(search, 'gender').includes(g);
+            {genders.map((g) => {
+              const checked = getArrayParam(search, 'gender').includes(g.slug);
               return (
-                <li key={g} className="flex items-center gap-2">
+                <li key={g.id} className="flex items-center gap-2">
                   <input
-                    id={`gender-${g}`}
+                    id={`gender-${g.slug}`}
                     type="checkbox"
                     className="h-4 w-4 accent-dark-900"
                     checked={checked}
-                    onChange={() => onToggle('gender' as GroupKey, g)}
+                    onChange={() => onToggle('gender' as GroupKey, g.slug)}
                   />
-                  <label htmlFor={`gender-${g}`} className="text-body text-dark-900 dark:text-gray-200">
-                    {g[0].toUpperCase() + g.slice(1)}
+                  <label htmlFor={`gender-${g.slug}`} className="text-body text-dark-900 dark:text-gray-200">
+                    {g.label}
                   </label>
                 </li>
               );
@@ -123,18 +127,18 @@ export default function Filters() {
 
         <Group title={`Size ${activeCounts.size ? `(${activeCounts.size})` : ''}`} k="size">
           <ul className="grid grid-cols-5 gap-2">
-            {SIZES.map((s) => {
-              const checked = getArrayParam(search, 'size').includes(s);
+            {sizes.map((s) => {
+              const checked = getArrayParam(search, 'size').includes(s.slug);
               return (
-                <li key={s}>
+                <li key={s.id}>
                   <label className="inline-flex items-center gap-2">
                     <input
                       type="checkbox"
                       className="h-4 w-4 accent-dark-900 dark:accent-gray-300"
                       checked={checked}
-                      onChange={() => onToggle('size', s)}
+                      onChange={() => onToggle('size', s.slug)}
                     />
-                    <span className="text-body dark:text-gray-200">{s}</span>
+                    <span className="text-body dark:text-gray-200">{s.name}</span>
                   </label>
                 </li>
               );
@@ -144,19 +148,19 @@ export default function Filters() {
 
         <Group title={`Color ${activeCounts.color ? `(${activeCounts.color})` : ''}`} k="color">
           <ul className="grid grid-cols-2 gap-2">
-            {COLORS.map((c) => {
-              const checked = getArrayParam(search, 'color').includes(c);
+            {colors.map((c) => {
+              const checked = getArrayParam(search, 'color').includes(c.slug);
               return (
-                <li key={c} className="flex items-center gap-2">
+                <li key={c.id} className="flex items-center gap-2">
                   <input
-                    id={`color-${c}`}
+                    id={`color-${c.slug}`}
                     type="checkbox"
                     className="h-4 w-4 accent-dark-900"
                     checked={checked}
-                    onChange={() => onToggle('color', c)}
+                    onChange={() => onToggle('color', c.slug)}
                   />
-                  <label htmlFor={`color-${c}`} className="text-body capitalize dark:text-gray-200">
-                    {c}
+                  <label htmlFor={`color-${c.slug}`} className="text-body capitalize dark:text-gray-200">
+                    {c.name}
                   </label>
                 </li>
               );
@@ -205,19 +209,19 @@ export default function Filters() {
             <div className="md:hidden">
               <Group title="Gender" k="gender">
                 <ul className="space-y-2">
-                  {GENDERS.map((g) => {
-                    const checked = getArrayParam(search, 'gender').includes(g);
+                  {genders.map((g) => {
+                    const checked = getArrayParam(search, 'gender').includes(g.slug);
                     return (
-                      <li key={g} className="flex items-center gap-2">
+                      <li key={g.id} className="flex items-center gap-2">
                         <input
-                          id={`m-gender-${g}`}
+                          id={`m-gender-${g.slug}`}
                           type="checkbox"
                           className="h-4 w-4 accent-dark-900"
                           checked={checked}
-                          onChange={() => onToggle('gender', g)}
+                          onChange={() => onToggle('gender', g.slug)}
                         />
-                        <label htmlFor={`m-gender-${g}`} className="text-body">
-                          {g[0].toUpperCase() + g.slice(1)}
+                        <label htmlFor={`m-gender-${g.slug}`} className="text-body">
+                          {g.label}
                         </label>
                       </li>
                     );
@@ -227,18 +231,18 @@ export default function Filters() {
 
               <Group title="Size" k="size">
                 <ul className="grid grid-cols-4 gap-2">
-                  {SIZES.map((s) => {
-                    const checked = getArrayParam(search, 'size').includes(s);
+                  {sizes.map((s) => {
+                    const checked = getArrayParam(search, 'size').includes(s.slug);
                     return (
-                      <li key={s}>
+                      <li key={s.id}>
                         <label className="inline-flex items-center gap-2">
                           <input
                             type="checkbox"
                             className="h-4 w-4 accent-dark-900"
                             checked={checked}
-                            onChange={() => onToggle('size', s)}
+                            onChange={() => onToggle('size', s.slug)}
                           />
-                          <span className="text-body">{s}</span>
+                          <span className="text-body">{s.name}</span>
                         </label>
                       </li>
                     );
@@ -248,19 +252,19 @@ export default function Filters() {
 
               <Group title="Color" k="color">
                 <ul className="grid grid-cols-2 gap-2">
-                  {COLORS.map((c) => {
-                    const checked = getArrayParam(search, 'color').includes(c);
+                  {colors.map((c) => {
+                    const checked = getArrayParam(search, 'color').includes(c.slug);
                     return (
-                      <li key={c} className="flex items-center gap-2">
+                      <li key={c.id} className="flex items-center gap-2">
                         <input
-                          id={`m-color-${c}`}
+                          id={`m-color-${c.slug}`}
                           type="checkbox"
                           className="h-4 w-4 accent-dark-900"
                           checked={checked}
-                          onChange={() => onToggle('color', c)}
+                          onChange={() => onToggle('color', c.slug)}
                         />
-                        <label htmlFor={`m-color-${c}`} className="text-body capitalize">
-                          {c}
+                        <label htmlFor={`m-color-${c.slug}`} className="text-body capitalize">
+                          {c.name}
                         </label>
                       </li>
                     );

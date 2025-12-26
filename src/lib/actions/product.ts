@@ -2,7 +2,7 @@
 
 import type { SQL } from 'drizzle-orm';
 import type { SelectBrand, SelectCategory, SelectColor, SelectGender, SelectProduct, SelectProductImage, SelectSize, SelectVariant } from '@/lib/db/schema';
-// import type { NormalizedProductFilters } from '@/lib/utils/query'
+import type { NormalizedProductFilters } from '@/lib/utils/query';
 import {
   and,
   asc,
@@ -48,7 +48,7 @@ export interface GetAllProductsResult {
 }
 
 export async function getAllProducts(
-  filters?: NormalizedProductfilters,
+  filters?: NormalizedProductFilters,
 ): Promise<GetAllProductsResult> {
   const conds: SQL[] = [eq(products.status, 'published')];
 
@@ -184,6 +184,10 @@ export async function getAllProducts(
         .where(isNull(productImages.variantId))
         .as('pi');
 
+  if (hasSize || hasColor || hasPrice) {
+    conds.push(sql`${variantJoin.variantId} is not null`);
+  }
+
   const baseWhere = conds.length ? and(...conds) : undefined;
 
   const priceAgg = {
@@ -245,7 +249,7 @@ string | null
     minPrice: r.minPrice === null ? null : Number(r.minPrice),
     maxPrice: r.maxPrice === null ? null : Number(r.maxPrice),
     createdAt: r.createdAt,
-    subtitle: r.subtitle ? `${r.subtitle} Shoes` : null,
+    subtitle: r.subtitle ? `${r.subtitle}` : null,
   }));
 
   const totalCount = countRows[0]?.cnt ?? 0;

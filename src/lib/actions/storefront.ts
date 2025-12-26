@@ -3,8 +3,11 @@
 import { eq } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import {
+  colors,
+  genders,
   products,
   reviews,
+  sizes,
 } from '@/lib/db/schema';
 
 export async function getStorefrontProduct(productId: string) {
@@ -22,6 +25,7 @@ export async function getStorefrontProduct(productId: string) {
           with: {
             size: true,
             color: true,
+            inventory: true,
           },
         },
       },
@@ -45,5 +49,29 @@ export async function getStorefrontProduct(productId: string) {
   catch (error) {
     console.error('[getStorefrontProduct] Error fetching product:', error);
     return null;
+  }
+}
+
+export async function getFilterOptions() {
+  try {
+    const [fetchedGenders, fetchedSizes, fetchedColors] = await Promise.all([
+      db.select().from(genders),
+      db.select().from(sizes).orderBy(sizes.sortOrder),
+      db.select().from(colors),
+    ]);
+
+    return {
+      genders: fetchedGenders,
+      sizes: fetchedSizes,
+      colors: fetchedColors,
+    };
+  }
+  catch (error) {
+    console.error('[getFilterOptions] Error fetching filter options:', error);
+    return {
+      genders: [],
+      sizes: [],
+      colors: [],
+    };
   }
 }
