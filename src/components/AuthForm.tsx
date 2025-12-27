@@ -1,5 +1,6 @@
 'use client';
 
+import { ArrowRight, Eye, EyeOff, Lock, Mail, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -12,6 +13,7 @@ interface Props {
 
 export default function AuthForm({ mode, onSubmit }: Props) {
   const [show, setShow] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -31,122 +33,175 @@ export default function AuthForm({ mode, onSubmit }: Props) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <p className="text-caption text-dark-700 dark:text-light-700">
-          {mode === 'sign-in' ? 'Don\'t have an account? ' : 'Already have an account? '}
-          <Link href={mode === 'sign-in' ? '/sign-up' : '/sign-in'} className="underline">
-            {mode === 'sign-in' ? 'Sign Up' : 'Sign In'}
-          </Link>
-        </p>
-        <h1 className="mt-3 text-heading-3 text-dark-900 dark:text-light-900">
-          {mode === 'sign-in' ? 'Welcome Back!' : 'Join Nike Today!'}
+    <div className="space-y-8">
+      {/* App Branding */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
+            <MessageSquare className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <p className="text-xs text-white/50 uppercase tracking-wider font-montserrat">PT</p>
+            <h2 className="text-xl font-light text-white font-playfair">PreetyTwist</h2>
+          </div>
+        </div>
+        <span className="text-sm text-white/40">v1.0</span>
+      </div>
+
+      {/* Header */}
+      <div className="space-y-2">
+        <h1 className="text-4xl font-light text-white font-playfair">
+          {mode === 'sign-in' ? 'Welcome back' : 'Create account'}
         </h1>
-        <p className="mt-1 text-body text-dark-700 dark:text-light-700">
+        <p className="text-white/60 font-light font-inter">
           {mode === 'sign-in'
-            ? 'Sign in to continue your journey'
-            : 'Create your account to start your fitness journey'}
+            ? 'Sign in to continue your shopping.'
+            : 'Create your account to start shopping.'}
         </p>
       </div>
 
-      <SocialProviders variant={mode} />
-
-      <div className="flex items-center gap-4">
-        <hr className="h-px w-full border-0 bg-light-300 dark:bg-dark-300" />
-        <span className="shrink-0 text-caption text-dark-700 dark:text-light-700">
-          Or
-          {' '}
-          {mode === 'sign-in' ? 'sign in' : 'sign up'}
-          {' '}
-          with
-        </span>
-        <hr className="h-px w-full border-0 bg-light-300 dark:bg-dark-300" />
-      </div>
-
-      <form
-        className="space-y-4"
-        onSubmit={handleSubmit}
-      >
+      {/* Form */}
+      <form className="space-y-6" onSubmit={handleSubmit}>
         {mode === 'sign-up' && (
-          <div className="space-y-1">
-            <label htmlFor="name" className="text-caption text-dark-900 dark:text-light-900">
-              Name
+          <div className="space-y-2">
+            <label htmlFor="name" className="text-sm text-white/70 font-inter">
+              Full name
             </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              placeholder="Enter your name"
-              className="w-full rounded-xl border border-light-300 dark:border-dark-300 bg-light-100 dark:bg-dark-800 px-4 py-3 text-body text-dark-900 dark:text-light-900 placeholder:text-dark-500 dark:placeholder:text-light-500 focus:outline-none focus:ring-2 focus:ring-dark-900/10 dark:focus:ring-light-900/10"
-              autoComplete="name"
-            />
+            <div className="relative">
+              <input
+                id="name"
+                name="name"
+                type="text"
+                placeholder="Enter your name"
+                className="w-full rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 px-12 py-4 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 transition-all font-inter"
+                autoComplete="name"
+              />
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50" />
+            </div>
           </div>
         )}
 
-        <div className="space-y-1">
-          <label htmlFor="email" className="text-caption text-dark-900 dark:text-light-900">
-            Email
+        {/* Email or username */}
+        <div className="space-y-2">
+          <label htmlFor="email" className="text-sm text-white/70 font-inter">
+            Email or username
           </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            placeholder="johndoe@gmail.com"
-            className="w-full rounded-xl border border-light-300 dark:border-dark-300 bg-light-100 dark:bg-dark-800 px-4 py-3 text-body text-dark-900 dark:text-light-900 placeholder:text-dark-500 dark:placeholder:text-light-500 focus:outline-none focus:ring-2 focus:ring-dark-900/10 dark:focus:ring-light-900/10"
-            autoComplete="email"
-            required
-          />
+          <div className="relative">
+            <input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="you@domain.com"
+              className="w-full rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 px-12 py-4 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 transition-all font-inter"
+              autoComplete="email"
+              required
+            />
+            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50" />
+          </div>
         </div>
 
-        <div className="space-y-1">
-          <label htmlFor="password" className="text-caption text-dark-900 dark:text-light-900">
-            Password
-          </label>
+        {/* Password */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <label htmlFor="password" className="text-sm text-white/70 font-inter">
+              Password
+            </label>
+            {mode === 'sign-in' && (
+              <Link href="/forgot-password" className="text-sm text-orange-400 hover:text-orange-300 font-inter">
+                Forgot?
+              </Link>
+            )}
+          </div>
           <div className="relative">
             <input
               id="password"
               name="password"
               type={show ? 'text' : 'password'}
-              placeholder="minimum 8 characters"
-              className="w-full rounded-xl border border-light-300 dark:border-dark-300 bg-light-100 dark:bg-dark-800 px-4 py-3 pr-12 text-body text-dark-900 dark:text-light-900 placeholder:text-dark-500 dark:placeholder:text-light-500 focus:outline-none focus:ring-2 focus:ring-dark-900/10 dark:focus:ring-light-900/10"
+              placeholder="••••••••"
+              className="w-full rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 px-12 py-4 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 transition-all font-inter"
               autoComplete={mode === 'sign-in' ? 'current-password' : 'new-password'}
               minLength={8}
               required
             />
+            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50" />
             <button
               type="button"
-              className="absolute inset-y-0 right-0 px-3 text-caption text-dark-700 dark:text-light-700"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors"
               onClick={() => setShow(v => !v)}
               aria-label={show ? 'Hide password' : 'Show password'}
             >
-              {show ? 'Hide' : 'Show'}
+              {show ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
           </div>
         </div>
 
+        {/* Remember me & Need help */}
+        {mode === 'sign-in' && (
+          <div className="flex items-center justify-between text-sm">
+            <label className="flex items-center gap-2 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={e => setRememberMe(e.target.checked)}
+                className="w-4 h-4 rounded border-white/30 bg-white/10 text-orange-500 focus:ring-2 focus:ring-orange-500/50"
+              />
+              <span className="text-white/70 group-hover:text-white transition-colors font-inter">
+                Remember me
+              </span>
+            </label>
+            <Link href="/help" className="text-white/70 hover:text-white transition-colors font-inter">
+              Need help?
+            </Link>
+          </div>
+        )}
+
+        {/* Sign in/up Button */}
         <button
           type="submit"
-          className="mt-2 w-full rounded-full bg-dark-900 dark:bg-light-900 px-6 py-3 text-body-medium text-light-100 dark:text-dark-900 hover:bg-dark-700 dark:hover:bg-light-700 focus:outline-none focus:ring-2 focus:ring-dark-900/20 dark:focus:ring-light-900/20"
+          className="w-full rounded-2xl bg-linear-to-r from-orange-400 via-orange-500 to-yellow-400 px-6 py-4 text-white font-semibold hover:shadow-lg hover:shadow-orange-500/50 transition-all flex items-center justify-center gap-2 font-montserrat tracking-wide"
         >
-          {mode === 'sign-in' ? 'Sign In' : 'Sign Up'}
+          <span>{mode === 'sign-in' ? 'Sign in' : 'Sign up'}</span>
+          <ArrowRight className="w-5 h-5" />
         </button>
 
-        {mode === 'sign-up' && (
-          <p className="text-center text-footnote text-dark-700 dark:text-light-700">
-            By signing up, you agree to our
-            {' '}
-            <a href="#" className="underline">
-              Terms of Service
-            </a>
-            {' '}
-            and
-            {' '}
-            <a href="#" className="underline">
-              Privacy Policy
-            </a>
-          </p>
-        )}
+        {/* Account toggle */}
+        <p className="text-center text-sm text-white/60 font-inter">
+          {mode === 'sign-in' ? 'New here? ' : 'Already have an account? '}
+          <Link
+            href={mode === 'sign-in' ? '/sign-up' : '/sign-in'}
+            className="text-white hover:underline font-medium"
+          >
+            {mode === 'sign-in' ? 'Create account' : 'Sign in'}
+          </Link>
+        </p>
       </form>
+
+      {/* Divider */}
+      <div className="flex items-center gap-4">
+        <hr className="flex-1 border-white/20" />
+        <span className="text-sm text-white/50 font-inter">Or continue with</span>
+        <hr className="flex-1 border-white/20" />
+      </div>
+
+      {/* Social Providers */}
+      <SocialProviders variant={mode} />
+
+      {/* Terms for sign up */}
+      {mode === 'sign-up' && (
+        <p className="text-center text-xs text-white/50 font-inter">
+          By signing up, you agree to our
+          {' '}
+          <a href="#" className="underline hover:text-white/70">
+            Terms of Service
+          </a>
+          {' '}
+          and
+          {' '}
+          <a href="#" className="underline hover:text-white/70">
+            Privacy Policy
+          </a>
+        </p>
+      )}
     </div>
   );
 }
