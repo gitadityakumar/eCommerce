@@ -25,16 +25,16 @@ export default function Sort() {
   };
 
   return (
-    <label className="inline-flex items-center gap-2">
-      <span className="text-body text-foreground">Sort by</span>
+    <label className="inline-flex items-center gap-3">
+      <span className="text-sm font-medium text-text-secondary">Sort by</span>
       <select
-        className="rounded-md border border-input bg-card px-3 py-2 text-body text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+        className="rounded-lg border border-border-subtle bg-surface px-4 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all cursor-pointer shadow-soft hover:border-accent/40"
         value={selected}
         onChange={e => onChange(e.target.value)}
         aria-label="Sort products"
       >
         {OPTIONS.map(o => (
-          <option key={o.value} value={o.value} className="bg-card">
+          <option key={o.value} value={o.value} className="bg-surface text-text-primary">
             {o.label}
           </option>
         ))}

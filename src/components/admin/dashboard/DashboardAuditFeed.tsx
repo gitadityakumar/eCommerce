@@ -22,12 +22,12 @@ export function DashboardAuditFeed({ logs }: AuditFeedProps) {
         <CardDescription>Recent admin activity.</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="relative space-y-4 before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-linear-to-b before:from-transparent before:via-slate-200 before:to-transparent">
+        <div className="relative space-y-4 before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-linear-to-b before:from-transparent before:via-border-subtle before:to-transparent">
           {logs.map(log => (
             <div key={log.id} className="relative flex items-center justify-between group">
               <div className="flex items-center gap-4">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full border bg-white shadow-sm z-10">
-                  <span className="text-[10px] font-bold uppercase">{log.action.substring(0, 1)}</span>
+                <div className="flex items-center justify-center w-10 h-10 rounded-full border border-border-subtle bg-surface shadow-sm z-10 transition-colors duration-300">
+                  <span className="text-[10px] font-bold uppercase text-accent">{log.action.substring(0, 1)}</span>
                 </div>
                 <div className="flex flex-col">
                   <p className="text-sm font-medium">

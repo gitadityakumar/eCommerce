@@ -27,34 +27,34 @@ export function AttributeDashboard({
 }: AttributeDashboardProps) {
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Attributes Management</h1>
-        <p className="text-muted-foreground">
-          Manage global attributes like colors, sizes, and genders, or product-specific options.
+      <div className="flex flex-col gap-3">
+        <h1 className="text-4xl font-light tracking-tighter text-text-primary font-playfair italic">Attribute Governance</h1>
+        <p className="text-sm text-text-secondary font-light tracking-tight max-w-2xl">
+          Synthesize and manage the global DNA of your collections—from chromatic spectrums to silhouette dimensions.
         </p>
       </div>
 
-      <Tabs defaultValue="colors" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="colors" className="flex items-center gap-2">
-            <IconPalette size={16} />
-            Colors
+      <Tabs defaultValue="colors" className="space-y-8">
+        <TabsList className="flex h-14 items-center justify-start gap-1 bg-surface/50 border border-border-subtle p-1 rounded-2xl w-fit overflow-hidden">
+          <TabsTrigger value="colors" className="flex items-center gap-2 px-6 h-full rounded-xl data-[state=active]:bg-surface data-[state=active]:text-accent data-[state=active]:shadow-soft font-bold tracking-widest uppercase text-[10px] transition-all">
+            <IconPalette size={14} strokeWidth={2.5} />
+            Spectrum
           </TabsTrigger>
-          <TabsTrigger value="sizes" className="flex items-center gap-2">
-            <IconRuler size={16} />
-            Sizes
+          <TabsTrigger value="sizes" className="flex items-center gap-2 px-6 h-full rounded-xl data-[state=active]:bg-surface data-[state=active]:text-accent data-[state=active]:shadow-soft font-bold tracking-widest uppercase text-[10px] transition-all">
+            <IconRuler size={14} strokeWidth={2.5} />
+            Scale
           </TabsTrigger>
-          <TabsTrigger value="genders" className="flex items-center gap-2">
-            <IconGenderIntergender size={16} />
-            Genders
+          <TabsTrigger value="genders" className="flex items-center gap-2 px-6 h-full rounded-xl data-[state=active]:bg-surface data-[state=active]:text-accent data-[state=active]:shadow-soft font-bold tracking-widest uppercase text-[10px] transition-all">
+            <IconGenderIntergender size={14} strokeWidth={2.5} />
+            Archetype
           </TabsTrigger>
-          <TabsTrigger value="brands" className="flex items-center gap-2">
-            <IconBuildingStore size={16} />
-            Brands
+          <TabsTrigger value="brands" className="flex items-center gap-2 px-6 h-full rounded-xl data-[state=active]:bg-surface data-[state=active]:text-accent data-[state=active]:shadow-soft font-bold tracking-widest uppercase text-[10px] transition-all">
+            <IconBuildingStore size={14} strokeWidth={2.5} />
+            Houses
           </TabsTrigger>
-          <TabsTrigger value="options" className="flex items-center gap-2">
-            <IconSettings size={16} />
-            Product Options
+          <TabsTrigger value="options" className="flex items-center gap-2 px-6 h-full rounded-xl data-[state=active]:bg-surface data-[state=active]:text-accent data-[state=active]:shadow-soft font-bold tracking-widest uppercase text-[10px] transition-all">
+            <IconSettings size={14} strokeWidth={2.5} />
+            Refinements
           </TabsTrigger>
         </TabsList>
         <TabsContent value="colors" className="space-y-4">

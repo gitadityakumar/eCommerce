@@ -20,15 +20,15 @@ function formatPrice(price: number | null | undefined) {
 
 function NotFoundBlock() {
   return (
-    <section className="mx-auto max-w-3xl rounded-xl border border-input bg-card p-8 text-center">
-      <h1 className="text-heading-3 text-foreground">Product not found</h1>
-      <p className="mt-2 text-body text-muted-foreground">The product you&apos;re looking for doesn&apos;t exist or may have been removed.</p>
-      <div className="mt-6">
+    <section className="mx-auto max-w-3xl rounded-3xl border border-border-subtle bg-surface/50 p-12 text-center shadow-soft backdrop-blur-md">
+      <h1 className="text-4xl font-light tracking-tighter text-text-primary font-playfair italic mb-4">Silhouette Lost</h1>
+      <p className="text-sm text-text-secondary font-light max-w-sm mx-auto leading-relaxed">The archival masterpiece you seek has either transitioned to a private collection or never existed in this realm.</p>
+      <div className="mt-10">
         <Link
           href="/products"
-          className="inline-block rounded-full bg-primary px-6 py-3 text-body-medium text-primary-foreground transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="inline-flex h-12 items-center justify-center rounded-full bg-accent px-8 text-[10px] font-bold tracking-[0.2em] uppercase text-white transition-all hover:bg-accent/90 hover:-translate-y-0.5 shadow-soft shadow-accent/20"
         >
-          Browse Products
+          Explore Catalog
         </Link>
       </div>
     </section>
@@ -43,34 +43,36 @@ async function ReviewsSection({ productId }: { productId: string }) {
 
   return (
     <CollapsibleSection
-      title={`Reviews (${count})`}
-      rightMeta={(
-        <span className="flex items-center gap-1 text-foreground">
-          {[1, 2, 3, 4, 5].map(i => (
-            <Star key={i} className={`h-4 w-4 ${i <= Math.round(avg) ? 'fill-foreground' : ''}`} />
-          ))}
+      title={`Editorial Reviews (${count})`}
+      className="border-t border-border-subtle pt-6"
+      rightMeta={count > 0 && (
+        <span className="flex items-center gap-1.5 text-accent">
+          <Star className="h-3.5 w-3.5 fill-accent" />
+          <span className="text-sm font-bold tracking-tighter text-text-primary">{avg.toFixed(1)}</span>
         </span>
       )}
     >
       {reviews.length === 0
         ? (
-            <p>No reviews yet.</p>
+            <p className="text-sm text-text-secondary font-light italic">No narratives shared yet.</p>
           )
         : (
-            <ul className="space-y-4">
+            <ul className="space-y-6 pt-4">
               {reviews.slice(0, 10).map(r => (
-                <li key={r.id} className="rounded-lg border border-input p-4">
-                  <div className="mb-1 flex items-center justify-between">
-                    <p className="text-body-medium text-foreground">{r.author}</p>
-                    <span className="flex items-center gap-1">
+                <li key={r.id} className="rounded-2xl border border-border-subtle bg-background/30 p-6 transition-all hover:bg-background/50">
+                  <div className="mb-4 flex items-center justify-between">
+                    <div>
+                      <p className="text-[10px] font-bold tracking-widest uppercase text-text-primary">{r.author}</p>
+                      <p className="text-[9px] text-text-secondary font-light uppercase tracking-tighter mt-0.5">{new Date(r.createdAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</p>
+                    </div>
+                    <span className="flex items-center gap-0.5">
                       {[1, 2, 3, 4, 5].map(i => (
-                        <Star key={i} className={`h-4 w-4 ${i <= r.rating ? 'fill-foreground' : ''}`} />
+                        <Star key={i} className={`h-3 w-3 ${i <= r.rating ? 'fill-accent text-accent' : 'text-border-subtle'}`} />
                       ))}
                     </span>
                   </div>
-                  {r.title && <p className="text-body-medium text-foreground">{r.title}</p>}
-                  {r.content && <p className="mt-1 line-clamp-8 text-body text-muted-foreground">{r.content}</p>}
-                  <p className="mt-2 text-caption text-muted-foreground">{new Date(r.createdAt).toLocaleDateString()}</p>
+                  {r.title && <p className="text-sm font-bold tracking-tight text-text-primary mb-2">{r.title}</p>}
+                  {r.content && <p className="text-sm leading-relaxed text-text-secondary font-light">{r.content}</p>}
                 </li>
               ))}
             </ul>
@@ -84,9 +86,9 @@ async function AlsoLikeSection({ productId }: { productId: string }) {
   if (!recs.length)
     return null;
   return (
-    <section className="mt-16">
-      <h2 className="mb-6 text-heading-3 text-dark-900 dark:text-white">You Might Also Like</h2>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <section>
+      <h2 className="mb-12 text-3xl font-light tracking-tighter text-text-primary font-playfair italic">Parallels</h2>
+      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {recs.map(p => (
           <Card
             key={p.id}
@@ -94,6 +96,7 @@ async function AlsoLikeSection({ productId }: { productId: string }) {
             imageSrc={p.imageUrl}
             price={p.price ?? undefined}
             href={`/products/${p.id}`}
+            className="group"
           />
         ))}
       </div>
@@ -165,90 +168,105 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     = product.gender?.label ? `${product.gender.label}` : undefined;
 
   return (
-    <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <nav className="py-4 text-caption text-muted-foreground">
-        <Link href="/" className="hover:underline">Home</Link>
-        {' '}
-        /
-        <Link href="/products" className="hover:underline">Products</Link>
-        {' '}
-        /
-        {' '}
-        <span className="text-foreground">{product.name}</span>
+    <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12 py-10">
+      <nav className="pb-10 flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-text-secondary">
+        <Link href="/" className="hover:text-accent transition-colors">House</Link>
+        <span className="text-border-subtle">/</span>
+        <Link href="/products" className="hover:text-accent transition-colors">Catalog</Link>
+        <span className="text-border-subtle">/</span>
+        <span className="text-accent truncate">{product.name}</span>
       </nav>
 
-      <section className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_480px]">
+      <section className="grid grid-cols-1 gap-16 lg:grid-cols-[1fr_420px] xl:grid-cols-[1fr_480px]">
         {galleryVariants.length > 0 && (
-          <ProductGallery productId={product.id} variants={galleryVariants} className="lg:sticky lg:top-6" />
+          <div className="relative group">
+            <ProductGallery productId={product.id} variants={galleryVariants} className="lg:sticky lg:top-32 rounded-3xl overflow-hidden shadow-soft" />
+          </div>
         )}
 
-        <div className="flex flex-col gap-6">
-          <header className="flex flex-col gap-2">
-            <h1 className="text-heading-2 text-foreground">{product.name}</h1>
-            {subtitle && <p className="text-body text-muted-foreground">{subtitle}</p>}
+        <div className="flex flex-col gap-10">
+          <header className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1">
+              {subtitle && <p className="text-[10px] text-accent font-bold uppercase tracking-[0.3em] mb-1">{subtitle}</p>}
+              <h1 className="text-4xl md:text-5xl font-light tracking-tighter text-text-primary font-playfair italic leading-[1.1]">{product.name}</h1>
+            </div>
+
+            <div className="flex items-baseline gap-4 mt-2">
+              <p className="text-3xl font-light tracking-tighter text-text-primary">{formatPrice(displayPrice)}</p>
+              {compareAt && (
+                <>
+                  <span className="text-lg text-text-secondary line-through font-light opacity-60 tracking-tighter">{formatPrice(compareAt)}</span>
+                  {discount !== null && (
+                    <span className="text-[10px] font-black tracking-widest uppercase text-accent bg-accent/5 px-2 py-0.5 rounded">
+                      -
+                      {discount}
+                      %
+                    </span>
+                  )}
+                </>
+              )}
+            </div>
           </header>
 
-          <div className="flex items-center gap-3">
-            <p className="text-lead text-foreground">{formatPrice(displayPrice)}</p>
-            {compareAt && (
-              <>
-                <span className="text-body text-muted-foreground line-through">{formatPrice(compareAt)}</span>
-                {discount !== null && (
-                  <span className="rounded-full border border-input px-2 py-1 text-caption text-green-600 dark:text-green-400">
-                    {discount}
-                    % off
-                  </span>
-                )}
-              </>
-            )}
+          <div className="space-y-8">
             <StockBadge productId={product.id} variants={variants} galleryVariants={galleryVariants} />
+
+            <ProductStateInitializer productId={product.id} variants={variants} galleryVariants={galleryVariants} />
+
+            <div className="space-y-6 py-8 border-y border-border-subtle">
+              <ColorSelector productId={product.id} variants={galleryVariants} allVariants={variants} />
+              <SizePicker productId={product.id} variants={variants} galleryVariants={galleryVariants} />
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <AddToBagButton productId={product.id} name={product.name} variants={variants} galleryVariants={galleryVariants} />
+              <button className="flex h-14 items-center justify-center gap-3 rounded-full border border-border-subtle px-8 text-[10px] font-bold tracking-[0.2em] uppercase text-text-primary transition-all hover:bg-surface hover:border-accent hover:text-accent group relative overflow-hidden">
+                <Heart className="h-4 w-4 transition-transform group-hover:scale-110" />
+                <span>Save to Atelier</span>
+              </button>
+            </div>
           </div>
 
-          <ProductStateInitializer productId={product.id} variants={variants} galleryVariants={galleryVariants} />
-          <ColorSelector productId={product.id} variants={galleryVariants} allVariants={variants} />
-          <SizePicker productId={product.id} variants={variants} galleryVariants={galleryVariants} />
+          <div className="space-y-2">
+            <CollapsibleSection title="Aesthetic Narrative" defaultOpen className="border-b border-border-subtle pb-6">
+              <p className="text-sm leading-relaxed text-text-secondary font-light italic">{product.description}</p>
+            </CollapsibleSection>
 
-          <div className="flex flex-col gap-3">
-            <AddToBagButton productId={product.id} name={product.name} variants={variants} galleryVariants={galleryVariants} />
-            <button className="flex items-center justify-center gap-2 rounded-full border border-input px-6 py-4 text-body-medium text-foreground transition hover:border-ring focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-              <Heart className="h-5 w-5" />
-              Favorite
-            </button>
+            <CollapsibleSection title="Archival Logistics" className="border-b border-border-subtle pb-6">
+              <div className="text-sm leading-relaxed text-text-secondary font-light space-y-4 pt-2">
+                <p>Complimentary artisanal delivery and global archival tracing on all acquisitions.</p>
+                <p>30-day temporal window for returns to our atelier.</p>
+              </div>
+            </CollapsibleSection>
+
+            <Suspense
+              fallback={(
+                <CollapsibleSection title="Narratives">
+                  <p className="text-[10px] font-bold tracking-widest text-text-secondary uppercase animate-pulse">Tracing echoes...</p>
+                </CollapsibleSection>
+              )}
+            >
+              <ReviewsSection productId={product.id} />
+            </Suspense>
           </div>
-
-          <CollapsibleSection title="Product Details" defaultOpen>
-            <p>{product.description}</p>
-          </CollapsibleSection>
-
-          <CollapsibleSection title="Shipping & Returns">
-            <p>Free standard shipping and free 30-day returns for Nike Members.</p>
-          </CollapsibleSection>
-
-          <Suspense
-            fallback={(
-              <CollapsibleSection title="Reviews">
-                <p className="text-body text-dark-700">Loading reviews…</p>
-              </CollapsibleSection>
-            )}
-          >
-            <ReviewsSection productId={product.id} />
-          </Suspense>
         </div>
       </section>
 
       <Suspense
         fallback={(
-          <section className="mt-16">
-            <h2 className="mb-6 text-heading-3 text-foreground">You Might Also Like</h2>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <section className="mt-24 border-t border-border-subtle pt-20">
+            <h2 className="mb-12 text-3xl font-light tracking-tighter text-text-primary font-playfair italic">Parallels</h2>
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="h-64 animate-pulse rounded-xl bg-muted" />
+                <div key={i} className="aspect-4/5 animate-pulse rounded-3xl bg-surface/50 border border-border-subtle shadow-soft" />
               ))}
             </div>
           </section>
         )}
       >
-        <AlsoLikeSection productId={product.id} />
+        <div className="mt-24 border-t border-border-subtle pt-20">
+          <AlsoLikeSection productId={product.id} />
+        </div>
       </Suspense>
     </main>
   );

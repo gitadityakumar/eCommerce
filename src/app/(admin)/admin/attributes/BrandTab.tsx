@@ -173,28 +173,30 @@ export function BrandTab({ initialData }: BrandTabProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-4">
-        <div className="relative flex-1 max-w-sm">
-          <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+      <div className="flex items-center justify-between gap-6 bg-surface/30 p-6 rounded-2xl border border-border-subtle backdrop-blur-sm">
+        <div className="relative flex-1 max-w-sm group">
+          <IconSearch className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-text-secondary group-focus-within:text-accent transition-colors" />
           <Input
-            placeholder="Search brands..."
-            className="pl-9"
+            placeholder="Search archival houses..."
+            className="pl-11 bg-background/50 border-border-subtle rounded-full h-11 focus:ring-accent/20 focus:border-accent/40 transition-all placeholder:text-text-secondary/50 placeholder:font-light"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
           />
         </div>
-        <Button onClick={() => {
-          setEditingBrand(null);
-          form.reset({ name: '', slug: '', logoUrl: '' });
-          setIsOpen(true);
-        }}
+        <Button
+          onClick={() => {
+            setEditingBrand(null);
+            form.reset({ name: '', slug: '', logoUrl: '' });
+            setIsOpen(true);
+          }}
+          className="bg-accent text-white hover:bg-accent/90 rounded-full px-8 font-bold tracking-widest uppercase text-[10px] shadow-soft shadow-accent/20 h-11 transition-all hover:-translate-y-0.5"
         >
-          <IconPlus className="mr-2 size-4" />
-          Add Brand
+          <IconPlus className="mr-2 size-3.5" strokeWidth={3} />
+          Instate House
         </Button>
       </div>
 
-      <div className="rounded-md border bg-card">
+      <div className="rounded-2xl border border-border-subtle bg-surface/50 overflow-hidden shadow-soft">
         <Table>
           <TableHeader>
             <TableRow>

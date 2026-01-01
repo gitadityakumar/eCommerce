@@ -16,11 +16,10 @@ interface CartPageUIProps {
 }
 
 export function CartPageUI({ cart }: CartPageUIProps) {
-  // Server-side items
+  // ... (previous logic stays the same)
   const serverItems = cart?.items || [];
   const serverItemCount = serverItems.reduce((acc: number, item: any) => acc + item.quantity, 0);
 
-  // Client-side items
   const clientItems = useCartStore(s => s.items);
   const clientItemCount = useCartStore(s => s.getItemCount());
   const [mounted, setMounted] = useState(false);
@@ -29,87 +28,97 @@ export function CartPageUI({ cart }: CartPageUIProps) {
     setMounted(true);
   }, []);
 
-  // Determine which data to show
-  // If server has items, we prefer showing them (assuming sync exists or will exist)
-  // If server is empty, we fall back to client store
   const showingClient = serverItemCount === 0 && mounted;
   const items = showingClient ? clientItems : serverItems;
   const itemCount = showingClient ? clientItemCount : serverItemCount;
 
   if (!mounted) {
-    return <div className="min-h-[50vh] flex items-center justify-center">Loading...</div>;
+    return <div className="min-h-[50vh] flex items-center justify-center text-text-secondary font-light">Loading...</div>;
   }
 
   if (itemCount === 0) {
     return (
-      <div className="flex flex-col mt-5 items-center justify-center min-h-[60vh] gap-10">
-        <h1 className="text-3xl font-bold tracking-tight">Your Shopping Cart is Empty</h1>
-
-        <Image
-          src="https://cdn.perpetuity.dev/assets/handbagforecomno-bg.png"
-          alt="Empty Shopping Bag"
-          width={400}
-          height={400}
-          className="w-[300px] h-[300px] md:w-[400px] md:h-[400px] object-contain"
-          priority
-        />
+      <div className="flex flex-col mt-5 items-center justify-center min-h-[70vh] gap-8 bg-background transition-colors duration-500">
+        <div className="relative">
+          <div className="absolute inset-0 bg-accent/10 blur-3xl rounded-full" />
+          <Image
+            src="https://cdn.perpetuity.dev/assets/handbagforecomno-bg.png"
+            alt="Empty Shopping Bag"
+            width={400}
+            height={400}
+            className="w-[280px] h-[280px] md:w-[350px] md:h-[350px] object-contain relative z-10 opacity-80 dark:opacity-60 grayscale hover:grayscale-0 transition-all duration-700"
+            priority
+          />
+        </div>
+        <div className="text-center space-y-4 px-6 relative z-10">
+          <h1 className="text-4xl font-light text-text-primary tracking-tight font-playfair italic">Your Trove is Empty</h1>
+          <p className="text-text-secondary max-w-sm mx-auto font-light leading-relaxed">
+            The collection awaits. Discover pieces that define your silhouette.
+          </p>
+        </div>
 
         <Link
           href="/products"
-          className="bg-black text-white px-8 py-3 rounded-full font-medium hover:bg-black/90 transition-colors"
+          className="bg-accent text-white px-12 py-4 rounded-full font-bold tracking-[0.2em] uppercase hover:bg-accent/90 transition-all shadow-soft active:scale-95"
         >
-          Back to Store
+          Discover Collection
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <div className="flex flex-col gap-2 items-center mb-10 text-center">
-        <div className="h-12 w-12 rounded-full bg-secondary flex items-center justify-center mb-2">
-          <ShoppingBag className="h-6 w-6" />
-        </div>
-        <h1 className="text-4xl font-bold tracking-tight">Shopping Cart</h1>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
-        <div className="lg:col-span-2 bg-card border rounded-xl overflow-hidden shadow-sm">
-          <div className="p-6 border-b flex items-center gap-2">
-            <ShoppingBag className="h-5 w-5" />
-            <h2 className="text-xl font-bold">
-              Cart Items (
-              {itemCount}
-              )
-            </h2>
-          </div>
-          <div className="p-6 pt-0">
-            {showingClient
-              ? (
-            // Client items render
-                  items.map((item: any) => (
-                    <ClientCartItem key={item.id} item={item} />
-                  ))
-                )
-              : (
-            // Server items render
-                  items.map((item: any) => (
-                    <CartItem key={item.id} item={item} />
-                  ))
-                )}
-          </div>
+    <div className="min-h-screen bg-background transition-colors duration-500 py-16">
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="flex flex-col gap-4 items-center mb-16 text-center">
+          <span className="text-accent text-xs tracking-[0.4em] uppercase">Shopping Cart</span>
+          <h1 className="text-5xl font-light text-text-primary tracking-tighter">Your Bag</h1>
+          <div className="w-12 h-px bg-border-subtle" />
         </div>
 
-        <div className="lg:col-span-1">
-          <Suspense fallback={<div className="h-96 w-full bg-secondary animate-pulse rounded-xl" />}>
-            {showingClient
-              ? (
-                  <ClientOrderSummary />
-                )
-              : (
-                  <OrderSummary items={items} />
-                )}
-          </Suspense>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+          <div className="lg:col-span-2 space-y-8">
+            <div className="bg-surface border border-border-subtle rounded-2xl overflow-hidden shadow-soft">
+              <div className="p-8 border-b border-border-subtle flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <ShoppingBag className="h-5 w-5 text-accent" />
+                  <h2 className="text-xl font-light text-text-primary tracking-tight">
+                    Cart Items
+                  </h2>
+                </div>
+                <span className="text-sm text-text-secondary font-light">
+                  {itemCount}
+                  {' '}
+                  {itemCount === 1 ? 'Item' : 'Items'}
+                </span>
+              </div>
+              <div className="p-8 pt-2">
+                {showingClient
+                  ? (
+                      items.map((item: any) => (
+                        <ClientCartItem key={item.id} item={item} />
+                      ))
+                    )
+                  : (
+                      items.map((item: any) => (
+                        <CartItem key={item.id} item={item} />
+                      ))
+                    )}
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:col-span-1">
+            <Suspense fallback={<div className="h-96 w-full bg-surface border border-border-subtle animate-pulse rounded-2xl" />}>
+              {showingClient
+                ? (
+                    <ClientOrderSummary />
+                  )
+                : (
+                    <OrderSummary items={items} />
+                  )}
+            </Suspense>
+          </div>
         </div>
       </div>
     </div>

@@ -130,11 +130,15 @@ export function CouponForm() {
               name="code"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Coupon Code</FormLabel>
+                  <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Identifier Code</FormLabel>
                   <FormControl>
-                    <Input placeholder="E.g. SUMMER2024" {...field} />
+                    <Input
+                      placeholder="E.g. NOIRSUMMER2026"
+                      className="h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-mono tracking-widest"
+                      {...field}
+                    />
                   </FormControl>
-                  <FormDescription>Must be unique and descriptive.</FormDescription>
+                  <FormDescription className="text-[9px] italic opacity-60">A unique archival identifier for this incentive.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -146,16 +150,16 @@ export function CouponForm() {
               name="discountType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Discount Type</FormLabel>
+                  <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Discount Mechanism</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light">
                         <SelectValue placeholder="Select type" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="percentage">Percentage (%)</SelectItem>
-                      <SelectItem value="fixed">Fixed Amount (₹)</SelectItem>
+                    <SelectContent className="bg-surface border-border-subtle rounded-xl shadow-soft">
+                      <SelectItem value="percentage" className="text-[10px] font-bold tracking-widest uppercase">Percentage (%)</SelectItem>
+                      <SelectItem value="fixed" className="text-[10px] font-bold tracking-widest uppercase text-accent">Fixed Amount (₹)</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -171,11 +175,17 @@ export function CouponForm() {
               name="discountValue"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Discount Value</FormLabel>
+                  <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Incentive Value</FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <Input type="number" step="0.01" placeholder="0.00" {...field} className="pr-10" />
-                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-muted-foreground font-semibold">
+                    <div className="relative group">
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="0.00"
+                        {...field}
+                        className="h-12 pl-4 pr-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light"
+                      />
+                      <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-accent font-bold text-[10px] tracking-widest">
                         {discountType === 'percentage' ? '%' : '₹'}
                       </div>
                     </div>
@@ -191,11 +201,17 @@ export function CouponForm() {
               name="minOrderAmount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Min Order Amount (₹)</FormLabel>
+                  <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Minimum Acquisition (₹)</FormLabel>
                   <FormControl>
-                    <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="0.00"
+                      {...field}
+                      className="h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light"
+                    />
                   </FormControl>
-                  <FormDescription>Minimum spend required to use this coupon.</FormDescription>
+                  <FormDescription className="text-[9px] italic opacity-60">Minimum spend required to activate this archival incentive.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -209,15 +225,15 @@ export function CouponForm() {
               name="startsAt"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Starts At</FormLabel>
+                  <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Activation Epoch</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
                           variant="outline"
                           className={cn(
-                            'w-full pl-3 text-left font-normal',
-                            !field.value && 'text-muted-foreground',
+                            'w-full h-12 bg-background/50 border-border-subtle rounded-xl pl-4 text-left font-light text-sm hover:border-accent/40',
+                            !field.value && 'text-text-secondary',
                           )}
                         >
                           {field.value
@@ -225,13 +241,13 @@ export function CouponForm() {
                                 format(field.value, 'PPP')
                               )
                             : (
-                                <span>Pick a date</span>
+                                <span>Curate a date</span>
                               )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          <CalendarIcon className="ml-auto h-4 w-4 text-accent opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
+                    <PopoverContent className="w-auto p-0 bg-surface border-border-subtle rounded-2xl shadow-soft" align="start">
                       <Calendar
                         mode="single"
                         selected={field.value}
@@ -239,6 +255,7 @@ export function CouponForm() {
                         disabled={date =>
                           date < new Date('1900-01-01')}
                         initialFocus
+                        className="p-4"
                       />
                     </PopoverContent>
                   </Popover>
@@ -253,15 +270,15 @@ export function CouponForm() {
               name="expiresAt"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Expires At (Optional)</FormLabel>
+                  <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Sunset Period (Optional)</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
                           variant="outline"
                           className={cn(
-                            'w-full pl-3 text-left font-normal',
-                            !field.value && 'text-muted-foreground',
+                            'w-full h-12 bg-background/50 border-border-subtle rounded-xl pl-4 text-left font-light text-sm hover:border-accent/40',
+                            !field.value && 'text-text-secondary',
                           )}
                         >
                           {field.value
@@ -269,13 +286,13 @@ export function CouponForm() {
                                 format(field.value, 'PPP')
                               )
                             : (
-                                <span>Never expires</span>
+                                <span>Perpetual Incentive</span>
                               )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          <CalendarIcon className="ml-auto h-4 w-4 text-accent opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
+                    <PopoverContent className="w-auto p-0 bg-surface border-border-subtle rounded-2xl shadow-soft" align="start">
                       <Calendar
                         mode="single"
                         selected={field.value || undefined}
@@ -283,15 +300,16 @@ export function CouponForm() {
                         disabled={date =>
                           date < (form.getValues('startsAt') || new Date())}
                         initialFocus
+                        className="p-4"
                       />
-                      <div className="p-3 border-t">
+                      <div className="p-4 border-t border-border-subtle">
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="w-full text-xs"
+                          className="w-full text-[10px] font-bold tracking-widest uppercase text-text-secondary hover:text-accent transition-colors"
                           onClick={() => field.onChange(null)}
                         >
-                          Clear Expiry
+                          Clear Archive Date
                         </Button>
                       </div>
                     </PopoverContent>
@@ -308,35 +326,47 @@ export function CouponForm() {
             name="maxUsage"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Total Usage Limit (Optional)</FormLabel>
+                <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Total Archival Limit (Optional)</FormLabel>
                 <FormControl>
-                  <Input type="number" placeholder="Leave blank for unlimited" {...field} value={field.value || ''} min="1" />
+                  <Input
+                    type="number"
+                    placeholder="Leave blank for a perpetual existence"
+                    {...field}
+                    value={field.value || ''}
+                    min="1"
+                    className="h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light"
+                  />
                 </FormControl>
-                <FormDescription>Total number of times this coupon can be used globally.</FormDescription>
+                <FormDescription className="text-[9px] italic opacity-60">Total number of times this incentive can be redeemed globally.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <div className="flex justify-end gap-4 mt-4">
+          <div className="flex justify-end gap-6 pt-10 border-t border-border-subtle mt-4">
             <Button
               type="button"
               variant="outline"
               onClick={() => router.back()}
               disabled={isPending}
+              className="h-12 px-8 rounded-full border-border-subtle text-text-secondary hover:text-accent font-bold tracking-widest uppercase text-[10px] transition-all"
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isPending} className="bg-primary hover:bg-primary/90">
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="h-12 px-8 bg-accent text-white hover:bg-accent/90 rounded-full font-bold tracking-widest uppercase text-[10px] shadow-soft shadow-accent/20 transition-all hover:-translate-y-0.5 active:scale-95"
+            >
               {isPending
                 ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Creating...
+                      Archiving...
                     </>
                   )
                 : (
-                    'Create Coupon'
+                    'Finalize Incentive'
                   )}
             </Button>
           </div>

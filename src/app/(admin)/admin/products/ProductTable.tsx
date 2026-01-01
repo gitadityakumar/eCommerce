@@ -69,7 +69,7 @@ const columns: ColumnDef<Product>[] = [
     accessorKey: 'status',
     header: 'Status',
     cell: ({ row }) => (
-      <Badge variant="outline" className="capitalize">
+      <Badge variant="outline" className="capitalize font-bold text-[10px] tracking-widest border-border-subtle text-text-secondary">
         {row.original.status}
       </Badge>
     ),
@@ -113,16 +113,16 @@ export function ProductTable({ data }: { data: Product[] }) {
 
   return (
     <div className="flex flex-col gap-4 px-4 lg:px-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Products</h1>
-        <Button asChild size="sm">
-          <Link href="/admin/products/new">
-            <IconPlus className="mr-2 size-4" />
+      <div className="flex items-center justify-between p-4">
+        <h1 className="text-4xl font-light tracking-tighter text-text-primary font-playfair italic">Products</h1>
+        <Button asChild size="sm" className="bg-accent text-white hover:bg-accent/90 rounded-full px-6 font-bold tracking-widest uppercase text-[10px] shadow-soft shadow-accent/20 transition-all hover:-translate-y-0.5 active:scale-95">
+          <Link href="/admin/products/new" className="flex items-center gap-2">
+            <IconPlus className="size-3.5" />
             Add Product
           </Link>
         </Button>
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-2xl border border-border-subtle bg-surface/50 overflow-hidden shadow-soft">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
@@ -163,12 +163,13 @@ export function ProductTable({ data }: { data: Product[] }) {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-end space-x-2 p-4">
         <Button
           variant="outline"
           size="sm"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
+          className="rounded-full border-border-subtle text-text-secondary hover:text-accent hover:border-accent/40"
         >
           Previous
         </Button>
@@ -177,6 +178,7 @@ export function ProductTable({ data }: { data: Product[] }) {
           size="sm"
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
+          className="rounded-full border-border-subtle text-text-secondary hover:text-accent hover:border-accent/40"
         >
           Next
         </Button>

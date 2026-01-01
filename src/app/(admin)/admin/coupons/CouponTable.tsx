@@ -94,7 +94,7 @@ export function CouponTable({ data }: { data: Coupon[] }) {
       accessorKey: 'code',
       header: 'Code',
       cell: ({ row }) => (
-        <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
+        <code className="relative rounded bg-accent/5 px-2 py-1 font-bold tracking-widest text-[10px] text-accent border border-accent/10">
           {row.original.code}
         </code>
       ),
@@ -106,7 +106,7 @@ export function CouponTable({ data }: { data: Coupon[] }) {
         const value = Number.parseFloat(row.original.discountValue);
         const type = row.original.discountType;
         return (
-          <Badge variant="secondary">
+          <Badge variant="secondary" className="bg-surface border-border-subtle text-text-primary font-bold text-[10px] tracking-widest uppercase py-1">
             {type === 'percentage' ? `${value}%` : `₹${value.toFixed(2)}`}
           </Badge>
         );
@@ -127,16 +127,16 @@ export function CouponTable({ data }: { data: Coupon[] }) {
         const used = row.original.usedCount;
         const max = row.original.maxUsage;
         return (
-          <div className="flex flex-col gap-1">
-            <span className="text-sm">
+          <div className="flex flex-col gap-2">
+            <span className="text-[10px] font-bold tracking-widest text-text-secondary uppercase">
               {used}
               {' '}
               /
               {max || '∞'}
             </span>
-            <div className="w-24 h-1.5 bg-muted rounded-full overflow-hidden">
+            <div className="w-24 h-1 bg-border-subtle rounded-full overflow-hidden">
               <div
-                className="h-full bg-primary"
+                className="h-full bg-accent"
                 style={{ width: `${max ? Math.min((used / max) * 100, 100) : 0}%` }}
               />
             </div>
@@ -208,7 +208,7 @@ export function CouponTable({ data }: { data: Coupon[] }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-md border bg-card">
+      <div className="rounded-2xl border border-border-subtle bg-surface/50 overflow-hidden shadow-soft transition-all duration-500">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
@@ -249,12 +249,13 @@ export function CouponTable({ data }: { data: Coupon[] }) {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-end space-x-2 p-4">
         <Button
           variant="outline"
           size="sm"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
+          className="rounded-full border-border-subtle text-text-secondary hover:text-accent hover:border-accent/40"
         >
           Previous
         </Button>
@@ -263,6 +264,7 @@ export function CouponTable({ data }: { data: Coupon[] }) {
           size="sm"
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
+          className="rounded-full border-border-subtle text-text-secondary hover:text-accent hover:border-accent/40"
         >
           Next
         </Button>

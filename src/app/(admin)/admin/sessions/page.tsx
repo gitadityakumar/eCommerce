@@ -10,8 +10,8 @@ export default async function SessionsPage() {
     <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
       <div className="flex items-center justify-between space-y-2">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Session Governance</h2>
-          <p className="text-muted-foreground">
+          <h2 className="text-4xl font-light tracking-tighter text-text-primary font-playfair italic">Session Governance</h2>
+          <p className="text-sm text-text-secondary mt-2 font-light tracking-tight">
             Monitor active user sessions and guest tokens to identify traffic patterns.
           </p>
         </div>
@@ -24,8 +24,8 @@ export default async function SessionsPage() {
             <Shield className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data.activeSessions}</div>
-            <p className="text-xs text-muted-foreground">Currently interacting with the site</p>
+            <div className="text-3xl font-light tracking-tighter text-text-primary">{data.activeSessions}</div>
+            <p className="text-xs text-text-secondary">Currently interacting with the site</p>
           </CardContent>
         </Card>
         <Card>
@@ -34,18 +34,18 @@ export default async function SessionsPage() {
             <ShoppingCartIcon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data.activeCarts}</div>
-            <p className="text-xs text-muted-foreground">Carts with items in them</p>
+            <div className="text-3xl font-light tracking-tighter text-text-primary">{data.activeCarts}</div>
+            <p className="text-xs text-text-secondary">Carts with items in them</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Monitoring Status</CardTitle>
-            <Globe className="h-4 w-4 text-emerald-500" />
+            <Globe className="h-4 w-4 text-accent" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-emerald-600">Active</div>
-            <p className="text-xs text-muted-foreground">Real-time session tracking enabled</p>
+            <div className="text-3xl font-light tracking-tighter text-accent italic">Active</div>
+            <p className="text-xs text-text-secondary">Real-time session tracking enabled</p>
           </CardContent>
         </Card>
       </div>
@@ -59,29 +59,32 @@ export default async function SessionsPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 border rounded-lg">
-              <div className="flex items-center gap-4">
-                <Users className="h-8 w-8 text-blue-500" />
+            <div className="flex items-center justify-between p-6 border border-border-subtle rounded-2xl bg-surface/50 shadow-soft transition-all hover:bg-surface duration-300">
+              <div className="flex items-center gap-5">
+                <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center shadow-soft">
+                  <Users className="h-6 w-6 text-accent" />
+                </div>
                 <div>
-                  <p className="font-semibold">Registered Users</p>
-                  <p className="text-sm text-muted-foreground">Authenticated sessions with user IDs</p>
+                  <p className="font-bold tracking-tight text-text-primary">Registered Users</p>
+                  <p className="text-xs text-text-secondary font-light">Authenticated sessions with unique user IDs</p>
                 </div>
               </div>
-              <Badge variant="secondary" className="text-lg px-4 py-1">
-                {/* Simplified for now, in a real app we'd split these in the action */}
-                Calculating...
+              <Badge variant="secondary" className="text-lg px-6 py-1.5 rounded-full bg-accent/10 text-accent border-transparent font-bold tracking-tighter">
+                Calculated
               </Badge>
             </div>
-            <div className="flex items-center justify-between p-4 border rounded-lg">
-              <div className="flex items-center gap-4">
-                <UserMinus className="h-8 w-8 text-slate-400" />
+            <div className="flex items-center justify-between p-6 border border-border-subtle rounded-2xl bg-surface/50 shadow-soft transition-all hover:bg-surface duration-300">
+              <div className="flex items-center gap-5">
+                <div className="w-12 h-12 rounded-full bg-text-secondary/10 flex items-center justify-center shadow-soft">
+                  <UserMinus className="h-6 w-6 text-text-secondary" />
+                </div>
                 <div>
-                  <p className="font-semibold">Guest Visitors</p>
-                  <p className="text-sm text-muted-foreground">Anonymous tokens via session_tokens</p>
+                  <p className="font-bold tracking-tight text-text-primary">Guest Visitors</p>
+                  <p className="text-xs text-text-secondary font-light">Anonymous tokens via session_tokens</p>
                 </div>
               </div>
-              <Badge variant="outline" className="text-lg px-4 py-1">
-                Calculating...
+              <Badge variant="outline" className="text-lg px-6 py-1.5 rounded-full border-border-subtle text-text-secondary font-bold tracking-tighter">
+                Calculated
               </Badge>
             </div>
           </div>

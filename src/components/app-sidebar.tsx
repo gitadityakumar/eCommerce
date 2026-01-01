@@ -8,7 +8,6 @@ import {
   IconGift,
   IconHash,
   IconHistory,
-  IconInnerShadowTop,
   IconLink,
   IconPlus,
   IconSettings,
@@ -24,10 +23,6 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
 } from '@/components/ui/sidebar';
 
 const data = {
@@ -123,26 +118,26 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader className="border-b border-sidebar-border/50 px-4 py-4">
+      {/* <SidebarHeader className="border-b border-sidebar-border/50 px-4 py-4">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-0 hover:bg-transparent active:bg-transparent"
+              className="data-[slot=sidebar-menu-button]:p-0! hover:bg-transparent active:bg-transparent"
             >
-              <a href="/admin" className="flex items-center gap-3">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <IconInnerShadowTop className="size-5" />
+              <a href="/admin" className="flex items-center gap-3 group">
+                <div className="flex aspect-square size-10 items-center justify-center rounded-xl bg-accent text-white shadow-soft shadow-accent/20 group-hover:scale-105 transition-transform duration-500">
+                  <IconInnerShadowTop className="size-4" />
                 </div>
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="text-lg font-bold tracking-tight">Preety Twist</span>
-                  <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">Admin Panel</span>
+                <div className="flex flex-col gap-0.5 leading-none px-1">
+                  <span className="text-xl font-bold tracking-tighter text-text-primary">PreetyTwist</span>
+                  <span className="text-[10px] text-accent font-bold uppercase tracking-[0.2em]">Admin</span>
                 </div>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-      </SidebarHeader>
+      </SidebarHeader> */}
       <SidebarContent className="gap-0 py-2">
         <NavMain label="Quick Links" items={data.quickLinks} />
         <NavMain label="Catalog" items={data.catalog} />

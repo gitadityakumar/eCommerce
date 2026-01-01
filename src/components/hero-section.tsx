@@ -40,15 +40,17 @@ export default function HeroSection() {
       <div className="absolute inset-0 z-0">
         {/* 1. Image */}
         <div
-          className="absolute inset-0 bg-center bg-cover "
+          className="absolute inset-0 bg-center bg-cover transition-all duration-700"
           style={{
             backgroundImage: `url('https://ik.imagekit.io/nq9atqhjb/Generated%20Image%20November%2019,%202025%20-%2011_56AM.png?tr=w-2912,h-1632,f-webp')`,
           }}
         />
-        {/* 2. Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/80" />
-        {/* 3. Vignette */}
-        <div className="absolute inset-0 bg-gradient-radial from-transparent to-black/50" />
+        {/* 2. Responsive Overlays */}
+        {/* Dark mode: deep gradient. Light mode: subtle fade */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60 dark:from-black/60 dark:to-black/90 transition-opacity duration-500" />
+
+        {/* 3. Vignette - only in dark mode */}
+        <div className="absolute inset-0 bg-gradient-radial from-transparent to-black/40 opacity-0 dark:opacity-100 transition-opacity duration-500" />
       </div>
 
       {/* Content */}
@@ -58,11 +60,10 @@ export default function HeroSection() {
           initial="initial"
           animate="animate"
           transition={{ ...fadeInUp.transition, delay: 0.4 }}
-          className="mt-8 sm:mt-12 md:mt-16 font-[var(--font-playfair)] text-[clamp(3rem,14vw,8rem)] sm:text-[clamp(3.5rem,12vw,8rem)] md:text-[clamp(4.5rem,10vw,8rem)] lg:text-[clamp(5rem,8vw,8rem)] font-normal leading-[1.1] tracking-[-0.02em]"
-          style={{ textShadow: '0 4px 20px rgba(0,0,0,0.8)' }}
+          className="mt-8 sm:mt-12 md:mt-16 font-[var(--font-playfair)] text-[clamp(3.5rem,14vw,8.5rem)] font-normal leading-[1.05] tracking-[-0.03em] drop-shadow-2xl"
         >
           <span className="block text-white">Refined</span>
-          <span className="block bg-gradient-to-b from-white via-white to-neutral-400 bg-clip-text text-transparent">
+          <span className="block bg-gradient-to-b from-white via-neutral-100 to-neutral-400 bg-clip-text text-transparent">
             Elegance
           </span>
         </motion.h1>
@@ -72,7 +73,7 @@ export default function HeroSection() {
           initial="initial"
           animate="animate"
           transition={{ ...scaleX.transition, delay: 0.8 }}
-          className="w-[40px] sm:w-[60px] h-[1px] bg-[#D4AF37] my-6 sm:my-8 mx-auto opacity-80"
+          className="w-[60px] h-[1px] bg-accent my-8 mx-auto opacity-80"
         />
 
         <motion.p
@@ -80,7 +81,7 @@ export default function HeroSection() {
           initial="initial"
           animate="animate"
           transition={{ ...fadeIn.transition, delay: 1 }}
-          className="max-w-[90%] sm:max-w-[600px] mx-auto mb-8 sm:mb-10 md:mb-12 px-2 font-[var(--font-inter)] text-[clamp(1rem,4vw,1.25rem)] sm:text-[clamp(1.0625rem,3vw,1.25rem)] md:text-[clamp(1.125rem,2vw,1.25rem)]  leading-[1.6] tracking-[0.05em] text-[#E5E5E5] opacity-90"
+          className="max-w-[600px] mx-auto mb-12 px-4 font-[var(--font-inter)] text-lg leading-relaxed tracking-wide text-neutral-200 drop-shadow-md"
         >
           Experience the pinnacle of haute couture craftsmanship in our curated
           collections.
@@ -91,37 +92,22 @@ export default function HeroSection() {
           initial="initial"
           animate="animate"
           transition={{ ...fadeInUp.transition, delay: 1.2 }}
-          className="flex flex-col items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto sm:flex-row px-2 sm:px-0"
+          className="flex flex-col items-stretch sm:items-center gap-4 w-full sm:w-auto sm:flex-row"
         >
-          <Button className="group relative z-20 flex h-12 sm:h-14 w-full sm:w-auto items-center justify-center space-x-2 bg-gradient-to-r from-red-400 to-red-500 px-6 sm:px-8 py-3 text-sm font-bold leading-6 text-white transition-all duration-300 before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-r before:from-red-500 before:to-red-600 before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100 hover:shadow-2xl hover:shadow-red-500/40 hover:-translate-y-1 active:scale-95 overflow-hidden">
-            {/* Glare Effect */}
-            <div className="absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full transition-transform duration-1000 ease-out group-hover:translate-x-full" />
-            <span className="relative z-10 transition-transform duration-300 group-hover:scale-110 whitespace-nowrap font-[var(--font-montserrat)] tracking-[0.15em] uppercase text-sm md:text-base">
+          {/* CTA Primary: Accent color in light mode, bright in dark mode */}
+          <Button className="group relative z-20 flex h-14 items-center justify-center space-x-3 bg-accent px-10 py-4 text-white hover:bg-accent/90 transition-all duration-500 hover:shadow-[0_0_30px_oklch(0.6_0.2_25/0.4)] hover:-translate-y-1 active:scale-95 overflow-hidden rounded-full border-none shadow-soft">
+            <span className="relative z-10 font-[var(--font-montserrat)] tracking-[0.2em] uppercase text-sm font-bold">
               Discover
             </span>
-            {/* Ripple Effect */}
-            <div className="absolute inset-0 -z-10">
-              <div className="absolute inset-0 rounded-xl bg-white/20 scale-0 group-active:scale-100 transition-transform duration-300" />
-            </div>
+            <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
           </Button>
+
+          {/* CTA Secondary: Inverted */}
           <Button
             variant="outline"
-            className="group relative z-20 flex h-12 sm:h-14 w-full sm:w-auto items-center justify-center space-x-2 border-2 border-white/30 bg-transparent px-5 sm:px-6 py-3 text-sm font-bold leading-6 text-white backdrop-blur-sm transition-all duration-300 hover:border-white/60 hover:bg-white/10 hover:text-white hover:shadow-2xl hover:shadow-white/20 hover:-translate-y-1 active:scale-95"
+            className="group relative z-20 flex h-14 items-center justify-center space-x-3 border-2 border-white/30 bg-white/5 backdrop-blur-md px-10 py-4 text-white transition-all duration-500 hover:border-white hover:bg-white/10 hover:-translate-y-1 active:scale-95 rounded-full"
           >
-            <svg
-              className="h-5 w-5 sm:h-5 sm:w-5 md:h-6 md:w-6 transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110 flex-shrink-0"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 7l5 5m0 0l-5 5m5-5H6"
-              />
-            </svg>
-            <span className="transition-transform duration-300 group-hover:scale-105 whitespace-nowrap font-[var(--font-montserrat)] tracking-[0.15em] uppercase text-sm md:text-base">
+            <span className="font-[var(--font-montserrat)] tracking-[0.2em] uppercase text-sm font-bold">
               Learn More
             </span>
           </Button>
@@ -131,18 +117,18 @@ export default function HeroSection() {
       {/* Scroll Down Indicator */}
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: 0.6 }}
+        animate={{ opacity: 0.8 }}
         transition={{ delay: 2, duration: 1 }}
-        className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 hidden sm:flex"
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 hidden sm:flex"
       >
         <motion.div
-          className="flex flex-col items-center gap-2"
+          className="flex flex-col items-center gap-3"
           animate={scrollIndicatorBounce}
         >
-          <span className="font-[var(--font-montserrat)] text-[0.625rem] uppercase tracking-[0.2em] text-white opacity-80 whitespace-nowrap">
-            SCROLL DOWN
+          <span className="font-[var(--font-montserrat)] text-[0.625rem] uppercase tracking-[0.3em] text-white/80">
+            EXPLORE
           </span>
-          <div className="w-[1px] h-[40px] sm:h-[60px] bg-gradient-to-b from-transparent via-white to-transparent" />
+          <div className="w-[1px] h-[80px] bg-gradient-to-b from-accent via-white/50 to-transparent" />
         </motion.div>
       </motion.div>
     </section>

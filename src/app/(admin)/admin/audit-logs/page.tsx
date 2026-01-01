@@ -27,9 +27,9 @@ export default async function AuditLogsPage() {
     <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
       <div className="flex items-center justify-between space-y-2">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">System Audit Logs</h2>
-          <p className="text-muted-foreground">
-            Monitor all administrative changes and system activity for accountability.
+          <h2 className="text-4xl font-light tracking-tighter text-text-primary font-playfair italic">System Audit Logs</h2>
+          <p className="text-sm text-text-secondary mt-2 font-light tracking-tight">
+            Monitor all administrative changes and system activity with absolute transparency.
           </p>
         </div>
       </div>
@@ -45,21 +45,21 @@ export default async function AuditLogsPage() {
               <AccordionItem key={log.id} value={log.id}>
                 <AccordionTrigger className="hover:no-underline py-4">
                   <div className="flex items-center gap-4 text-left w-full">
-                    <div className="p-2 rounded-full bg-slate-100">
+                    <div className="p-2.5 rounded-full bg-accent/10 text-accent shadow-soft">
                       {getEntityIcon(log.entityType)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-sm">{log.adminName || 'System'}</span>
-                        <Badge variant="secondary" className="text-[10px] uppercase font-bold">
+                        <span className="font-bold tracking-tight text-text-primary">{log.adminName || 'System Archive'}</span>
+                        <Badge variant="secondary" className="text-[9px] uppercase font-bold tracking-widest bg-accent/5 text-accent border-transparent">
                           {log.action.replace('_', ' ')}
                         </Badge>
                       </div>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {log.entityType}
+                      <p className="text-[10px] text-text-secondary font-mono tracking-tighter opacity-70">
+                        {log.entityType.toUpperCase()}
                         {' '}
-                        ID:
-                        {log.entityId}
+                        REF: #
+                        {log.entityId.substring(0, 12)}
                       </p>
                     </div>
                     <div className="text-right pr-4">
@@ -73,10 +73,13 @@ export default async function AuditLogsPage() {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <div className="pt-4 pb-2 px-4 border-t bg-slate-50/50 rounded-b-md">
+                  <div className="pt-6 pb-4 px-6 border-t border-border-subtle bg-surface/50 rounded-b-2xl shadow-inner-soft">
                     <div className="mb-4">
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Data Modifications</h4>
-                      <AuditDiffViewer oldValue={log.oldValue} newValue={log.newValue} />
+                      <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-4">Historical Data Modifications</h4>
+                      <AuditDiffViewer
+                        oldValue={log.oldValue as Record<string, unknown> | null}
+                        newValue={log.newValue as Record<string, unknown> | null}
+                      />
                     </div>
                   </div>
                 </AccordionContent>

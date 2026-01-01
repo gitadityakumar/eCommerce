@@ -24,19 +24,19 @@ export function DashboardStockStatus({ items }: StockStatusProps) {
       <CardContent>
         <div className="space-y-4">
           {items.map(item => (
-            <div key={item.id} className="flex items-center gap-3">
-              <div className={`p-2 rounded-full ${item.available === 0 ? 'bg-rose-100' : 'bg-amber-100'}`}>
-                <AlertTriangle className={`h-4 w-4 ${item.available === 0 ? 'text-rose-600' : 'text-amber-600'}`} />
+            <div key={item.id} className="flex items-center gap-3 group">
+              <div className={`p-2 rounded-full transition-colors duration-300 ${item.available === 0 ? 'bg-destructive/10' : 'bg-accent/10'}`}>
+                <AlertTriangle className={`h-4 w-4 ${item.available === 0 ? 'text-destructive' : 'text-accent'}`} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{item.productName}</p>
-                <p className="text-xs text-muted-foreground truncate">{item.sku}</p>
+                <p className="text-sm font-medium truncate text-text-primary">{item.productName}</p>
+                <p className="text-xs text-text-secondary truncate">{item.sku}</p>
               </div>
               <div className="text-right flex flex-col items-end">
-                <span className={`text-sm font-bold ${item.available === 0 ? 'text-rose-600' : 'text-amber-600'}`}>
+                <span className={`text-sm font-bold tracking-tight ${item.available === 0 ? 'text-destructive' : 'text-accent'}`}>
                   {item.available}
                 </span>
-                <span className="text-[10px] text-muted-foreground uppercase">Left</span>
+                <span className="text-[10px] text-text-secondary/60 font-bold uppercase tracking-widest">Left</span>
               </div>
               <StockAdjustmentModal
                 variantId={item.id}

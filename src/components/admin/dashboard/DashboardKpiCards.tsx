@@ -24,28 +24,28 @@ export function DashboardKpiCards({ stats }: KpiCardsProps) {
       value: formatINR(stats.totalRevenue),
       description: 'Total earnings (excl. cancelled)',
       icon: IndianRupee,
-      color: 'text-emerald-500',
+      color: 'text-accent',
     },
     {
       title: 'Total Orders',
       value: stats.totalOrders.toLocaleString(),
       description: 'Lifetime orders placed',
       icon: ShoppingBag,
-      color: 'text-blue-500',
+      color: 'text-text-secondary',
     },
     {
       title: 'Total Customers',
       value: stats.totalCustomers.toLocaleString(),
       description: 'Registered customers',
       icon: Users,
-      color: 'text-violet-500',
+      color: 'text-accent/80',
     },
     {
       title: 'Active Sessions',
       value: stats.activeSessions.toLocaleString(),
       description: 'Users & Guests currently online',
       icon: Activity,
-      color: 'text-orange-500',
+      color: 'text-text-secondary/80',
     },
   ];
 
@@ -57,10 +57,10 @@ export function DashboardKpiCards({ stats }: KpiCardsProps) {
             <CardTitle className="text-sm font-medium">
               {item.title}
             </CardTitle>
-            <item.icon className={`h-4 w-4 ${item.color}`} />
+            <item.icon className={`h-4 w-4 ${item.color} opacity-80`} strokeWidth={1.5} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{item.value}</div>
+            <div className="text-3xl font-light tracking-tighter text-text-primary">{item.value}</div>
             <p className="text-xs text-muted-foreground">
               {item.description}
             </p>

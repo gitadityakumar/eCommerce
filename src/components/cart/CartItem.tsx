@@ -41,25 +41,31 @@ export function CartItem({ item }: CartItemProps) {
   };
 
   return (
-    <div className="flex gap-4 py-6 border-b last:border-0 items-start">
-      <div className="relative aspect-square w-24 sm:w-32 bg-secondary rounded-lg overflow-hidden shrink-0">
+    <div className="flex gap-6 py-8 border-b border-border-subtle last:border-0 items-start group">
+      <div className="relative aspect-square w-24 sm:w-32 bg-bg-secondary rounded-xl overflow-hidden shrink-0 shadow-soft">
         <Image
           src={image}
           alt={product.name}
           fill
-          className="object-cover"
+          className="object-cover group-hover:scale-110 transition-transform duration-700 opacity-90 dark:opacity-80 group-hover:opacity-100"
         />
       </div>
 
-      <div className="flex flex-col flex-1 gap-1">
-        <div className="flex justify-between items-start">
+      <div className="flex flex-col flex-1 min-h-[128px]">
+        <div className="flex justify-between items-start mb-2">
           <div>
-            <h3 className="font-semibold text-lg leading-tight text-foreground">{product.name}</h3>
-            <div className="text-sm text-muted-foreground flex gap-3 mt-1">
-              {variant.color && <span>{variant.color.name}</span>}
+            <h3 className="text-xl font-light text-text-primary tracking-tight leading-tight group-hover:text-accent transition-colors">{product.name}</h3>
+            <div className="text-xs text-text-secondary uppercase tracking-widest flex items-center gap-3 mt-2 opacity-70">
+              {variant.color && (
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: variant.color.hex || '#000' }} />
+                  <span>{variant.color.name}</span>
+                </div>
+              )}
               {variant.size && (
                 <span>
                   Size:
+                  {' '}
                   {variant.size.name}
                 </span>
               )}
@@ -68,39 +74,36 @@ export function CartItem({ item }: CartItemProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 -mr-2"
+            className="h-8 w-8 -mr-2 text-text-secondary hover:text-accent hover:bg-accent/10 transition-all rounded-full"
             onClick={handleRemove}
             disabled={isPending}
+            aria-label="Remove item"
           >
             <X className="h-4 w-4" />
           </Button>
         </div>
 
-        <div className="flex items-center justify-between mt-auto pt-2">
-          <div className="flex items-center border rounded-md h-9">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 rounded-none border-r"
+        <div className="mt-auto flex items-center justify-between">
+          <div className="flex items-center border border-border-subtle rounded-full overflow-hidden h-10 bg-surface">
+            <button
+              className="h-full px-3 text-text-secondary hover:bg-bg-secondary hover:text-text-primary disabled:opacity-30 transition-all"
               onClick={() => handleUpdateQuantity(item.quantity - 1)}
               disabled={isPending || item.quantity <= 1}
             >
               <Minus className="h-3 w-3" />
-            </Button>
-            <span className="w-10 text-center text-sm tabular-nums">
+            </button>
+            <span className="w-8 text-center text-xs font-medium tabular-nums text-text-primary">
               {item.quantity}
             </span>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 rounded-none border-l"
+            <button
+              className="h-full px-3 text-text-secondary hover:bg-bg-secondary hover:text-text-primary disabled:opacity-30 transition-all"
               onClick={() => handleUpdateQuantity(item.quantity + 1)}
               disabled={isPending}
             >
               <Plus className="h-3 w-3" />
-            </Button>
+            </button>
           </div>
-          <div className="font-bold text-lg">
+          <div className="text-lg font-medium text-text-primary">
             {formatINR(Number(variant.price) * item.quantity)}
           </div>
         </div>

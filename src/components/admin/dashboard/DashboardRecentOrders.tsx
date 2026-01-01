@@ -24,15 +24,15 @@ export function DashboardRecentOrders({ orders }: RecentOrdersProps) {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'delivered':
-        return 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100';
+        return 'bg-accent/10 text-accent hover:bg-accent/20 border-transparent';
       case 'shipped':
-        return 'bg-blue-100 text-blue-700 hover:bg-blue-100';
+        return 'bg-text-secondary/10 text-text-secondary hover:bg-text-secondary/20 border-transparent';
       case 'processing':
-        return 'bg-amber-100 text-amber-700 hover:bg-amber-100';
+        return 'bg-text-secondary/5 text-text-secondary hover:bg-text-secondary/10 border-transparent italic';
       case 'cancelled':
-        return 'bg-rose-100 text-rose-700 hover:bg-rose-100';
+        return 'bg-destructive/10 text-destructive hover:bg-destructive/20 border-transparent';
       default:
-        return 'bg-slate-100 text-slate-700 hover:bg-slate-100';
+        return 'bg-surface text-text-secondary hover:bg-surface border-border-subtle';
     }
   };
 

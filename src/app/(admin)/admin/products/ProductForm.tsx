@@ -227,17 +227,17 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit, onFormError)} className="space-y-8">
           <Tabs defaultValue="general" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-8">
-              <TabsTrigger value="general">General Info</TabsTrigger>
-              <TabsTrigger value="inventory">Inventory & Pricing</TabsTrigger>
-              <TabsTrigger value="media">Media</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-3 mb-10 h-14 p-1 bg-surface/50 border border-border-subtle rounded-2xl">
+              <TabsTrigger value="general" className="rounded-xl data-[state=active]:bg-surface data-[state=active]:text-accent data-[state=active]:shadow-soft font-bold tracking-widest uppercase text-[10px]">General Info</TabsTrigger>
+              <TabsTrigger value="inventory" className="rounded-xl data-[state=active]:bg-surface data-[state=active]:text-accent data-[state=active]:shadow-soft font-bold tracking-widest uppercase text-[10px]">Inventory & Pricing</TabsTrigger>
+              <TabsTrigger value="media" className="rounded-xl data-[state=active]:bg-surface data-[state=active]:text-accent data-[state=active]:shadow-soft font-bold tracking-widest uppercase text-[10px]">Media</TabsTrigger>
             </TabsList>
 
             <TabsContent value="general" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Basic Information</CardTitle>
-                  <CardDescription>All the standard details for your product.</CardDescription>
+              <Card className="border-border-subtle bg-surface/50 shadow-soft rounded-2xl overflow-hidden">
+                <CardHeader className="border-b border-border-subtle bg-surface/30 py-8">
+                  <CardTitle className="text-2xl font-light tracking-tighter text-text-primary font-playfair italic">Basic Information</CardTitle>
+                  <CardDescription className="text-xs text-text-secondary font-light">The foundational silhouette details of your creation.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -246,9 +246,9 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Product Name</FormLabel>
+                          <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Identifier Name</FormLabel>
                           <FormControl>
-                            <Input placeholder="Nike Air Max 270" {...field} />
+                            <Input placeholder="E.g. Zenith Chronograph" className="h-14 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -259,9 +259,9 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                       name="slug"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Slug</FormLabel>
+                          <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Archival Link</FormLabel>
                           <FormControl>
-                            <Input placeholder="nike-air-max-270" {...field} />
+                            <Input placeholder="zenith-chronograph" className="h-14 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-mono text-xs tracking-wider" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -274,9 +274,13 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Description</FormLabel>
+                        <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Description</FormLabel>
                         <FormControl>
-                          <Input placeholder="The Nike Air Max 270 is inspired by two icons..." {...field} />
+                          <Input
+                            placeholder="An editorial narrative of your product..."
+                            className="h-14 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -289,16 +293,16 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                       name="categoryId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Category</FormLabel>
+                          <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Spectrum Category</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select category" />
+                              <SelectTrigger className="h-14 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all">
+                                <SelectValue placeholder="Instate Category" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent>
+                            <SelectContent className="bg-surface border-border-subtle rounded-xl shadow-soft">
                               {categories.map(cat => (
-                                <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                                <SelectItem key={cat.id} value={cat.id} className="text-sm font-light">{cat.name}</SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
@@ -311,16 +315,16 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                       name="brandId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Brand</FormLabel>
+                          <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Noble House</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select brand" />
+                              <SelectTrigger className="h-14 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all">
+                                <SelectValue placeholder="Instate Brand" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent>
+                            <SelectContent className="bg-surface border-border-subtle rounded-xl shadow-soft">
                               {brands.map(brand => (
-                                <SelectItem key={brand.id} value={brand.id}>{brand.name}</SelectItem>
+                                <SelectItem key={brand.id} value={brand.id} className="text-sm font-light">{brand.name}</SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
@@ -333,16 +337,16 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                       name="genderId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Gender</FormLabel>
+                          <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Archetype</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select gender" />
+                              <SelectTrigger className="h-14 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all">
+                                <SelectValue placeholder="Instate Archetype" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent>
+                            <SelectContent className="bg-surface border-border-subtle rounded-xl shadow-soft">
                               {genders.map(g => (
-                                <SelectItem key={g.id} value={g.id}>{g.label}</SelectItem>
+                                <SelectItem key={g.id} value={g.id} className="text-sm font-light">{g.label}</SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
@@ -357,17 +361,17 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                     name="status"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Status</FormLabel>
+                        <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Status</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select status" />
+                            <SelectTrigger className="h-14 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all">
+                              <SelectValue placeholder="Current Phase" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
-                            <SelectItem value="draft">Draft</SelectItem>
-                            <SelectItem value="published">Published</SelectItem>
-                            <SelectItem value="archived">Archived</SelectItem>
+                          <SelectContent className="bg-surface border-border-subtle rounded-xl shadow-soft">
+                            <SelectItem value="draft" className="text-[10px] font-bold tracking-widest uppercase">Draft Archive</SelectItem>
+                            <SelectItem value="published" className="text-[10px] font-bold tracking-widest uppercase text-accent">Published Editorial</SelectItem>
+                            <SelectItem value="archived" className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Hidden Archive</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -379,16 +383,14 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
             </TabsContent>
 
             <TabsContent value="inventory" className="space-y-6">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0">
+              <Card className="border-border-subtle bg-surface/50 shadow-soft rounded-2xl overflow-hidden">
+                <CardHeader className="flex flex-row items-center justify-between border-b border-border-subtle bg-surface/30 py-6">
                   <div>
-                    <CardTitle>Variants</CardTitle>
-                    <CardDescription>Manage SKUs, pricing, and stock for each variation.</CardDescription>
+                    <CardTitle className="text-2xl font-light tracking-tighter text-text-primary font-playfair italic">Archival Variants</CardTitle>
+                    <CardDescription className="text-xs text-text-secondary font-light">Manage SKUs, pricing, and stock for each variation.</CardDescription>
                   </div>
                   <Button
                     type="button"
-                    variant="outline"
-                    size="sm"
                     onClick={() => appendVariant({
                       sku: '',
                       price: '',
@@ -399,23 +401,24 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                       sizeId: null,
                       dimensions: null,
                     })}
+                    className="bg-accent text-white hover:bg-accent/90 rounded-full px-6 font-bold tracking-widest uppercase text-[10px] shadow-soft shadow-accent/20 h-10 transition-all hover:-translate-y-0.5"
                   >
-                    <IconCirclePlus className="mr-2 size-4" />
-                    Add Variant
+                    <IconCirclePlus className="mr-2 size-3.5" strokeWidth={3} />
+                    Instate Variant
                   </Button>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {variantFields.map((field, index) => (
-                    <div key={field.id} className="space-y-4 p-4 border rounded-lg relative">
+                    <div key={field.id} className="space-y-6 p-8 bg-background/30 border border-border-subtle rounded-2xl relative group/variant transition-all hover:bg-background/40">
                       {variantFields.length > 1 && (
                         <Button
                           type="button"
                           variant="ghost"
                           size="icon"
                           onClick={() => removeVariant(index)}
-                          className="absolute top-2 right-2"
+                          className="absolute top-4 right-4 text-text-secondary hover:text-rose-500 hover:bg-rose-500/10 rounded-full transition-all opacity-0 group-hover/variant:opacity-100"
                         >
-                          <IconTrash className="size-4 text-destructive" />
+                          <IconTrash className="size-4" />
                         </Button>
                       )}
 
@@ -425,9 +428,9 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                           name={`variants.${index}.sku`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>SKU</FormLabel>
+                              <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Archival SKU</FormLabel>
                               <FormControl>
-                                <Input placeholder="NIKE-AM270-BLK-9" {...field} />
+                                <Input placeholder="E.g. NOIR-AM270-BLK" className="h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-mono text-[10px] tracking-widest" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -438,9 +441,9 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                           name={`variants.${index}.price`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Price (INR)</FormLabel>
+                              <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Valuation (INR)</FormLabel>
                               <FormControl>
-                                <Input type="number" step="0.01" min="0" placeholder="9999.00" {...field} />
+                                <Input type="number" step="0.01" min="0" placeholder="0.00" className="h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -451,9 +454,9 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                           name={`variants.${index}.availableStock`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Initial Stock</FormLabel>
+                              <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Initial Reserve</FormLabel>
                               <FormControl>
-                                <Input placeholder="0" {...field} value={field.value ?? ''} />
+                                <Input placeholder="0" className="h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light" {...field} value={field.value ?? ''} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -467,20 +470,20 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                           name={`variants.${index}.colorId`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Color (Optional)</FormLabel>
+                              <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Hue Selection (Optional)</FormLabel>
                               <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
                                 <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select color" />
+                                  <SelectTrigger className="h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light">
+                                    <SelectValue placeholder="Select hue" />
                                   </SelectTrigger>
                                 </FormControl>
-                                <SelectContent>
-                                  <SelectItem value="none">None</SelectItem>
+                                <SelectContent className="bg-surface border-border-subtle rounded-xl shadow-soft">
+                                  <SelectItem value="none" className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">No Hue</SelectItem>
                                   {colors.map(color => (
-                                    <SelectItem key={color.id} value={color.id}>
-                                      <div className="flex items-center gap-2">
+                                    <SelectItem key={color.id} value={color.id} className="text-sm font-light">
+                                      <div className="flex items-center gap-3">
                                         <div
-                                          className="size-4 rounded-full border"
+                                          className="size-3.5 rounded-full border border-border-subtle shadow-sm"
                                           style={{ backgroundColor: color.hexCode }}
                                         />
                                         {color.name}
@@ -498,17 +501,17 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                           name={`variants.${index}.sizeId`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Size (Optional)</FormLabel>
+                              <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Dimensional Scale (Optional)</FormLabel>
                               <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
                                 <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select size" />
+                                  <SelectTrigger className="h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light">
+                                    <SelectValue placeholder="Select scale" />
                                   </SelectTrigger>
                                 </FormControl>
-                                <SelectContent>
-                                  <SelectItem value="none">None</SelectItem>
+                                <SelectContent className="bg-surface border-border-subtle rounded-xl shadow-soft">
+                                  <SelectItem value="none" className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">No Scale</SelectItem>
                                   {sizes.map(size => (
-                                    <SelectItem key={size.id} value={size.id}>{size.name}</SelectItem>
+                                    <SelectItem key={size.id} value={size.id} className="text-sm font-light">{size.name}</SelectItem>
                                   ))}
                                 </SelectContent>
                               </Select>
@@ -524,9 +527,9 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                           name={`variants.${index}.weight`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Weight (kg) (Optional)</FormLabel>
+                              <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Mass (kg)</FormLabel>
                               <FormControl>
-                                <Input type="number" step="0.01" min="0" {...field} value={field.value ?? ''} />
+                                <Input type="number" step="0.01" min="0" className="h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light" {...field} value={field.value ?? ''} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -537,9 +540,9 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                           name={`variants.${index}.dimensions.length`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Length (Optional)</FormLabel>
+                              <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Length</FormLabel>
                               <FormControl>
-                                <Input type="number" min="0" {...field} value={field.value ?? ''} />
+                                <Input type="number" min="0" className="h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light" {...field} value={field.value ?? ''} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -550,9 +553,9 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                           name={`variants.${index}.dimensions.width`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Width (Optional)</FormLabel>
+                              <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Width</FormLabel>
                               <FormControl>
-                                <Input type="number" min="0" {...field} value={field.value ?? ''} />
+                                <Input type="number" min="0" className="h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light" {...field} value={field.value ?? ''} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -563,9 +566,9 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                           name={`variants.${index}.dimensions.height`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Height (Optional)</FormLabel>
+                              <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Height</FormLabel>
                               <FormControl>
-                                <Input type="number" min="0" {...field} value={field.value ?? ''} />
+                                <Input type="number" min="0" className="h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light" {...field} value={field.value ?? ''} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -579,10 +582,10 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
             </TabsContent>
 
             <TabsContent value="media" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Product Media</CardTitle>
-                  <CardDescription>Add images for your product. The first one will be the primary image.</CardDescription>
+              <Card className="border-border-subtle bg-surface/50 shadow-soft rounded-2xl overflow-hidden">
+                <CardHeader className="border-b border-border-subtle bg-surface/30 py-8">
+                  <CardTitle className="text-2xl font-light tracking-tighter text-text-primary font-playfair italic">Product Media</CardTitle>
+                  <CardDescription className="text-xs text-text-secondary font-light">Add images for your product. The first one will be the primary image.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <SortableImageUpload
@@ -611,17 +614,22 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
             </TabsContent>
           </Tabs>
 
-          <div className="flex justify-end gap-4">
+          <div className="flex justify-end gap-6 pt-10 border-t border-border-subtle mt-10">
             <Button
               type="button"
               variant="outline"
               onClick={() => router.back()}
               disabled={isPending}
+              className="h-14 px-10 rounded-full border-border-subtle text-text-secondary hover:text-accent font-bold tracking-widest uppercase text-[10px] transition-all"
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isPending}>
-              {isPending ? 'Creating...' : 'Create Product'}
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="h-14 px-10 bg-accent text-white hover:bg-accent/90 rounded-full font-bold tracking-widest uppercase text-[10px] shadow-soft shadow-accent/20 transition-all hover:-translate-y-0.5"
+            >
+              {isPending ? 'Curating...' : 'Create Masterpiece'}
             </Button>
           </div>
         </form>

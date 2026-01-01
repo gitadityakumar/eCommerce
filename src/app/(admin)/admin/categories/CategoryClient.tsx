@@ -74,22 +74,22 @@ export function CategoryClient({ initialCategories }: CategoryClientProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-muted/30 p-4 rounded-lg border">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-surface/50 p-8 rounded-2xl border border-border-subtle shadow-soft backdrop-blur-md transition-all duration-500">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <IconLayoutList className="text-primary" />
+          <h1 className="text-4xl font-light tracking-tighter text-text-primary font-playfair italic flex items-center gap-3">
+            <IconLayoutList className="text-accent size-8" strokeWidth={1.5} />
             Categories Management
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Manage your product hierarchy and taxonomy.
+          <p className="text-sm text-text-secondary mt-2 font-light tracking-tight">
+            Curate your taxonomy with editorial precision.
           </p>
         </div>
 
-        <div className="relative w-full md:w-72">
-          <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+        <div className="relative w-full md:w-80 group">
+          <IconSearch className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-text-secondary group-focus-within:text-accent transition-colors" />
           <Input
-            placeholder="Search categories..."
-            className="pl-9 bg-background"
+            placeholder="Search silhouettes..."
+            className="pl-11 bg-background/50 border-border-subtle rounded-full h-11 focus:ring-accent/20 focus:border-accent/40 transition-all placeholder:text-text-secondary/50 placeholder:font-light"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
           />

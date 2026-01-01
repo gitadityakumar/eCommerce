@@ -57,11 +57,11 @@ export function DashboardDateRangePicker({
             id="date"
             variant="outline"
             className={cn(
-              'w-[300px] justify-start text-left font-normal',
-              !date && 'text-muted-foreground',
+              'w-[300px] justify-start text-left font-medium rounded-full border-border-subtle bg-surface/50 hover:bg-accent/5 hover:text-accent hover:border-accent/40 transition-all duration-300',
+              !date && 'text-text-secondary',
             )}
           >
-            <CalendarIcon className="mr-2 h-4 w-4" />
+            <CalendarIcon className="mr-2 h-4 w-4 opacity-60" />
             {date?.from
               ? (
                   date.to

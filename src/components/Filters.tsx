@@ -64,17 +64,17 @@ export default function Filters({ genders, sizes, colors }: FiltersProps) {
     children: import('react').ReactNode;
     k: GroupKey;
   }) => (
-    <div className="border-b border-light-300 dark:border-gray-700 py-4">
+    <div className="border-b border-border-subtle py-6 last:border-0">
       <button
-        className="flex w-full items-center justify-between text-body-medium text-dark-900 dark:text-white hover:text-dark-700 dark:hover:text-gray-300"
+        className="flex w-full items-center justify-between text-sm font-medium tracking-wide text-text-primary hover:text-accent transition-colors"
         onClick={() => setExpanded(s => ({ ...s, [k]: !s[k] }))}
         aria-expanded={expanded[k]}
         aria-controls={`${k}-section`}
       >
         <span>{title}</span>
-        <span className="text-caption text-dark-700 dark:text-gray-400">{expanded[k] ? '−' : '+'}</span>
+        <span className="text-text-secondary opacity-50">{expanded[k] ? '−' : '+'}</span>
       </button>
-      <div id={`${k}-section`} className={`${expanded[k] ? 'mt-3 block' : 'hidden'}`}>
+      <div id={`${k}-section`} className={`${expanded[k] ? 'mt-4 block' : 'hidden'}`}>
         {children}
       </div>
     </div>
@@ -82,41 +82,41 @@ export default function Filters({ genders, sizes, colors }: FiltersProps) {
 
   return (
     <>
-      <div className="mb-4 flex items-center justify-between md:hidden">
+      <div className="mb-6 flex items-center justify-between md:hidden px-4 py-3 bg-surface rounded-xl border border-border-subtle">
         <button
-          className="rounded-md border border-light-300 dark:border-gray-700 px-3 py-2 text-body-medium dark:text-white hover:bg-light-100 dark:hover:bg-gray-800"
+          className="text-sm font-medium text-text-primary hover:text-accent transition-colors"
           onClick={() => setOpen(true)}
           aria-haspopup="dialog"
         >
           Filters
         </button>
-        <button className="text-caption text-dark-700 dark:text-gray-400 underline hover:text-dark-900 dark:hover:text-white" onClick={clearAll}>
+        <button className="text-xs text-text-secondary underline hover:text-accent transition-colors" onClick={clearAll}>
           Clear all
         </button>
       </div>
 
-      <aside className="sticky top-20 hidden h-fit min-w-60 rounded-lg border border-light-300 dark:border-gray-700 bg-light-100 dark:bg-gray-800 p-4 md:block">
-        <div className="mb-2 flex items-center justify-between">
-          <h3 className="text-body-medium text-dark-900 dark:text-white">Filters</h3>
-          <button className="text-caption text-dark-700 dark:text-gray-400 underline hover:text-dark-900 dark:hover:text-white" onClick={clearAll}>
+      <aside className="sticky top-24 hidden h-fit min-w-64 rounded-2xl border border-border-subtle bg-surface p-6 shadow-soft md:block">
+        <div className="mb-6 flex items-center justify-between border-b border-border-subtle pb-4">
+          <h3 className="text-lg font-light tracking-tight text-text-primary">Refine</h3>
+          <button className="text-xs text-text-secondary underline hover:text-accent transition-colors" onClick={clearAll}>
             Clear all
           </button>
         </div>
 
         <Group title={`Gender ${activeCounts.gender ? `(${activeCounts.gender})` : ''}`} k="gender">
-          <ul className="space-y-2">
+          <ul className="space-y-3">
             {genders.map((g) => {
               const checked = getArrayParam(search, 'gender').includes(g.slug);
               return (
-                <li key={g.id} className="flex items-center gap-2">
+                <li key={g.id} className="flex items-center gap-3 group cursor-pointer">
                   <input
                     id={`gender-${g.slug}`}
                     type="checkbox"
-                    className="h-4 w-4 accent-dark-900"
+                    className="h-4 w-4 rounded border-border-subtle bg-background accent-accent transition-all cursor-pointer"
                     checked={checked}
                     onChange={() => onToggle('gender' as GroupKey, g.slug)}
                   />
-                  <label htmlFor={`gender-${g.slug}`} className="text-body text-dark-900 dark:text-gray-200">
+                  <label htmlFor={`gender-${g.slug}`} className="text-sm text-text-secondary group-hover:text-text-primary transition-colors cursor-pointer">
                     {g.label}
                   </label>
                 </li>
@@ -126,20 +126,21 @@ export default function Filters({ genders, sizes, colors }: FiltersProps) {
         </Group>
 
         <Group title={`Size ${activeCounts.size ? `(${activeCounts.size})` : ''}`} k="size">
-          <ul className="grid grid-cols-5 gap-2">
+          <ul className="grid grid-cols-4 gap-2">
             {sizes.map((s) => {
               const checked = getArrayParam(search, 'size').includes(s.slug);
               return (
                 <li key={s.id}>
-                  <label className="inline-flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      className="h-4 w-4 accent-dark-900 dark:accent-gray-300"
-                      checked={checked}
-                      onChange={() => onToggle('size', s.slug)}
-                    />
-                    <span className="text-body dark:text-gray-200">{s.name}</span>
-                  </label>
+                  <button
+                    onClick={() => onToggle('size', s.slug)}
+                    className={`w-full flex items-center justify-center rounded-lg border py-2 text-xs transition-all ${
+                      checked
+                        ? 'bg-accent border-accent text-white shadow-soft shadow-accent/20'
+                        : 'border-border-subtle text-text-secondary hover:border-accent/40 hover:text-text-primary'
+                    }`}
+                  >
+                    {s.name}
+                  </button>
                 </li>
               );
             })}
@@ -147,19 +148,19 @@ export default function Filters({ genders, sizes, colors }: FiltersProps) {
         </Group>
 
         <Group title={`Color ${activeCounts.color ? `(${activeCounts.color})` : ''}`} k="color">
-          <ul className="grid grid-cols-2 gap-2">
+          <ul className="grid grid-cols-2 gap-3">
             {colors.map((c) => {
               const checked = getArrayParam(search, 'color').includes(c.slug);
               return (
-                <li key={c.id} className="flex items-center gap-2">
+                <li key={c.id} className="flex items-center gap-3 group cursor-pointer">
                   <input
                     id={`color-${c.slug}`}
                     type="checkbox"
-                    className="h-4 w-4 accent-dark-900"
+                    className="h-4 w-4 rounded border-border-subtle bg-background accent-accent transition-all cursor-pointer"
                     checked={checked}
                     onChange={() => onToggle('color', c.slug)}
                   />
-                  <label htmlFor={`color-${c.slug}`} className="text-body capitalize dark:text-gray-200">
+                  <label htmlFor={`color-${c.slug}`} className="text-sm text-text-secondary group-hover:text-text-primary capitalize transition-colors cursor-pointer">
                     {c.name}
                   </label>
                 </li>
@@ -169,19 +170,19 @@ export default function Filters({ genders, sizes, colors }: FiltersProps) {
         </Group>
 
         <Group title={`Price ${activeCounts.price ? `(${activeCounts.price})` : ''}`} k="price">
-          <ul className="space-y-2">
+          <ul className="space-y-3">
             {PRICES.map((p) => {
               const checked = getArrayParam(search, 'price').includes(p.id);
               return (
-                <li key={p.id} className="flex items-center gap-2">
+                <li key={p.id} className="flex items-center gap-3 group cursor-pointer">
                   <input
                     id={`price-${p.id}`}
                     type="checkbox"
-                    className="h-4 w-4 accent-dark-900"
+                    className="h-4 w-4 rounded border-border-subtle bg-background accent-accent transition-all cursor-pointer"
                     checked={checked}
                     onChange={() => onToggle('price', p.id)}
                   />
-                  <label htmlFor={`price-${p.id}`} className="text-body dark:text-gray-200">
+                  <label htmlFor={`price-${p.id}`} className="text-sm text-text-secondary group-hover:text-text-primary transition-colors cursor-pointer">
                     {p.label}
                   </label>
                 </li>
@@ -194,33 +195,32 @@ export default function Filters({ genders, sizes, colors }: FiltersProps) {
       {open && (
         <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true">
           <div
-            className="absolute inset-0 bg-black/40 dark:bg-black/60"
+            className="absolute inset-0 bg-background/80 backdrop-blur-sm"
             aria-hidden="true"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute inset-y-0 left-0 w-80 max-w-[80%] overflow-auto bg-light-100 dark:bg-gray-800 p-4 shadow-xl">
-            <div className="mb-2 flex items-center justify-between">
-              <h3 className="text-body-medium dark:text-white">Filters</h3>
-              <button className="text-caption text-dark-700 dark:text-gray-400 underline hover:text-dark-900 dark:hover:text-white" onClick={clearAll}>
+          <div className="absolute inset-y-0 left-0 w-80 max-w-[85%] overflow-auto bg-surface p-8 shadow-2xl transition-all duration-300">
+            <div className="mb-8 flex items-center justify-between border-b border-border-subtle pb-6">
+              <h3 className="text-2xl font-light tracking-tight text-text-primary">Filters</h3>
+              <button className="text-xs text-text-secondary underline hover:text-accent transition-colors" onClick={clearAll}>
                 Clear all
               </button>
             </div>
-            {/* Reuse the same desktop content by rendering the component again */}
             <div className="md:hidden">
               <Group title="Gender" k="gender">
-                <ul className="space-y-2">
+                <ul className="space-y-4">
                   {genders.map((g) => {
                     const checked = getArrayParam(search, 'gender').includes(g.slug);
                     return (
-                      <li key={g.id} className="flex items-center gap-2">
+                      <li key={g.id} className="flex items-center gap-4 group">
                         <input
                           id={`m-gender-${g.slug}`}
                           type="checkbox"
-                          className="h-4 w-4 accent-dark-900"
+                          className="h-5 w-5 rounded border-border-subtle bg-background accent-accent transition-all"
                           checked={checked}
                           onChange={() => onToggle('gender', g.slug)}
                         />
-                        <label htmlFor={`m-gender-${g.slug}`} className="text-body">
+                        <label htmlFor={`m-gender-${g.slug}`} className="text-base text-text-secondary group-hover:text-text-primary transition-colors">
                           {g.label}
                         </label>
                       </li>
@@ -230,20 +230,21 @@ export default function Filters({ genders, sizes, colors }: FiltersProps) {
               </Group>
 
               <Group title="Size" k="size">
-                <ul className="grid grid-cols-4 gap-2">
+                <ul className="grid grid-cols-4 gap-3">
                   {sizes.map((s) => {
                     const checked = getArrayParam(search, 'size').includes(s.slug);
                     return (
                       <li key={s.id}>
-                        <label className="inline-flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            className="h-4 w-4 accent-dark-900"
-                            checked={checked}
-                            onChange={() => onToggle('size', s.slug)}
-                          />
-                          <span className="text-body">{s.name}</span>
-                        </label>
+                        <button
+                          onClick={() => onToggle('size', s.slug)}
+                          className={`w-full flex items-center justify-center rounded-lg border py-3 text-sm transition-all ${
+                            checked
+                              ? 'bg-accent border-accent text-white shadow-soft'
+                              : 'border-border-subtle text-text-secondary'
+                          }`}
+                        >
+                          {s.name}
+                        </button>
                       </li>
                     );
                   })}
@@ -251,19 +252,19 @@ export default function Filters({ genders, sizes, colors }: FiltersProps) {
               </Group>
 
               <Group title="Color" k="color">
-                <ul className="grid grid-cols-2 gap-2">
+                <ul className="grid grid-cols-2 gap-4">
                   {colors.map((c) => {
                     const checked = getArrayParam(search, 'color').includes(c.slug);
                     return (
-                      <li key={c.id} className="flex items-center gap-2">
+                      <li key={c.id} className="flex items-center gap-4 group">
                         <input
                           id={`m-color-${c.slug}`}
                           type="checkbox"
-                          className="h-4 w-4 accent-dark-900"
+                          className="h-5 w-5 rounded border-border-subtle bg-background accent-accent transition-all"
                           checked={checked}
                           onChange={() => onToggle('color', c.slug)}
                         />
-                        <label htmlFor={`m-color-${c.slug}`} className="text-body capitalize">
+                        <label htmlFor={`m-color-${c.slug}`} className="text-base text-text-secondary group-hover:text-text-primary capitalize transition-colors">
                           {c.name}
                         </label>
                       </li>
@@ -273,19 +274,19 @@ export default function Filters({ genders, sizes, colors }: FiltersProps) {
               </Group>
 
               <Group title="Price" k="price">
-                <ul className="space-y-2">
+                <ul className="space-y-4">
                   {PRICES.map((p) => {
                     const checked = getArrayParam(search, 'price').includes(p.id);
                     return (
-                      <li key={p.id} className="flex items-center gap-2">
+                      <li key={p.id} className="flex items-center gap-4 group">
                         <input
                           id={`m-price-${p.id}`}
                           type="checkbox"
-                          className="h-4 w-4 accent-dark-900"
+                          className="h-5 w-5 rounded border-border-subtle bg-background accent-accent transition-all"
                           checked={checked}
                           onChange={() => onToggle('price', p.id)}
                         />
-                        <label htmlFor={`m-price-${p.id}`} className="text-body">
+                        <label htmlFor={`m-price-${p.id}`} className="text-base text-text-secondary group-hover:text-text-primary transition-colors">
                           {p.label}
                         </label>
                       </li>
@@ -294,6 +295,12 @@ export default function Filters({ genders, sizes, colors }: FiltersProps) {
                 </ul>
               </Group>
             </div>
+            <button
+              onClick={() => setOpen(false)}
+              className="w-full mt-12 bg-accent text-white py-4 rounded-full text-sm font-bold tracking-widest uppercase hover:bg-accent/90 transition-all shadow-soft active:scale-95"
+            >
+              Apply Filters
+            </button>
           </div>
         </div>
       )}

@@ -58,22 +58,24 @@ export function CategoryList({ categories, onEdit, onDelete, searchQuery }: Cate
 
   if (filteredTree.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed rounded-lg bg-muted/50">
-        <IconFolder className="size-12 mb-4 text-muted-foreground" />
-        <h3 className="text-lg font-medium">No categories found</h3>
-        <p className="text-sm text-muted-foreground mt-1">
-          {searchQuery ? 'Try searching for something else.' : 'Get started by creating your first category.'}
+      <div className="flex flex-col items-center justify-center p-16 text-center border border-border-subtle border-dashed rounded-3xl bg-surface/30 backdrop-blur-sm shadow-soft">
+        <div className="w-16 h-16 rounded-full bg-accent/5 flex items-center justify-center mb-6 shadow-soft transition-transform duration-500 hover:scale-110">
+          <IconFolder className="size-8 text-accent/60" />
+        </div>
+        <h3 className="text-xl font-light tracking-tight text-text-primary font-playfair italic">No categories found</h3>
+        <p className="text-sm text-text-secondary mt-2 max-w-xs font-light">
+          {searchQuery ? 'Your search returned no results. Try another silhouette.' : 'Your archive is currently empty. Begin by adding a new collection category.'}
         </p>
       </div>
     );
   }
 
   return (
-    <div className="divide-y border rounded-lg overflow-hidden bg-card">
-      <div className="grid grid-cols-[1fr_200px_120px] gap-4 p-4 font-medium bg-muted/50 text-sm">
-        <div>Name</div>
+    <div className="divide-y divide-border-subtle border border-border-subtle rounded-2xl overflow-hidden bg-surface shadow-soft transition-all duration-500">
+      <div className="grid grid-cols-[1fr_200px_120px] gap-4 p-5 font-bold uppercase tracking-[0.2em] bg-accent/5 text-[9px] text-accent">
+        <div>Category Identity</div>
         <div>Slug</div>
-        <div className="text-right">Actions</div>
+        <div className="text-right">Manage</div>
       </div>
       <div className="divide-y">
         {filteredTree.map(node => (
@@ -104,7 +106,7 @@ function CategoryItem({ node, level, onEdit, onDelete, isSearching }: CategoryIt
   const hasChildren = node.children && node.children.length > 0;
 
   return (
-    <div className="bg-card hover:bg-muted/30 transition-colors">
+    <div className="bg-surface hover:bg-accent/5 transition-all duration-300">
       <div className="grid grid-cols-[1fr_200px_120px] gap-4 p-4 text-sm items-center">
         <div className="flex items-center gap-2" style={{ paddingLeft: `${level * 24}px` }}>
           {hasChildren

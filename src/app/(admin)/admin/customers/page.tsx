@@ -22,11 +22,11 @@ export default async function CustomersPage({
   const getRoleBadge = (role: string) => {
     switch (role) {
       case 'admin':
-        return <Badge className="bg-purple-600">Admin</Badge>;
+        return <Badge className="bg-accent text-white font-bold text-[9px] tracking-widest uppercase py-1 border-transparent">Privileged Admin</Badge>;
       case 'staff':
-        return <Badge className="bg-blue-600">Staff</Badge>;
+        return <Badge className="bg-text-secondary text-white font-bold text-[9px] tracking-widest uppercase py-1 border-transparent">Curated Staff</Badge>;
       default:
-        return <Badge variant="secondary">Customer</Badge>;
+        return <Badge variant="secondary" className="bg-accent/5 text-accent font-bold text-[9px] tracking-widest uppercase py-1 border-transparent">Client</Badge>;
     }
   };
 
@@ -34,12 +34,12 @@ export default async function CustomersPage({
     <div className="flex flex-col gap-6 p-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Customers</h1>
-          <p className="text-muted-foreground">Manage your customer base and their roles.</p>
+          <h1 className="text-4xl font-light tracking-tighter text-text-primary font-playfair italic">Customer Archive</h1>
+          <p className="text-sm text-text-secondary mt-2 font-light tracking-tight">Manage your clientele and their access privileges with refinement.</p>
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4 items-center bg-white dark:bg-slate-900 p-4 rounded-lg border">
+      <div className="flex flex-col md:flex-row gap-6 items-center bg-surface/50 p-6 rounded-2xl border border-border-subtle shadow-soft backdrop-blur-md">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <form method="GET">
@@ -83,7 +83,7 @@ export default async function CustomersPage({
         </div>
       </div>
 
-      <div className="rounded-md border bg-white dark:bg-slate-900">
+      <div className="rounded-2xl border border-border-subtle bg-surface/50 overflow-hidden shadow-soft transition-all duration-500">
         <Table>
           <TableHeader>
             <TableRow>
@@ -123,16 +123,14 @@ export default async function CustomersPage({
                       <TableCell>
                         {customer.emailVerified
                           ? (
-                              <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 gap-1 font-normal">
+                              <Badge variant="outline" className="text-accent border-accent/20 bg-accent/5 gap-1.5 font-bold text-[9px] tracking-widest uppercase py-1">
                                 <MailCheck className="h-3 w-3" />
-                                {' '}
                                 Verified
                               </Badge>
                             )
                           : (
-                              <Badge variant="outline" className="text-yellow-600 border-yellow-200 bg-yellow-50 gap-1 font-normal">
+                              <Badge variant="outline" className="text-text-secondary border-border-subtle bg-surface gap-1.5 font-bold text-[9px] tracking-widest uppercase py-1 italic">
                                 <MailWarning className="h-3 w-3" />
-                                {' '}
                                 Pending
                               </Badge>
                             )}

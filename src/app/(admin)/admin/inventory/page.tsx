@@ -19,24 +19,24 @@ export default async function InventoryPage() {
     <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
       <div className="flex items-center justify-between space-y-2">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Inventory Management</h2>
-          <p className="text-muted-foreground">
-            Track and manage stock levels across all product variants.
+          <h2 className="text-4xl font-light tracking-tighter text-text-primary font-playfair italic">Inventory Archive</h2>
+          <p className="text-sm text-text-secondary mt-2 font-light tracking-tight">
+            Track and manage stock levels with editorial precision across all silhouettes.
           </p>
         </div>
       </div>
 
-      <div className="flex items-center gap-4 py-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+      <div className="flex items-center gap-4 py-6">
+        <div className="relative flex-1 max-w-sm group">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-text-secondary group-focus-within:text-accent transition-colors" />
           <Input
-            placeholder="Search SKU or Product..."
-            className="pl-8"
+            placeholder="Search by SKU or Silhouette..."
+            className="pl-10 bg-surface/50 border-border-subtle rounded-full h-11 focus:ring-accent/20 focus:border-accent/40 transition-all placeholder:font-light"
           />
         </div>
       </div>
 
-      <div className="rounded-md border bg-white">
+      <div className="rounded-2xl border border-border-subtle bg-surface/50 overflow-hidden shadow-soft transition-all duration-500">
         <Table>
           <TableHeader>
             <TableRow>
@@ -70,7 +70,7 @@ export default async function InventoryPage() {
                   </TableCell>
                   <TableCell className="font-mono text-xs">{item.variant.sku}</TableCell>
                   <TableCell className="text-right">
-                    <span className={`font-bold ${isOutOfStock ? 'text-rose-600' : isLowStock ? 'text-amber-600' : ''}`}>
+                    <span className={`font-bold tracking-tight ${isOutOfStock ? 'text-destructive' : isLowStock ? 'text-accent' : 'text-text-primary'}`}>
                       {item.available}
                     </span>
                   </TableCell>
@@ -83,14 +83,14 @@ export default async function InventoryPage() {
                   <TableCell className="text-right">
                     {isOutOfStock
                       ? (
-                          <Badge variant="destructive">Out of Stock</Badge>
+                          <Badge variant="destructive" className="bg-destructive/10 text-destructive border-transparent font-bold text-[9px] tracking-widest uppercase py-1">Out of Stock</Badge>
                         )
                       : isLowStock
                         ? (
-                            <Badge variant="outline" className="text-amber-600 border-amber-200 bg-amber-50">Low Stock</Badge>
+                            <Badge variant="outline" className="text-accent border-accent/20 bg-accent/5 font-bold text-[9px] tracking-widest uppercase py-1">Low Stock</Badge>
                           )
                         : (
-                            <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50">In Stock</Badge>
+                            <Badge variant="outline" className="text-text-secondary/70 border-border-subtle bg-surface font-bold text-[9px] tracking-widest uppercase py-1">In Stock</Badge>
                           )}
                   </TableCell>
                   <TableCell className="text-right">

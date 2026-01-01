@@ -1,7 +1,4 @@
-import { ArrowLeft, Ticket } from 'lucide-react';
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 import { getCurrentUser } from '@/lib/auth/actions';
 import { CouponForm } from '../CouponForm';
 
@@ -18,25 +15,13 @@ export default async function CreateCouponPage() {
   }
 
   return (
-    <div className="container mx-auto flex flex-col gap-6 p-4 md:p-6">
-      <div className="flex mt-6 items-center gap-4">
-        <Button variant="ghost" size="icon" asChild>
-          <Link href="/admin/coupons">
-            <ArrowLeft className="h-4 w-4" />
-          </Link>
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Ticket className="text-primary h-6 w-6" />
-            Create New Coupon
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Add a new promotional code and configure discount settings.
-          </p>
-        </div>
+    <div className="max-w-7xl mx-auto flex flex-col gap-10 p-8 py-12">
+      <div className="mb-12">
+        <h1 className="text-5xl font-light tracking-tighter text-text-primary font-playfair italic">Curate New Incentive</h1>
+        <p className="text-sm text-text-secondary mt-2 font-light tracking-tight">Define a high-fidelity promotional code and configure rewards.</p>
       </div>
 
-      <div className="bg-card border rounded-lg p-6 shadow-sm">
+      <div className="bg-surface/50 border border-border-subtle rounded-3xl p-10 shadow-soft backdrop-blur-sm">
         <CouponForm />
       </div>
     </div>

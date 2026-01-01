@@ -25,7 +25,7 @@ export function NavMain({
 }) {
   return (
     <SidebarGroup>
-      {label && <SidebarGroupLabel className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70 mb-2">{label}</SidebarGroupLabel>}
+      {label && <SidebarGroupLabel className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-3 px-4">{label}</SidebarGroupLabel>}
       <SidebarGroupContent>
         <SidebarMenu className="gap-1">
           {/* <SidebarMenuItem className="flex items-center gap-2"> */}
@@ -49,10 +49,10 @@ export function NavMain({
         <SidebarMenu className="gap-1">
           {items.map(item => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild tooltip={item.title} className="data-[slot=sidebar-menu-button]:h-9 data-[slot=sidebar-menu-button]:px-3">
-                <Link href={item.url} className="flex items-center gap-3">
-                  {item.icon && <item.icon className="!size-4.5" />}
-                  <span className="font-medium text-[13.5px]">{item.title}</span>
+              <SidebarMenuButton asChild tooltip={item.title} className="data-[slot=sidebar-menu-button]:h-10 data-[slot=sidebar-menu-button]:px-4 hover:bg-accent/5 hover:text-accent transition-all duration-300 rounded-lg group">
+                <Link href={item.url} className="flex items-center gap-3 w-full">
+                  {item.icon && <item.icon className="size-4! opacity-70 group-hover:opacity-100 transition-opacity" />}
+                  <span className="font-medium text-[13px] tracking-wide">{item.title}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

@@ -182,13 +182,13 @@ export function ProductOptionsTab() {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Search className="size-5 text-primary" />
-            Select Product
+      <Card className="border-border-subtle bg-surface/50 shadow-soft rounded-2xl overflow-hidden">
+        <CardHeader className="border-b border-border-subtle bg-surface/30">
+          <CardTitle className="flex items-center gap-3 text-2xl font-light tracking-tighter text-text-primary font-playfair italic">
+            <Search className="size-5 text-accent" />
+            Select Masterpiece
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-xs text-text-secondary font-light">
             Search and select a product to manage its specific specifications and custom options.
           </CardDescription>
         </CardHeader>
@@ -211,23 +211,23 @@ export function ProductOptionsTab() {
               </button>
             </div>
           )}
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="relative flex-1 group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-text-secondary group-focus-within:text-accent transition-colors" />
               <Input
-                placeholder="Filter products..."
-                className="pl-9"
+                placeholder="Filter archival catalog..."
+                className="pl-11 h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all placeholder:text-text-secondary/50 font-light"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
               />
             </div>
             <Select value={selectedProductId} onValueChange={setSelectedProductId} disabled={isLoadingProducts}>
-              <SelectTrigger className="w-full md:w-[300px]">
-                <SelectValue placeholder={isLoadingProducts ? 'Loading products...' : 'Select a product'} />
+              <SelectTrigger className="w-full md:w-[320px] h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light">
+                <SelectValue placeholder={isLoadingProducts ? 'Loading masterpieces...' : 'Select a creation'} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-surface border-border-subtle rounded-xl shadow-soft">
                 {filteredProducts.map(product => (
-                  <SelectItem key={product.id} value={product.id}>
+                  <SelectItem key={product.id} value={product.id} className="text-sm font-light">
                     {product.name as string}
                   </SelectItem>
                 ))}

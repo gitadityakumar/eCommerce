@@ -74,7 +74,7 @@ export function CollectionList({ data }: CollectionListProps) {
 
   return (
     <>
-      <div className="rounded-md border bg-card">
+      <div className="rounded-2xl border border-border-subtle bg-surface overflow-hidden shadow-soft transition-colors duration-500">
         <Table>
           <TableHeader>
             <TableRow>
@@ -99,15 +99,15 @@ export function CollectionList({ data }: CollectionListProps) {
                     <TableRow key={item.id}>
                       <TableCell className="font-medium">{item.name}</TableCell>
                       <TableCell>
-                        <code className="text-sm bg-muted px-1.5 py-0.5 rounded">
+                        <code className="text-[10px] font-bold tracking-widest bg-accent/5 px-2 py-1 rounded text-text-secondary">
                           {item.slug}
                         </code>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="secondary">
+                        <Badge variant="secondary" className="bg-accent/10 text-accent border-transparent font-bold text-[10px] tracking-widest uppercase py-1">
                           {item.productCount}
                           {' '}
-                          Products
+                          Items
                         </Badge>
                       </TableCell>
                       <TableCell>{format(new Date(item.createdAt), 'MMM d, yyyy')}</TableCell>

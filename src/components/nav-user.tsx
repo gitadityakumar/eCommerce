@@ -49,13 +49,13 @@ export function NavUser({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg grayscale">
+              <Avatar className="h-9 w-9 rounded-full grayscale hover:grayscale-0 transition-all duration-500 border border-border-subtle">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-full bg-surface text-text-secondary text-xs">AD</AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
-                <span className="text-muted-foreground truncate text-xs">
+              <div className="grid flex-1 text-left text-sm leading-tight ml-2">
+                <span className="truncate font-bold tracking-tight text-text-primary">{user.name}</span>
+                <span className="text-text-secondary truncate text-[10px] uppercase tracking-widest">
                   {user.email}
                 </span>
               </div>

@@ -4,21 +4,21 @@ interface Props { variant?: 'sign-in' | 'sign-up' }
 
 export default function SocialProviders({ variant = 'sign-in' }: Props) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <button
         type="button"
-        className="flex w-full items-center justify-center gap-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 px-4 py-3 text-white/90 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all font-inter"
+        className="flex w-full items-center justify-center gap-4 rounded-full bg-background border border-border-subtle px-6 py-4 text-text-primary hover:bg-surface hover:border-accent/40 transition-all font-bold text-[10px] tracking-[0.2em] uppercase shadow-soft group"
         aria-label={`${variant === 'sign-in' ? 'Continue' : 'Sign up'} with Google`}
       >
-        <Image src="/google.svg" alt="" width={18} height={18} />
+        <Image src="/google.svg" alt="" width={18} height={18} className="group-hover:scale-110 transition-transform" />
         <span>Continue with Google</span>
       </button>
       <button
         type="button"
-        className="flex w-full items-center justify-center gap-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 px-4 py-3 text-white/90 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all font-inter"
+        className="flex w-full items-center justify-center gap-4 rounded-full bg-background border border-border-subtle px-6 py-4 text-text-primary hover:bg-surface hover:border-accent/40 transition-all font-bold text-[10px] tracking-[0.2em] uppercase shadow-soft group"
         aria-label={`${variant === 'sign-in' ? 'Continue' : 'Sign up'} with Apple`}
       >
-        <Image src="/facebook.svg" alt="" width={18} height={18} />
+        <Image src="/facebook.svg" alt="" width={18} height={18} className="group-hover:scale-110 transition-transform" />
         <span>Continue with Facebook</span>
       </button>
     </div>
