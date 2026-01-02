@@ -84,23 +84,23 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <IconUserCircle />
-                Account
+              <DropdownMenuItem className="group cursor-pointer">
+                <IconUserCircle className="group-hover:text-accent transition-colors" />
+                <span className="group-hover:text-accent transition-colors">Account</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconCreditCard />
-                Billing
+              <DropdownMenuItem className="group cursor-pointer">
+                <IconCreditCard className="group-hover:text-accent transition-colors" />
+                <span className="group-hover:text-accent transition-colors">Billing</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconNotification />
-                Notifications
+              <DropdownMenuItem className="group cursor-pointer">
+                <IconNotification className="group-hover:text-accent transition-colors" />
+                <span className="group-hover:text-accent transition-colors">Notifications</span>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <IconLogout />
-              Log out
+            <DropdownMenuItem className="group cursor-pointer">
+              <IconLogout className="group-hover:text-accent transition-colors" />
+              <span className="group-hover:text-accent transition-colors">Log out</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

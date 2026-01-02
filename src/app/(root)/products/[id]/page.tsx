@@ -1,14 +1,16 @@
 import type { RecommendedProduct, Review } from '@/lib/actions/product';
-import { Heart, Star } from 'lucide-react';
+import { Star } from 'lucide-react';
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { Card, CollapsibleSection, ProductGallery, SizePicker } from '@/components';
+import { Card, CollapsibleSection, ProductGallery, SizePicker, WishlistButton } from '@/components';
 import AddToBagButton from '@/components/AddToBagButton';
 import ColorSelector from '@/components/ColorSelector';
 import ProductStateInitializer from '@/components/ProductStateInitializer';
 import StockBadge from '@/components/StockBadge';
 import { getProductReviews, getRecommendedProducts } from '@/lib/actions/product';
 import { getStorefrontProduct } from '@/lib/actions/storefront';
+import { getWishlistItemsAction } from '@/lib/actions/wishlist';
+import { getCurrentUser } from '@/lib/auth/actions';
 
 interface GalleryVariant { color: string; hexCode: string | null; images: string[] }
 
@@ -106,7 +108,10 @@ async function AlsoLikeSection({ productId }: { productId: string }) {
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const product = await getStorefrontProduct(id);
+  const [product, user] = await Promise.all([
+    getStorefrontProduct(id),
+    getCurrentUser(),
+  ]);
 
   if (!product) {
     return (
@@ -127,6 +132,13 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   }
 
   const { variants, images } = product;
+
+  // Check if wishlisted
+  let isWishlisted = false;
+  if (user) {
+    const wishlistItems = await getWishlistItemsAction();
+    isWishlisted = !!wishlistItems?.some(item => item.productId === product.id);
+  }
 
   const galleryVariants: GalleryVariant[] = variants.map((v) => {
     const imgs = images
@@ -220,10 +232,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
             <div className="flex flex-col gap-4">
               <AddToBagButton productId={product.id} name={product.name} variants={variants} galleryVariants={galleryVariants} />
-              <button className="flex h-14 items-center justify-center gap-3 rounded-full border border-border-subtle px-8 text-[10px] font-bold tracking-[0.2em] uppercase text-text-primary transition-all hover:bg-surface hover:border-accent hover:text-accent group relative overflow-hidden">
-                <Heart className="h-4 w-4 transition-transform group-hover:scale-110" />
-                <span>Save to Atelier</span>
-              </button>
+              <WishlistButton productId={product.id} initialIsWishlisted={isWishlisted} />
             </div>
           </div>
 
