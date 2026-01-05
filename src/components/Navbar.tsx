@@ -3,6 +3,7 @@
 import {
   IconSearch,
   IconShoppingCart,
+  IconUser,
 } from '@tabler/icons-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
@@ -10,6 +11,7 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { Menu } from '@/components/ui/navbar-menu';
 import { cn } from '@/lib/utils';
+import { useAuthStore } from '@/store/auth';
 import { useCartStore } from '@/store/cart';
 import { ProfileDropdown } from './ProfileDropdown';
 
@@ -26,6 +28,7 @@ export default function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const { isAuthenticated } = useAuthStore();
   const cartItemCount = useCartStore(s => s.getItemCount());
 
   useEffect(() => setMounted(true), []);
@@ -108,8 +111,21 @@ export default function Navbar() {
             )}
           </Link>
 
-          {/* Profile Avatar Icon - Always visible, top-right */}
-          <ProfileDropdown />
+          {mounted && (
+            isAuthenticated
+              ? (
+                  <ProfileDropdown />
+                )
+              : (
+                  <Link
+                    href="/sign-in"
+                    className="h-10 w-10 flex items-center justify-center rounded-full bg-accent/10 hover:bg-accent text-accent hover:text-white transition-all duration-300"
+                    aria-label="Sign in"
+                  >
+                    <IconUser size={20} />
+                  </Link>
+                )
+          )}
         </div>
       </Menu>
     </div>

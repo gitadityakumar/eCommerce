@@ -6,7 +6,7 @@ import { cookies, headers } from 'next/headers';
 import { z } from 'zod';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { guests } from '@/lib/db/schema/index';
+import { guests, users } from '@/lib/db/schema/index';
 
 const COOKIE_OPTIONS = {
   httpOnly: true as const,
@@ -61,24 +61,42 @@ const signUpSchema = z.object({
 });
 
 export async function signUp(formData: FormData) {
-  const rawData = {
-    name: formData.get('name') as string,
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
-  };
+  try {
+    const rawData = {
+      name: formData.get('name') as string,
+      email: formData.get('email') as string,
+      password: formData.get('password') as string,
+    };
 
-  const data = signUpSchema.parse(rawData);
+    const data = signUpSchema.parse(rawData);
 
-  const res = await auth.api.signUpEmail({
-    body: {
-      email: data.email,
-      password: data.password,
-      name: data.name,
-    },
-  });
+    const res = await auth.api.signUpEmail({
+      body: {
+        email: data.email,
+        password: data.password,
+        name: data.name,
+        role: 'customer',
+      },
+    });
 
-  await migrateGuestToUser();
-  return { ok: true, userId: res.user?.id };
+    await migrateGuestToUser();
+    return {
+      ok: true,
+      user: {
+        id: res.user.id,
+        email: res.user.email,
+        name: res.user.name,
+        image: res.user.image,
+      },
+    };
+  }
+  catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return { ok: false, error: 'Invalid input data', details: error.flatten().fieldErrors };
+    }
+    console.error('Sign up error:', error);
+    return { ok: false, error: error.message || 'Failed to sign up. Please try again.' };
+  }
 }
 
 const signInSchema = z.object({
@@ -87,22 +105,39 @@ const signInSchema = z.object({
 });
 
 export async function signIn(formData: FormData) {
-  const rawData = {
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
-  };
+  try {
+    const rawData = {
+      email: formData.get('email') as string,
+      password: formData.get('password') as string,
+    };
 
-  const data = signInSchema.parse(rawData);
+    const data = signInSchema.parse(rawData);
 
-  const res = await auth.api.signInEmail({
-    body: {
-      email: data.email,
-      password: data.password,
-    },
-  });
+    const res = await auth.api.signInEmail({
+      body: {
+        email: data.email,
+        password: data.password,
+      },
+    });
 
-  await migrateGuestToUser();
-  return { ok: true, userId: res.user?.id };
+    await migrateGuestToUser();
+    return {
+      ok: true,
+      user: {
+        id: res.user.id,
+        email: res.user.email,
+        name: res.user.name,
+        image: res.user.image,
+      },
+    };
+  }
+  catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return { ok: false, error: 'Invalid input data', details: error.flatten().fieldErrors };
+    }
+    console.error('Sign in error:', error);
+    return { ok: false, error: error.message || 'Failed to sign in. Please try again.' };
+  }
 }
 
 export async function getCurrentUser() {
@@ -137,4 +172,88 @@ async function migrateGuestToUser() {
 
   await db.delete(guests).where(eq(guests.sessionToken, token));
   (await cookieStore).delete('guest_session');
+}
+
+export async function forgotPassword(formData: FormData) {
+  try {
+    const email = formData.get('email') as string;
+    const data = z.object({ email: emailSchema }).parse({ email });
+
+    // Check if user exists
+    const user = await db.query.users.findFirst({
+      where: eq(users.email, data.email),
+    });
+
+    if (!user) {
+      return { ok: false, error: 'No account found with this email address.' };
+    }
+
+    try {
+      // Better Auth v1 uses requestPasswordReset to initiate the flow
+      await auth.api.requestPasswordReset({
+        body: {
+          email: data.email,
+          redirectTo: '/reset-password', // This will be used to construct the link
+        },
+        headers: await headers(),
+      });
+    }
+    catch (apiError: any) {
+      console.error('Better Auth sendPasswordResetEmail failed:', {
+        message: apiError.message,
+        status: apiError.status,
+        body: apiError.body,
+        availableMethods: Object.keys(auth.api).filter(k => k.toLowerCase().includes('password')),
+      });
+      throw apiError;
+    }
+
+    return { ok: true };
+  }
+  catch (error: any) {
+    console.error('Forgot password final error:', error);
+    return { ok: false, error: 'Failed to send reset link. Please try again later.' };
+  }
+}
+
+export async function updatePassword(formData: FormData) {
+  try {
+    const password = formData.get('password') as string;
+    const token = formData.get('token') as string;
+
+    const { password: newPassword } = z.object({
+      password: passwordSchema,
+    }).parse({ password });
+
+    if (!token) {
+      return { ok: false, error: 'Reset token is missing. Please request a new link.' };
+    }
+
+    try {
+      await auth.api.resetPassword({
+        body: {
+          newPassword,
+          token,
+        },
+        headers: await headers(),
+      });
+      return { ok: true };
+    }
+    catch (apiError: any) {
+      console.error('Better Auth resetPassword failed:', {
+        message: apiError.message,
+        status: apiError.status,
+        body: apiError.body,
+      });
+
+      if (apiError.message?.toLowerCase().includes('password')) {
+        return { ok: false, error: apiError.message || 'Invalid password format.' };
+      }
+      return { ok: false, error: apiError.message || 'Failed to reset password. The link may have expired.' };
+    }
+  }
+  catch (error: any) {
+    console.error('Update password final error:', error);
+    return { ok: false, error: error.message || 'An unexpected error occurred.' };
+  }
 }

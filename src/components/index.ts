@@ -11,6 +11,5 @@ export { default as ProductGallery } from './ProductGallery';
 export { ProfileDropdown } from './ProfileDropdown';
 export { default as PromoBanner } from './PromoBanner';
 export { default as SizePicker } from './SizePicker';
-export { default as SocialProviders } from './SocialProviders';
 export { default as SpotlightSection } from './SpotlightSection';
 export { default as WishlistButton } from './WishlistButton';

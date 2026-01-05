@@ -1,13 +1,11 @@
 'use client';
 
 import {
-  CreditCard,
   Heart,
   LogOut,
   MapPin,
   Moon,
   Package,
-  Settings,
   Sun,
   User,
 } from 'lucide-react';
@@ -108,17 +106,6 @@ export function ProfileDropdown() {
         {isAuthenticated && (
           <>
             <DropdownMenuSeparator className="bg-border-subtle opacity-50" />
-            {/* Account Summary Section */}
-            <div className="px-6 py-4 flex flex-col gap-3">
-              <div className="flex items-center justify-between text-[10px] uppercase tracking-widest">
-                <span className="text-text-secondary font-light">Membership</span>
-                <span className="text-accent font-bold">Free</span>
-              </div>
-              <div className="flex items-center justify-between text-[10px] uppercase tracking-widest">
-                <span className="text-text-secondary font-light">Atelier Points</span>
-                <span className="text-text-primary font-bold">0 pts</span>
-              </div>
-            </div>
           </>
         )}
 
@@ -150,18 +137,6 @@ export function ProfileDropdown() {
               <span className="text-sm font-light text-text-primary tracking-wide group-hover:text-accent transition-colors">Addresses</span>
             </DropdownMenuItem>
           </Link>
-          <Link href="/profile/payments">
-            <DropdownMenuItem className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer hover:bg-accent/5 focus:bg-accent/5 transition-colors group">
-              <CreditCard size={18} className="text-text-secondary group-hover:text-accent transition-colors" />
-              <span className="text-sm font-light text-text-primary tracking-wide group-hover:text-accent transition-colors">Payment Methods</span>
-            </DropdownMenuItem>
-          </Link>
-          <Link href="/settings">
-            <DropdownMenuItem className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer hover:bg-accent/5 focus:bg-accent/5 transition-colors group">
-              <Settings size={18} className="text-text-secondary group-hover:text-accent transition-colors" />
-              <span className="text-sm font-light text-text-primary tracking-wide group-hover:text-accent transition-colors">Settings</span>
-            </DropdownMenuItem>
-          </Link>
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator className="bg-border-subtle opacity-50" />
@@ -189,10 +164,10 @@ export function ProfileDropdown() {
           <div className="p-2 pt-0">
             <DropdownMenuItem
               onClick={handleLogout}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer text-destructive hover:bg-accent/5 focus:bg-accent/5 transition-colors group"
+              className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer text-destructive hover:text-accent/15 transition-colors group"
             >
               <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
-              <span className="text-sm font-bold tracking-widest uppercase">Logout</span>
+              <span className="text-sm font-bold tracking-widest uppercase ">Logout</span>
             </DropdownMenuItem>
           </div>
         )}

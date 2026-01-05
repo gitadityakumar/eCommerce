@@ -1,6 +1,7 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { nextCookies } from 'better-auth/next-js';
+import { magicLink } from 'better-auth/plugins';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '@/lib/db';
 import * as schema from '@/lib/db/schema/index';
@@ -25,6 +26,15 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false,
+    sendResetPassword: async ({ user, url }) => {
+      const { sendEmail } = await import('@/lib/email');
+      await sendEmail({
+        to: user.email,
+        subject: 'Reset Your Password | PreetyTwist',
+        html: '', // Handled by template
+        magicLinkUrl: url,
+      });
+    },
   },
   socialProviders: {},
   sessions: {
@@ -51,5 +61,18 @@ export const auth = betterAuth({
       generateId: () => uuidv4(),
     },
   },
-  plugins: [nextCookies()],
+  plugins: [
+    nextCookies(),
+    magicLink({
+      sendMagicLink: async ({ email, url }) => {
+        const { sendEmail } = await import('@/lib/email');
+        await sendEmail({
+          to: email,
+          subject: 'Your Magic Link for Password Reset',
+          html: '', // We will use template instead
+          magicLinkUrl: url,
+        });
+      },
+    }),
+  ],
 });

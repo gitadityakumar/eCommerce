@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, Jost, Montserrat, Playfair_Display } from 'next/font/google';
+import { AuthProvider } from '@/components/AuthProvider';
 import { ThemeProvider } from '@/components/theme-provider';
 import './globals.css';
 
@@ -45,7 +46,9 @@ export default function RootShell({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <AuthProvider>
+            {children}
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
