@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Jost, Montserrat, Playfair_Display } from 'next/font/google';
 import { AuthProvider } from '@/components/AuthProvider';
 import { ThemeProvider } from '@/components/theme-provider';
+import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
 
 const jost = Jost({
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
   title: 'Preety Twist',
   description: 'An e-commerce platform for Hair Bows',
 };
-// just a commnet to track current progress
+
 export default function RootShell({
   children,
 }: Readonly<{
@@ -49,6 +50,7 @@ export default function RootShell({
           <AuthProvider>
             {children}
           </AuthProvider>
+          <Toaster richColors closeButton />
         </ThemeProvider>
       </body>
     </html>

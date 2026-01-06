@@ -257,3 +257,53 @@ export async function updatePassword(formData: FormData) {
     return { ok: false, error: error.message || 'An unexpected error occurred.' };
   }
 }
+const updateProfileSchema = z.object({
+  name: nameSchema,
+  image: z.string().url().optional().nullable(),
+});
+
+export async function updateProfile(formData: FormData) {
+  try {
+    const rawData = {
+      name: formData.get('name') as string,
+      image: formData.get('image') as string || null,
+    };
+
+    const data = updateProfileSchema.parse(rawData);
+
+    const res = await auth.api.updateUser({
+      body: {
+        name: data.name,
+        image: data.image ?? undefined,
+      },
+      headers: await headers(),
+    });
+
+    if (!res?.status) {
+      return { ok: false, error: 'Failed to update user' };
+    }
+
+    const updatedUser = await getCurrentUser();
+
+    if (!updatedUser) {
+      return { ok: false, error: 'Failed to fetch updated user' };
+    }
+
+    return {
+      ok: true,
+      user: {
+        id: updatedUser.id,
+        email: updatedUser.email,
+        name: updatedUser.name,
+        image: updatedUser.image,
+      },
+    };
+  }
+  catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return { ok: false, error: 'Invalid input data', details: error.flatten().fieldErrors };
+    }
+    console.error('Update profile error:', error);
+    return { ok: false, error: error.message || 'Failed to update profile. Please try again.' };
+  }
+}
