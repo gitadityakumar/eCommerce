@@ -18,7 +18,7 @@ export function ClientOrderSummary() {
   const isFreeShipping = subtotal > 1000; // Example threshold
 
   return (
-    <div className="bg-surface border border-border-subtle rounded-2xl p-8 flex flex-col gap-8 sticky top-28 shadow-soft transition-colors duration-500">
+    <div className="bg-surface border border-border-subtle rounded-2xl p-6 md:p-8 flex flex-col gap-6 md:gap-8 sticky top-28 shadow-soft transition-colors duration-500">
       <h2 className="text-2xl font-light text-text-primary tracking-tight">Summary</h2>
 
       <div className="space-y-4">
@@ -57,14 +57,14 @@ export function ClientOrderSummary() {
       <div className="h-px bg-border-subtle" />
 
       <div className="flex justify-between items-end mb-2">
-        <span className="text-lg font-light text-text-primary">Total</span>
-        <span className="text-3xl font-light text-text-primary tracking-tighter">{formatINR(total)}</span>
+        <span className="text-base md:text-lg font-light text-text-primary">Total</span>
+        <span className="text-2xl md:text-3xl font-light text-text-primary tracking-tighter">{formatINR(total)}</span>
       </div>
 
       <motion.button
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className="w-full bg-accent text-white py-5 px-6 rounded-full text-sm font-bold tracking-[0.2em] uppercase transition-all shadow-soft shadow-accent/20 hover:shadow-accent/40 flex items-center justify-center gap-3 active:scale-95"
+        className="w-full bg-accent text-white py-4 md:py-5 px-6 rounded-full text-xs md:text-sm font-bold tracking-[0.2em] uppercase transition-all shadow-soft shadow-accent/20 hover:shadow-accent/40 flex items-center justify-center gap-3 active:scale-95"
       >
         <Lock className="h-4 w-4" />
         Checkout

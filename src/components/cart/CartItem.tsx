@@ -41,8 +41,8 @@ export function CartItem({ item }: CartItemProps) {
   };
 
   return (
-    <div className="flex gap-6 py-8 border-b border-border-subtle last:border-0 items-start group">
-      <div className="relative aspect-square w-24 sm:w-32 bg-bg-secondary rounded-xl overflow-hidden shrink-0 shadow-soft">
+    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 py-6 md:py-8 border-b border-border-subtle last:border-0 items-start group">
+      <div className="relative aspect-square w-full sm:w-32 bg-bg-secondary rounded-xl overflow-hidden shrink-0 shadow-soft">
         <Image
           src={image}
           alt={product.name}
@@ -51,10 +51,10 @@ export function CartItem({ item }: CartItemProps) {
         />
       </div>
 
-      <div className="flex flex-col flex-1 min-h-[128px]">
+      <div className="flex flex-col flex-1 w-full min-h-0 sm:min-h-[128px]">
         <div className="flex justify-between items-start mb-2">
-          <div>
-            <h3 className="text-xl font-light text-text-primary tracking-tight leading-tight group-hover:text-accent transition-colors">{product.name}</h3>
+          <div className="pr-4">
+            <h3 className="text-lg md:text-xl font-light text-text-primary tracking-tight leading-tight group-hover:text-accent transition-colors">{product.name}</h3>
             <div className="text-xs text-text-secondary uppercase tracking-widest flex items-center gap-3 mt-2 opacity-70">
               {variant.color && (
                 <div className="flex items-center gap-2">

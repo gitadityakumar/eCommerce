@@ -68,19 +68,19 @@ export function CartPageUI({ cart }: CartPageUIProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background transition-colors duration-500 py-16">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="flex flex-col gap-4 items-center mb-16 text-center">
-          <span className="text-accent text-xs tracking-[0.4em] uppercase">Shopping Cart</span>
-          <h1 className="text-5xl font-light text-text-primary tracking-tighter">Your Bag</h1>
+    <div className="min-h-screen bg-background transition-colors duration-500 py-8 md:py-16">
+      <div className="max-w-6xl mx-auto px-4 md:px-6">
+        <div className="flex flex-col gap-2 md:gap-4 items-center mb-8 md:mb-16 text-center">
+          <span className="text-accent text-[10px] md:text-xs tracking-[0.4em] uppercase">Shopping Cart</span>
+          <h1 className="text-3xl md:text-5xl font-light text-text-primary tracking-tighter">Your Bag</h1>
           <div className="w-12 h-px bg-border-subtle" />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
-          <div className="lg:col-span-2 space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-start">
+          <div className="lg:col-span-2 space-y-6 md:space-y-8">
             <div className="bg-surface border border-border-subtle rounded-2xl overflow-hidden shadow-soft">
-              <div className="p-8 border-b border-border-subtle flex items-center justify-between">
-                <div className="flex items-center gap-3">
+              <div className="p-6 md:p-8 border-b border-border-subtle flex items-center justify-between">
+                <div className="flex items-center gap-2 md:gap-3">
                   <ShoppingBag className="h-5 w-5 text-accent" />
                   <h2 className="text-xl font-light text-text-primary tracking-tight">
                     Cart Items
@@ -92,7 +92,7 @@ export function CartPageUI({ cart }: CartPageUIProps) {
                   {itemCount === 1 ? 'Item' : 'Items'}
                 </span>
               </div>
-              <div className="p-8 pt-2">
+              <div className="p-4 md:p-8 pt-2">
                 {showingClient
                   ? (
                       items.map((item: any) => (
