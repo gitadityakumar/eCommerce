@@ -3,14 +3,10 @@
 import type { SelectColor, SelectGender, SelectSize } from '@/lib/db/schema';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { getArrayParam, removeParams, toggleArrayParam } from '@/lib/utils/query';
+import { Slider } from '@/components/ui/slider';
+import { getArrayParam, getStringParam, removeParams, setParam, toggleArrayParam } from '@/lib/utils/query';
 
-const PRICES = [
-  { id: '0-50', label: '₹0 - ₹50' },
-  { id: '50-100', label: '₹50 - ₹100' },
-  { id: '100-150', label: '₹100 - ₹150' },
-  { id: '150-', label: 'Over ₹150' },
-] as const;
+const PRICE_MAX = 500; // Adjusted based on current range, can be dynamic
 
 type GroupKey = 'gender' | 'size' | 'color' | 'price';
 
@@ -34,11 +30,33 @@ export default function Filters({ genders, sizes, colors }: FiltersProps) {
     price: true,
   });
 
+  // Price range state
+  const initialMin = Number(getStringParam(search, 'priceMin')) || 0;
+  const initialMax = Number(getStringParam(search, 'priceMax')) || PRICE_MAX;
+  const [priceRange, setPriceRange] = useState<[number, number]>([initialMin, initialMax]);
+
+  // Sync state with URL when search params change externally (e.g., Clear All)
+  useEffect(() => {
+    setPriceRange([
+      Number(getStringParam(search, 'priceMin')) || 0,
+      Number(getStringParam(search, 'priceMax')) || PRICE_MAX,
+    ]);
+  }, [search]);
+
+  const updatePriceParams = (range: [number, number]) => {
+    let url = setParam(pathname, search, 'priceMin', range[0] > 0 ? range[0] : undefined);
+    url = setParam(pathname, url.split('?')[1] ? `?${url.split('?')[1]}` : '', 'priceMax', range[1] < PRICE_MAX ? range[1] : undefined);
+
+    // Also clear old 'price' array param if it exists to avoid conflicts
+    const finalUrl = removeParams(pathname, url.split('?')[1] ? `?${url.split('?')[1]}` : '', ['price']);
+    router.push(finalUrl, { scroll: false });
+  };
+
   const activeCounts = {
     gender: getArrayParam(search, 'gender').length,
     size: getArrayParam(search, 'size').length,
     color: getArrayParam(search, 'color').length,
-    price: getArrayParam(search, 'price').length,
+    price: (getStringParam(search, 'priceMin') || getStringParam(search, 'priceMax')) ? 1 : 0,
   };
 
   useEffect(() => {
@@ -51,7 +69,7 @@ export default function Filters({ genders, sizes, colors }: FiltersProps) {
   };
 
   const clearAll = () => {
-    const url = removeParams(pathname, search, ['gender', 'size', 'color', 'price', 'page']);
+    const url = removeParams(pathname, search, ['gender', 'size', 'color', 'price', 'priceMin', 'priceMax', 'page']);
     router.push(url, { scroll: false });
   };
 
@@ -169,26 +187,29 @@ export default function Filters({ genders, sizes, colors }: FiltersProps) {
           </ul>
         </Group>
 
-        <Group title={`Price ${activeCounts.price ? `(${activeCounts.price})` : ''}`} k="price">
-          <ul className="space-y-3">
-            {PRICES.map((p) => {
-              const checked = getArrayParam(search, 'price').includes(p.id);
-              return (
-                <li key={p.id} className="flex items-center gap-3 group cursor-pointer">
-                  <input
-                    id={`price-${p.id}`}
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-border-subtle bg-background accent-accent transition-all cursor-pointer"
-                    checked={checked}
-                    onChange={() => onToggle('price', p.id)}
-                  />
-                  <label htmlFor={`price-${p.id}`} className="text-sm text-text-secondary group-hover:text-text-primary transition-colors cursor-pointer">
-                    {p.label}
-                  </label>
-                </li>
-              );
-            })}
-          </ul>
+        <Group title={`Price ${activeCounts.price ? '(1)' : ''}`} k="price">
+          <div className="px-2 pt-2">
+            <Slider
+              defaultValue={[0, PRICE_MAX]}
+              value={priceRange}
+              max={PRICE_MAX}
+              step={10}
+              onValueChange={v => setPriceRange(v as [number, number])}
+              onValueCommit={v => updatePriceParams(v as [number, number])}
+              className="mb-6"
+            />
+            <div className="flex items-center justify-between mt-2">
+              <span className="text-xs font-medium text-text-secondary bg-surface-variant/50 px-2 py-1 rounded">
+                ₹
+                {priceRange[0]}
+              </span>
+              <span className="text-xs font-medium text-text-secondary bg-surface-variant/50 px-2 py-1 rounded">
+                ₹
+                {priceRange[1]}
+                {priceRange[1] === PRICE_MAX ? '+' : ''}
+              </span>
+            </div>
+          </div>
         </Group>
       </aside>
 
@@ -274,29 +295,40 @@ export default function Filters({ genders, sizes, colors }: FiltersProps) {
               </Group>
 
               <Group title="Price" k="price">
-                <ul className="space-y-4">
-                  {PRICES.map((p) => {
-                    const checked = getArrayParam(search, 'price').includes(p.id);
-                    return (
-                      <li key={p.id} className="flex items-center gap-4 group">
-                        <input
-                          id={`m-price-${p.id}`}
-                          type="checkbox"
-                          className="h-5 w-5 rounded border-border-subtle bg-background accent-accent transition-all"
-                          checked={checked}
-                          onChange={() => onToggle('price', p.id)}
-                        />
-                        <label htmlFor={`m-price-${p.id}`} className="text-base text-text-secondary group-hover:text-text-primary transition-colors">
-                          {p.label}
-                        </label>
-                      </li>
-                    );
-                  })}
-                </ul>
+                <div className="px-2 pt-4 pb-2">
+                  <Slider
+                    defaultValue={[0, PRICE_MAX]}
+                    value={priceRange}
+                    max={PRICE_MAX}
+                    step={10}
+                    onValueChange={v => setPriceRange(v as [number, number])}
+                    className="mb-8"
+                  />
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase tracking-widest text-text-secondary/60 mb-1">Min Price</span>
+                      <span className="text-lg font-light text-text-primary">
+                        ₹
+                        {priceRange[0]}
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <span className="text-[10px] uppercase tracking-widest text-text-secondary/60 mb-1">Max Price</span>
+                      <span className="text-lg font-light text-text-primary">
+                        ₹
+                        {priceRange[1]}
+                        {priceRange[1] === PRICE_MAX ? '+' : ''}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </Group>
             </div>
             <button
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                updatePriceParams(priceRange);
+                setOpen(false);
+              }}
               className="w-full mt-12 bg-accent text-white py-4 rounded-full text-sm font-bold tracking-widest uppercase hover:bg-accent/90 transition-all shadow-soft active:scale-95"
             >
               Apply Filters
