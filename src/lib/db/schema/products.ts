@@ -17,6 +17,7 @@ export const products = pgTable('products', {
   status: productStatusEnum('status').notNull().default('draft'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  defaultVariantId: uuid('default_variant_id'),
 });
 
 export const insertProductSchema = z.object({
@@ -29,6 +30,7 @@ export const insertProductSchema = z.object({
   status: z.enum(['draft', 'published', 'archived']).optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
+  defaultVariantId: z.string().uuid().optional().nullable(),
 });
 export const selectProductSchema = insertProductSchema.extend({
   id: z.string().uuid(),

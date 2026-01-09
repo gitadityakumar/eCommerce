@@ -87,7 +87,7 @@ export async function getAllProducts(
         db
           .select({ id: sizes.id })
           .from(sizes)
-          .where(inArray(sizes.slug, filters?.sizeSlugs)),
+          .where(inArray(sizes.slug, filters!.sizeSlugs!)),
       ),
     );
   }
@@ -98,7 +98,7 @@ export async function getAllProducts(
         db
           .select({ id: colors.id })
           .from(colors)
-          .where(inArray(colors.slug, filters?.colorSlugs)),
+          .where(inArray(colors.slug, filters!.colorSlugs!)),
       ),
     );
   }
@@ -168,7 +168,7 @@ export async function getAllProducts(
             db
               .select({ id: colors.id })
               .from(colors)
-              .where(inArray(colors.slug, filters?.colorSlugs)),
+              .where(inArray(colors.slug, filters!.colorSlugs!)),
           ),
         )
         .as('pi')
@@ -206,8 +206,8 @@ string | null
         ? desc(sql`max(${variantJoin.price})`)
         : desc(products.createdAt);
 
-  const page = Math.max(1, filters?.page);
-  const limit = Math.max(1, Math.min(filters?.limit, 60));
+  const page = Math.max(1, filters?.page ?? 1);
+  const limit = Math.max(1, Math.min(filters?.limit ?? 60, 60));
   const offset = (page - 1) * limit;
 
   const rows = await db
@@ -279,12 +279,13 @@ export async function getProduct(
     .select({
       productId: products.id,
       productName: products.name,
+      productSlug: products.slug,
       productDescription: products.description,
       productBrandId: products.brandId,
       productCategoryId: products.categoryId,
       productGenderId: products.genderId,
       status: products.status,
-      // defaultVariantId: products.defaultVariantId,
+      defaultVariantId: products.defaultVariantId,
       productCreatedAt: products.createdAt,
       productUpdatedAt: products.updatedAt,
 
@@ -346,9 +347,11 @@ number | null
     brand?: SelectBrand | null;
     category?: SelectCategory | null;
     gender?: SelectGender | null;
+    isPublished: boolean;
   } = {
     id: head.productId,
     name: head.productName,
+    slug: head.productSlug,
     description: head.productDescription,
     brandId: head.productBrandId ?? null,
     categoryId: head.productCategoryId ?? null,

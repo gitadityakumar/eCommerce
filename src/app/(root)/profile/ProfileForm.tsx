@@ -1,5 +1,6 @@
 'use client';
 
+import type { Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -38,7 +39,7 @@ interface ProfileFormProps {
 export function ProfileForm({ user }: ProfileFormProps) {
   const { setUser } = useAuthStore();
   const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema),
+    resolver: zodResolver(profileSchema) as Resolver<ProfileFormValues>,
     defaultValues: {
       name: user.name || '',
       email: user.email || '',
@@ -55,7 +56,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
       const result = await updateProfile(formData);
       if (result.ok && result.user) {
         toast.success('Profile updated successfully');
-        setUser(result.user);
+        setUser({ ...result.user, image: result.user.image ?? undefined });
         form.reset({
           name: result.user.name,
           email: result.user.email,

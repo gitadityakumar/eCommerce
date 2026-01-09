@@ -1,5 +1,6 @@
 'use client';
 
+import type { Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertTriangle, Minus, Package, Plus } from 'lucide-react';
 import { useState } from 'react';
@@ -61,7 +62,7 @@ export function StockAdjustmentModal({
   const [loading, setLoading] = useState(false);
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as Resolver<FormValues>,
     defaultValues: {
       amount: 1,
       reason: 'manual_adjustment',

@@ -152,6 +152,7 @@ export const ordersRelations = relations(orders, ({ many, one }) => ({
   }),
   items: many(orderItems),
   fulfillments: many(fulfillments),
+  payments: many(payments),
 }));
 
 export const fulfillmentsRelations = relations(fulfillments, ({ one }) => ({

@@ -1,4 +1,4 @@
-import { jsonb, numeric, pgTable, real, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { boolean, jsonb, numeric, pgTable, real, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 import { colors } from './filters/colors';
 import { sizes } from './filters/sizes';
@@ -15,6 +15,7 @@ export const productVariants = pgTable('product_variants', {
   dimensions: jsonb('dimensions'),
   colorId: uuid('color_id').references(() => colors.id, { onDelete: 'set null' }),
   sizeId: uuid('size_id').references(() => sizes.id, { onDelete: 'set null' }),
+  inStock: boolean('in_stock').default(true).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
@@ -42,6 +43,7 @@ export const insertVariantSchema = z.object({
     .nullable(),
   colorId: z.string().uuid().optional().nullable(),
   sizeId: z.string().uuid().optional().nullable(),
+  inStock: z.boolean().default(true).optional(),
   createdAt: z.date().optional(),
 });
 export const selectVariantSchema = insertVariantSchema.extend({

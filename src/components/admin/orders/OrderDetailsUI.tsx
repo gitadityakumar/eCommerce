@@ -34,48 +34,48 @@ interface OrderItem {
   variant: {
     sku: string;
     product: { name: string };
-    color?: { name: string };
-    size?: { name: string };
+    color?: { name: string } | null;
+    size?: { name: string } | null;
   };
 }
 
 interface Order {
   id: string;
   status: string;
-  createdAt: string;
+  createdAt: string | Date;
   totalAmount: string | number;
   items: OrderItem[];
   user: {
     id: string;
-    name: string;
+    name: string | null;
     email: string;
-  };
+  } | null;
   shippingAddress: {
     line1: string;
-    line2?: string;
+    line2?: string | null;
     city: string;
     state: string;
     postalCode: string;
     country: string;
-  };
+  } | null;
   billingAddress: {
     line1: string;
-    line2?: string;
+    line2?: string | null;
     city: string;
     state: string;
     postalCode: string;
     country: string;
-  };
+  } | null;
   payments: {
     id: string;
     method: string;
     status: string;
-    transactionId?: string;
+    transactionId?: string | null;
   }[];
   fulfillments: {
     id: string;
-    trackingNumber: string;
-    carrier: string;
+    trackingNumber: string | null;
+    carrier: string | null;
     status: string;
   }[];
 }
