@@ -22,7 +22,7 @@ const nameSchema = z.string().min(1).max(100);
 
 export async function createGuestSession() {
   const cookieStore = await cookies();
-  const existing = (await cookieStore).get('guest_session');
+  const existing = (cookieStore).get('guest_session');
   if (existing?.value) {
     return { ok: true, sessionToken: existing.value };
   }
@@ -36,13 +36,13 @@ export async function createGuestSession() {
     expiresAt,
   });
 
-  (await cookieStore).set('guest_session', sessionToken, COOKIE_OPTIONS);
+  cookieStore.set('guest_session', sessionToken, COOKIE_OPTIONS);
   return { ok: true, sessionToken };
 }
 
 export async function guestSession() {
   const cookieStore = await cookies();
-  const token = (await cookieStore).get('guest_session')?.value;
+  const token = cookieStore.get('guest_session')?.value;
   if (!token) {
     return { sessionToken: null };
   }

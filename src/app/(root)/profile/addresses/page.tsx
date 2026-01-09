@@ -16,6 +16,8 @@ import { getCurrentUser } from '@/lib/auth/actions';
 import { AddressCard } from './AddressCard';
 import { AddressForm } from './AddressForm';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AddressesPage() {
   const user = await getCurrentUser();
 

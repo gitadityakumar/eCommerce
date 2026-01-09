@@ -4,6 +4,8 @@ import { getProducts } from '@/actions/products';
 import { getCurrentUser } from '@/lib/auth/actions';
 import { CollectionClient } from './CollectionClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function CollectionsPage() {
   const user = await getCurrentUser();
   if (!user || user.role !== 'admin') {

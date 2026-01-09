@@ -7,6 +7,8 @@ export const metadata = {
   description: 'Create and manage store discounts and promotions.',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function CreateCouponPage() {
   const user = await getCurrentUser();
 

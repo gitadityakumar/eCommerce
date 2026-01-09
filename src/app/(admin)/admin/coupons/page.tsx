@@ -3,6 +3,8 @@ import { getCoupons } from '@/lib/actions/coupons';
 import { getCurrentUser } from '@/lib/auth/actions';
 import { CouponClient } from './CouponClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function CouponsPage() {
   const user = await getCurrentUser();
   if (!user || user.role !== 'admin') {

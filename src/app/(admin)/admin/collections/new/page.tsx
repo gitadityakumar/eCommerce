@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { getCurrentUser } from '@/lib/auth/actions';
 import { CollectionForm } from '../CollectionForm';
 
+export const dynamic = 'force-dynamic';
+
 export default async function NewCollectionPage() {
   const user = await getCurrentUser();
 
