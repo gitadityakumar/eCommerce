@@ -22,9 +22,10 @@ const COURIERS = [
 
 interface CheckoutProps {
   initialAddresses: any[];
+  storeSettings: any;
 }
 
-export default function Checkout({ initialAddresses }: CheckoutProps) {
+export default function Checkout({ initialAddresses, storeSettings }: CheckoutProps) {
   const router = useRouter();
   const items = useCartStore(s => s.items);
   const total = useCartStore(s => s.total); // Re-added total as it's used later
@@ -55,7 +56,12 @@ export default function Checkout({ initialAddresses }: CheckoutProps) {
     ? (appliedCoupon.type === 'percentage' ? (total * appliedCoupon.value) / 100 : appliedCoupon.value)
     : 0;
 
-  const grandTotal = total + selectedCourier.price - discount;
+  const subtotalAfterDiscount = total - discount;
+  const taxAmount = storeSettings?.isTaxEnabled
+    ? (subtotalAfterDiscount * Number(storeSettings.taxPercentage)) / 100
+    : 0;
+
+  const grandTotal = total + selectedCourier.price - discount + taxAmount;
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim())
@@ -332,8 +338,14 @@ export default function Checkout({ initialAddresses }: CheckoutProps) {
                   </div>
                 )}
                 <div className="flex justify-between text-xs">
-                  <span className="text-text-secondary font-light tracking-wide italic">Tax Contribution</span>
-                  <span className="text-text-primary font-bold tracking-tight">{formatINR(0)}</span>
+                  <span className="text-text-secondary font-light tracking-wide italic">
+                    {storeSettings?.taxName || 'Tax'}
+                    {' '}
+                    Contribution (
+                    {storeSettings?.taxPercentage || '0'}
+                    %)
+                  </span>
+                  <span className="text-text-primary font-bold tracking-tight">{formatINR(taxAmount)}</span>
                 </div>
               </div>
 

@@ -19,6 +19,7 @@ export * from './products';
 export * from './relations';
 export * from './reviews';
 export * from './session';
+export * from './store-settings';
 export * from './user';
 export * from './variants';
 export * from './verification';
