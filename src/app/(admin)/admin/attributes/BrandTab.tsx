@@ -4,6 +4,7 @@ import type * as z from 'zod';
 import type { SelectBrand } from '@/lib/db/schema/brands';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { IconEdit, IconLoader2, IconPlus, IconSearch, IconSparkles, IconTrash } from '@tabler/icons-react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -230,10 +231,13 @@ export function BrandTab({ initialData }: BrandTabProps) {
                                 className="inline-block hover:opacity-80 transition-opacity"
                                 title={brand.logoUrl}
                               >
-                                <img
+                                <Image
                                   src={brand.logoUrl}
                                   alt={`${brand.name} logo`}
+                                  width={32}
+                                  height={32}
                                   className="size-8 object-contain rounded border"
+                                  unoptimized
                                   onError={(e) => {
                                     // Fallback to text if image fails to load
                                     const target = e.target as HTMLImageElement;

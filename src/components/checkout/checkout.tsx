@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check, CheckCircle2, Lock, MapPin, Tag, X } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -355,10 +356,12 @@ export default function Checkout({ initialAddresses, storeSettings, user }: Chec
                   <div key={index} className="flex gap-4 group">
                     <div className="relative h-16 w-16 bg-background border border-border-subtle/50 rounded-xl overflow-hidden shrink-0">
                       {item.image && (
-                        <img
+                        <Image
                           src={item.image}
                           alt={item.name}
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-110"
+                          unoptimized
                         />
                       )}
                     </div>

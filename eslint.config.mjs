@@ -1,6 +1,7 @@
 import antfu from '@antfu/eslint-config';
 
 export default antfu({
+  nextjs: true,
   type: 'app',
   formatters: true,
   stylistic: {

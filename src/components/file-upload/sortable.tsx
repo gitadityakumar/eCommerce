@@ -1,6 +1,7 @@
 'use client';
 
 import { CloudUpload, GripVertical, XIcon } from 'lucide-react';
+import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -304,13 +305,15 @@ export default function SortableImageUpload({
           {allImages.map(item => (
             <SortableItem key={item.id} value={item.id}>
               <div className="flex items-center justify-center rounded-md bg-accent/50 shadow-none shrink-0 relative group border border-border hover:z-10 data-[dragging=true]:z-50 transition-all duration-200 hover:bg-accent/70 h-[120px] overflow-hidden">
-                <img
+                <Image
                   src={item.src}
+                  fill
                   className={cn(
-                    'h-full w-full object-cover rounded-md pointer-events-none transition-opacity duration-300',
+                    'object-cover rounded-md pointer-events-none transition-opacity duration-300',
                     item.status === 'uploading' ? 'opacity-40' : 'opacity-100',
                   )}
                   alt={item.alt}
+                  unoptimized
                 />
 
                 {/* Loader Overlay */}
