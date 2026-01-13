@@ -1,13 +1,19 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, CheckCircle2, Home, Lock, MapPin, Tag, Truck, X } from 'lucide-react';
+import { Check, CheckCircle2, Lock, MapPin, Tag, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { validateCoupon } from '@/actions/coupons';
 import { AddressForm } from '@/app/(root)/profile/addresses/AddressForm';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { formatINR } from '@/lib/currency';
 import { cn } from '@/lib/utils';
@@ -23,9 +29,10 @@ const COURIERS = [
 interface CheckoutProps {
   initialAddresses: any[];
   storeSettings: any;
+  user: any;
 }
 
-export default function Checkout({ initialAddresses, storeSettings }: CheckoutProps) {
+export default function Checkout({ initialAddresses, storeSettings, user }: CheckoutProps) {
   const router = useRouter();
   const items = useCartStore(s => s.items);
   const total = useCartStore(s => s.total); // Re-added total as it's used later
@@ -40,8 +47,11 @@ export default function Checkout({ initialAddresses, storeSettings }: CheckoutPr
       router.push('/cart');
     }
   }, [items, isHydrated, router]);
+  const [addresses] = useState(initialAddresses);
+  const [isChangingAddress, setIsChangingAddress] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
-    initialAddresses.find(a => a.isDefault)?.id || initialAddresses[0]?.id || null,
+    addresses.find(a => a.isDefault)?.id || addresses[0]?.id || null,
   );
   const [selectedCourierId, setSelectedCourierId] = useState<string>(COURIERS[0].id);
 
@@ -94,6 +104,18 @@ export default function Checkout({ initialAddresses, storeSettings }: CheckoutPr
     setCouponCode('');
   };
 
+  const selectedAddress = addresses.find(a => a.id === selectedAddressId);
+
+  const handleAddressCreated = () => {
+    setShowAddModal(false);
+    // Refresh addresses from server (or we could just reload, but let's try to be smooth)
+    // Actually, createAddress revalidatesPath, so a window.location.reload() or router.refresh() would work.
+    // The user asked for "without losing performance", so maybe a manual state update or router.refresh()?
+    // Let's stick to router.refresh() combined with a brief wait if needed, or just let revalidatePath handle it.
+    // Actually, better to just reload for now to ensure consistency, as per previous implementation.
+    window.location.reload();
+  };
+
   return (
     <section className="container mx-auto px-4 py-12 min-h-screen bg-background animate-in fade-in duration-1000">
       <div className="max-w-7xl mx-auto">
@@ -107,81 +129,174 @@ export default function Checkout({ initialAddresses, storeSettings }: CheckoutPr
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
           {/* Left Side: Address & Delivery */}
           <div className="lg:col-span-7 space-y-16">
-            {/* Saved Addresses */}
-            {initialAddresses.length > 0 && (
-              <div className="space-y-8">
-                <div className="flex items-center gap-4">
-                  <div className="h-px bg-border-subtle flex-1" />
-                  <h2 className="text-[10px] uppercase tracking-[0.4em] font-bold text-accent flex items-center gap-2">
-                    <MapPin size={14} />
-                    Saved Coordinates
-                  </h2>
-                  <div className="h-px bg-border-subtle flex-1" />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {initialAddresses.map(address => (
-                    <div
-                      key={address.id}
-                      onClick={() => setSelectedAddressId(address.id)}
-                      className={cn(
-                        'group p-6 border transition-all duration-500 rounded-2xl cursor-pointer relative overflow-hidden',
-                        selectedAddressId === address.id
-                          ? 'border-accent bg-accent/5 ring-1 ring-accent/20'
-                          : 'border-border-subtle/50 bg-surface/5 hover:bg-surface/10',
-                      )}
-                    >
-                      {selectedAddressId === address.id && (
-                        <div className="absolute top-4 right-4 text-accent">
-                          <CheckCircle2 size={18} />
-                        </div>
-                      )}
-                      <div className="flex items-start gap-3 mb-4">
-                        <div className={cn(
-                          'p-2 rounded-lg transition-colors duration-500',
-                          selectedAddressId === address.id ? 'bg-accent text-white' : 'bg-accent/5 text-accent',
-                        )}
-                        >
-                          <Home size={16} />
-                        </div>
+            {!isChangingAddress
+              ? (
+            /* Delivery Card View */
+                  <div className="space-y-8">
+                    <div className="flex items-center gap-4">
+                      <div className="h-px bg-border-subtle flex-1" />
+                      <h2 className="text-[10px] uppercase tracking-[0.4em] font-bold text-accent flex items-center gap-2">
+                        <MapPin size={14} />
+                        Shipping Destination
+                      </h2>
+                      <div className="h-px bg-border-subtle flex-1" />
+                    </div>
+
+                    <div className="p-8 border border-accent bg-accent/5 ring-1 ring-accent/20 rounded-3xl relative overflow-hidden group transition-all duration-500">
+                      <div className="flex justify-between items-start mb-6">
                         <div>
-                          <p className="text-[10px] font-bold uppercase tracking-widest text-text-primary">
-                            {address.type}
+                          <h3 className="text-xl font-playfair text-text-primary mb-1">
+                            Delivering to
+                            {' '}
+                            {user?.name || 'Guest'}
+                          </h3>
+                          <p className="text-[10px] uppercase tracking-widest text-accent font-bold">
+                            Primary Archival Coordinate
                           </p>
                         </div>
+                        <Button
+                          variant="ghost"
+                          onClick={() => setIsChangingAddress(true)}
+                          className="text-xs uppercase tracking-widest font-bold text-accent hover:bg-accent/10 rounded-xl px-4"
+                        >
+                          Change
+                        </Button>
                       </div>
-                      <div className="space-y-1">
-                        <p className="text-sm font-semibold tracking-tight text-text-primary">{address.line1}</p>
-                        <p className="text-xs text-text-secondary/80 font-light">
-                          {address.city}
-                          ,
-                          {address.state}
-                          {' '}
-                          {address.postalCode}
-                        </p>
-                        <p className="text-[10px] uppercase tracking-widest font-bold text-text-secondary/40 pt-1">
-                          {address.country}
-                        </p>
+
+                      {selectedAddress
+                        ? (
+                            <div className="space-y-2 p-4 bg-surface/40 r">
+                              <div className="flex items-center gap-3 mb-2">
+                                {/* <div className="p-2 rounded-lg bg-accent text-white">
+                                  <Home size={14} />
+                                </div> */}
+                                {/* <p className="text-[10px] font-bold uppercase tracking-widest text-text-primary">
+                                  {selectedAddress.type}
+                                </p> */}
+                              </div>
+                              <div className="space-y-1">
+                                <p className="text-sm font-semibold tracking-tight text-text-primary">{selectedAddress.line1}</p>
+                                {selectedAddress.line2 && (
+                                  <p className="text-sm text-text-secondary/80 font-light">{selectedAddress.line2}</p>
+                                )}
+                                <p className="text-xs text-text-secondary/80 font-light">
+                                  {selectedAddress.city}
+                                  ,
+                                  {selectedAddress.state}
+                                  {' '}
+                                  {selectedAddress.postalCode}
+                                </p>
+                                <p className="text-[10px] uppercase tracking-widest font-bold text-text-secondary/40 pt-1">
+                                  {selectedAddress.country}
+                                </p>
+                              </div>
+                            </div>
+                          )
+                        : (
+                            <div className="text-center py-6 text-text-secondary italic text-sm">
+                              No shipping address selected.
+                            </div>
+                          )}
+                    </div>
+                  </div>
+                )
+              : (
+            /* Address Selection View */
+                  <div className="space-y-8 animate-in slide-in-from-left duration-500">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-4 flex-1">
+                        <div className="h-px bg-border-subtle flex-1" />
+                        <h2 className="text-[10px] uppercase tracking-[0.4em] font-bold text-accent flex items-center gap-2">
+                          <MapPin size={14} />
+                          Delivery Addresses (
+                          {addresses.length}
+                          )
+                        </h2>
+                        <div className="h-px bg-border-subtle flex-1" />
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
-            {/* Add Address Form */}
-            <div className="space-y-8">
-              <div className="flex items-center gap-4">
-                <div className="h-px bg-border-subtle flex-1" />
-                <h2 className="text-[10px] uppercase tracking-[0.4em] font-bold text-accent flex items-center gap-2">
-                  <Truck size={14} />
-                  New Delivery Coordinate
-                </h2>
-                <div className="h-px bg-border-subtle flex-1" />
-              </div>
-              <div className="p-8 border border-border-subtle/50 bg-surface/5 rounded-3xl">
-                <AddressForm onSuccess={() => window.location.reload()} />
-              </div>
-            </div>
+                    <div className="grid grid-cols-1 gap-4">
+                      {addresses.map(address => (
+                        <div
+                          key={address.id}
+                          onClick={() => setSelectedAddressId(address.id)}
+                          className={cn(
+                            'group p-6 border transition-all duration-500 rounded-2xl cursor-pointer relative overflow-hidden flex items-center gap-6',
+                            selectedAddressId === address.id
+                              ? 'border-accent bg-accent/5 ring-1 ring-accent/20'
+                              : 'border-border-subtle/50 bg-surface/5 hover:bg-surface/10',
+                          )}
+                        >
+                          <div className={cn(
+                            'w-5 h-5 border-2 rounded-full flex items-center justify-center transition-all duration-500 shrink-0',
+                            selectedAddressId === address.id
+                              ? 'border-accent bg-accent text-white scale-110'
+                              : 'border-border-subtle/50',
+                          )}
+                          >
+                            {selectedAddressId === address.id && <Check size={12} />}
+                          </div>
+
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-1">
+                              <p className="text-[10px] font-bold uppercase tracking-widest text-text-primary">
+                                {address.type}
+                              </p>
+                              {address.isDefault && (
+                                <span className="text-[8px] bg-accent/10 text-accent px-2 py-0.5 rounded-full uppercase font-bold tracking-tighter">Default</span>
+                              )}
+                            </div>
+                            <p className="text-sm font-semibold tracking-tight text-text-primary line-clamp-1">{address.line1}</p>
+                            <p className="text-xs text-text-secondary/80 font-light truncate">
+                              {address.city}
+                              ,
+                              {address.state}
+                              {' '}
+                              {address.postalCode}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex flex-col gap-4">
+                      <Button
+                        variant="ghost"
+                        onClick={() => setShowAddModal(true)}
+                        className="w-full py-6 rounded-2xl border border-dashed border-border-subtle hover:border-accent hover:bg-accent/5 text-text-secondary hover:text-accent transition-all duration-500 text-xs uppercase tracking-widest font-bold flex items-center gap-2"
+                      >
+                        <MapPin size={14} />
+                        Add New Delivery Address
+                      </Button>
+
+                      <Button
+                        disabled={!selectedAddressId}
+                        onClick={() => setIsChangingAddress(false)}
+                        className="w-full py-8 rounded-full bg-accent text-white font-bold text-xs tracking-[0.2em] uppercase hover:bg-accent/90 shadow-soft transition-all duration-500"
+                      >
+                        Deliver to this address
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+            {/* Add Address Modal */}
+            <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+              <DialogContent className="sm:max-w-[600px] bg-background border-border-subtle rounded-3xl overflow-hidden p-0">
+                <div className="p-8 md:p-10">
+                  <DialogHeader className="mb-8">
+                    <DialogTitle className="text-3xl font-playfair tracking-tight text-text-primary">
+                      New Archival Coordinate
+                    </DialogTitle>
+                    <p className="text-text-secondary font-light tracking-widest uppercase text-[10px]">
+                      Specify your preferred delivery location
+                    </p>
+                  </DialogHeader>
+                  <AddressForm onSuccess={handleAddressCreated} />
+                </div>
+              </DialogContent>
+            </Dialog>
 
             {/* Courier Selection */}
             <div className="space-y-8">

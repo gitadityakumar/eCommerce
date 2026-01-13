@@ -14,5 +14,5 @@ export default async function Page() {
   const addresses = await getAddresses();
   const settings = await getStoreSettings();
 
-  return <Checkout initialAddresses={addresses} storeSettings={settings} />;
+  return <Checkout initialAddresses={addresses} storeSettings={settings} user={user} />;
 }
