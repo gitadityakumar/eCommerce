@@ -32,6 +32,7 @@ async function seedOrders() {
     line1: '123 Logical St',
     city: 'Consistency City',
     state: 'CC',
+    phone: '1234567890',
     country: 'Reality',
     postalCode: '12345',
   }).returning();

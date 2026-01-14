@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { validateCoupon } from '@/actions/coupons';
+import { checkShippingServiceability } from '@/actions/shipping';
 import { AddressForm } from '@/app/(root)/profile/addresses/AddressForm';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,16 +17,19 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 import { formatINR } from '@/lib/currency';
 import { cn } from '@/lib/utils';
 import { useCartStore } from '@/store/cart';
 
-const COURIERS = [
-  { id: 'delhivery', name: 'Delhivery', price: 80, time: '3-5 Days' },
-  { id: 'bluedart', name: 'Blue Dart', price: 150, time: '1-2 Days' },
-  { id: 'ecom', name: 'Ecom Express', price: 60, time: '4-6 Days' },
-  { id: 'shiprocket', name: 'Shiprocket', price: 100, time: '2-4 Days' },
-];
+interface Courier {
+  id: string;
+  name: string;
+  price: number;
+  time: string;
+  is_cod?: boolean;
+  estimated_delivery_days?: string | number;
+}
 
 interface CheckoutProps {
   initialAddresses: any[];
@@ -54,14 +58,54 @@ export default function Checkout({ initialAddresses, storeSettings, user }: Chec
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
     addresses.find(a => a.isDefault)?.id || addresses[0]?.id || null,
   );
-  const [selectedCourierId, setSelectedCourierId] = useState<string>(COURIERS[0].id);
+  const [couriers, setCouriers] = useState<Courier[]>([]);
+  const [isLoadingCouriers, setIsLoadingCouriers] = useState(false);
+  const [selectedCourierId, setSelectedCourierId] = useState<string | null>(null);
+
+  const selectedAddress = addresses.find(a => a.id === selectedAddressId);
+
+  // Fetch Couriers when address changes
+  useEffect(() => {
+    async function fetchCouriers() {
+      if (!selectedAddress?.postalCode)
+        return;
+
+      setIsLoadingCouriers(true);
+      setSelectedCourierId(null);
+      try {
+        const result = await checkShippingServiceability(selectedAddress.postalCode, total);
+        if (result.success && result.data) {
+          setCouriers(result.data);
+          if (result.data.length > 0) {
+            setSelectedCourierId(result.data[0].id);
+          }
+        }
+        else {
+          toast.error(result.error || 'Failed to load shipping options');
+          setCouriers([]);
+        }
+      }
+      catch (error) {
+        console.error('Error fetching couriers:', error);
+        toast.error('Failed to load shipping options');
+        setCouriers([]);
+      }
+      finally {
+        setIsLoadingCouriers(false);
+      }
+    }
+
+    if (isHydrated) {
+      fetchCouriers();
+    }
+  }, [selectedAddress?.postalCode, isHydrated]);
 
   // Coupon State
   const [couponCode, setCouponCode] = useState('');
   const [isApplying, setIsApplying] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; type: string; value: number } | null>(null);
 
-  const selectedCourier = COURIERS.find(c => c.id === selectedCourierId)!;
+  const selectedCourier = couriers.find(c => c.id === selectedCourierId);
 
   const discount = appliedCoupon
     ? (appliedCoupon.type === 'percentage' ? (total * appliedCoupon.value) / 100 : appliedCoupon.value)
@@ -72,7 +116,7 @@ export default function Checkout({ initialAddresses, storeSettings, user }: Chec
     ? (subtotalAfterDiscount * Number(storeSettings.taxPercentage)) / 100
     : 0;
 
-  const grandTotal = total + selectedCourier.price - discount + taxAmount;
+  const grandTotal = total + (selectedCourier?.price || 0) - discount + taxAmount;
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim())
@@ -104,8 +148,6 @@ export default function Checkout({ initialAddresses, storeSettings, user }: Chec
     setAppliedCoupon(null);
     setCouponCode('');
   };
-
-  const selectedAddress = addresses.find(a => a.id === selectedAddressId);
 
   const handleAddressCreated = () => {
     setShowAddModal(false);
@@ -309,31 +351,61 @@ export default function Checkout({ initialAddresses, storeSettings, user }: Chec
                 <div className="h-px bg-border-subtle flex-1" />
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {COURIERS.map(courier => (
-                  <div
-                    key={courier.id}
-                    onClick={() => setSelectedCourierId(courier.id)}
-                    className={cn(
-                      'group p-6 border transition-all duration-500 rounded-2xl cursor-pointer text-center space-y-3 relative',
-                      selectedCourierId === courier.id
-                        ? 'border-accent bg-accent/5'
-                        : 'border-border-subtle/50 bg-surface/5 hover:bg-surface/10',
-                    )}
-                  >
-                    <div className={cn(
-                      'mx-auto w-6 h-6 border-2 rounded-full flex items-center justify-center transition-all duration-500',
-                      selectedCourierId === courier.id ? 'border-accent bg-accent text-white scale-110' : 'border-border-subtle/50',
-                    )}
-                    >
-                      {selectedCourierId === courier.id && <Check size={14} />}
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-text-primary">{courier.name}</p>
-                      <p className="text-sm font-semibold text-text-primary">{formatINR(courier.price)}</p>
-                      <p className="text-[9px] text-text-secondary/60 uppercase tracking-tighter">{courier.time}</p>
-                    </div>
-                  </div>
-                ))}
+                {isLoadingCouriers
+                  ? (
+                      Array.from({ length: 4 }).map((_, i) => (
+                        <div key={i} className="p-6 border border-border-subtle/50 bg-surface/5 rounded-2xl space-y-3">
+                          <Skeleton className="mx-auto w-6 h-6 rounded-full" />
+                          <div className="space-y-2">
+                            <Skeleton className="h-3 w-16 mx-auto" />
+                            <Skeleton className="h-4 w-12 mx-auto" />
+                            <Skeleton className="h-2 w-10 mx-auto" />
+                          </div>
+                        </div>
+                      ))
+                    )
+                  : couriers.length > 0
+                    ? (
+                        couriers.map(courier => (
+                          <div
+                            key={courier.id}
+                            onClick={() => setSelectedCourierId(courier.id)}
+                            className={cn(
+                              'group p-6 border transition-all duration-500 rounded-2xl cursor-pointer text-center space-y-3 relative',
+                              selectedCourierId === courier.id
+                                ? 'border-accent bg-accent/5'
+                                : 'border-border-subtle/50 bg-surface/5 hover:bg-surface/10',
+                            )}
+                          >
+                            <div className={cn(
+                              'mx-auto w-6 h-6 border-2 rounded-full flex items-center justify-center transition-all duration-500',
+                              selectedCourierId === courier.id ? 'border-accent bg-accent text-white scale-110' : 'border-border-subtle/50',
+                            )}
+                            >
+                              {selectedCourierId === courier.id && <Check size={14} />}
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-[10px] font-bold uppercase tracking-widest text-text-primary">{courier.name}</p>
+                              <p className="text-sm font-semibold text-text-primary">{formatINR(courier.price)}</p>
+                              <p className="text-[9px] text-text-secondary/60 uppercase tracking-tighter">{courier.time}</p>
+                              {courier.estimated_delivery_days && (
+                                <p className="text-[8px] bg-green-500/10 text-green-600 px-2 py-0.5 rounded-full uppercase font-bold tracking-tighter mt-1 inline-block">
+                                  {courier.estimated_delivery_days}
+                                  {' '}
+                                  Days
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        ))
+                      )
+                    : (
+                        <div className="col-span-full py-8 text-center bg-surface/5 rounded-2xl border border-dashed border-border-subtle">
+                          <p className="text-xs text-text-secondary uppercase tracking-widest font-bold">
+                            {selectedAddress ? 'No shipping partners available for this address' : 'Please select an address to see shipping options'}
+                          </p>
+                        </div>
+                      )}
               </div>
             </div>
           </div>
@@ -440,7 +512,9 @@ export default function Checkout({ initialAddresses, storeSettings, user }: Chec
                 </div>
                 <div className="flex justify-between text-xs">
                   <span className="text-text-secondary font-light tracking-wide italic">Editorial Delivery</span>
-                  <span className="text-text-primary font-bold tracking-tight">{formatINR(selectedCourier.price)}</span>
+                  <span className="text-text-primary font-bold tracking-tight">
+                    {isLoadingCouriers ? 'Calculating...' : selectedCourier ? formatINR(selectedCourier.price) : 'Select Method'}
+                  </span>
                 </div>
                 {appliedCoupon && (
                   <div className="flex justify-between text-xs text-green-600">
@@ -479,6 +553,7 @@ export default function Checkout({ initialAddresses, storeSettings, user }: Chec
                 </div>
 
                 <Button
+                  disabled={!selectedAddressId || !selectedCourierId || isLoadingCouriers}
                   className="w-full py-8 rounded-full bg-accent text-white font-bold text-xs md:text-sm tracking-[0.3em] uppercase hover:bg-accent/90 shadow-[0_20px_50px_-12px_rgba(236,72,153,0.3)] hover:shadow-[0_20px_50px_-12px_rgba(236,72,153,0.5)] transition-all duration-700 flex items-center justify-center gap-3 group relative overflow-hidden"
                   size="lg"
                 >
