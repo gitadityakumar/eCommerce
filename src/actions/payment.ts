@@ -2,14 +2,58 @@
 
 import { eq } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
-import { getCartAction } from '@/lib/actions/storefront-cart';
+import { clearCartAction, getCartAction } from '@/lib/actions/storefront-cart';
 import { getCurrentUser } from '@/lib/auth/actions';
 import { db } from '@/lib/db';
 import { orderItems, orders, payments } from '@/lib/db/schema';
-import { base64Encode, signRequest } from '@/lib/phonepe/client';
 
-const PHONEPE_HOST_URL = process.env.PHONEPE_BASE_SANDBOX_URL || 'https://api-preprod.phonepe.com/apis/pg-sandbox';
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+const PHONEPE_HOST_URL = (process.env.PHONEPE_BASE_SANDBOX_URL || process.env.PHONEPE_BASE_URL || 'https://api-preprod.phonepe.com/apis/pg-sandbox').replace(/\/$/, '').trim();
+const APP_URL = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/$/, '').trim();
+
+const CLIENT_ID = 'M23GP1KUPUW4M_2512260843';
+const CLIENT_SECRET = 'MTA3MmY5MTgtODliMy00NjA4LWE0MGMtOTU3MjNmMjBmMWM1';
+const CLIENT_VERSION = '1';
+
+async function getPhonePeOAuthToken() {
+  const params = new URLSearchParams();
+  params.append('client_id', CLIENT_ID);
+  params.append('client_version', CLIENT_VERSION);
+  params.append('client_secret', CLIENT_SECRET);
+  params.append('grant_type', 'client_credentials');
+
+  const authEndpoint = '/v1/oauth/token';
+
+  console.warn('PhonePe OAuth Request:', {
+    url: `${PHONEPE_HOST_URL}${authEndpoint}`,
+    client_id: CLIENT_ID,
+    client_version: CLIENT_VERSION,
+    has_secret: !!CLIENT_SECRET,
+  });
+
+  const response = await fetch(`${PHONEPE_HOST_URL}${authEndpoint}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: params.toString(),
+  });
+
+  const data = await response.json();
+  if (!response.ok || !data.access_token) {
+    console.error('PhonePe OAuth Error Details:', {
+      status: response.status,
+      data,
+    });
+    throw new Error(data.message || `Failed to get PhonePe OAuth token: ${data.code || response.status}`);
+  }
+
+  return data.access_token;
+}
+
+// function validatePhonePeConfig() {
+//   // Logic shifted to getPhonePeOAuthToken
+//   return true;
+// }
 
 export async function initiatePayment(
   shippingAddressId: string,
@@ -44,7 +88,6 @@ export async function initiatePayment(
 
   const amount = subtotal + courierPrice + taxAmount - couponDiscount;
   const merchantTransactionId = `MT${uuidv4().replace(/-/g, '').substring(0, 20)}`;
-  const merchantUserId = user?.id || 'GUEST';
 
   // 2. Create Order (Pending)
   const [newOrder] = await db.insert(orders).values({
@@ -76,57 +119,73 @@ export async function initiatePayment(
     merchantTransactionId,
   });
 
-  // 5. Prepare PhonePe Payload
+  // 5. Prepare PhonePe V2 Payload (Corrected structure for Web Standard Checkout)
   const payload = {
-    merchantId: process.env.PHONEPE_CLIENT_ID,
-    merchantTransactionId,
-    merchantUserId,
+    merchantOrderId: merchantTransactionId,
     amount: Math.round(amount * 100), // in paise
-    // Usually redirectUrl is a UI page (Order Confirmation), and callbackUrl is the webhook.
-    // PhonePe redirects POST to redirectUrl.
-    // So redirectUrl handles the UI + Status check.
-    // callbackUrl is Server-to-Server.
-    redirectUrl: `${APP_URL}/api/webhooks/phonepe/redirect?orderId=${newOrder.id}`,
-    redirectMode: 'POST',
-    callbackUrl: `${APP_URL}/api/webhooks/phonepe`, // Server-to-server
-    paymentInstrument: {
-      type: 'PAY_PAGE',
+    paymentFlow: {
+      type: 'PG_CHECKOUT',
+      merchantUrls: {
+        redirectUrl: `${APP_URL}/api/webhooks/phonepe/redirect?orderId=${newOrder.id}`,
+      },
     },
   };
 
-  const base64Payload = base64Encode(payload);
-  const saltKey = process.env.PHONEPE_CLIENT_SECRET!;
-  const saltIndex = process.env.PHONEPE_CLIENT_VERSION || '1';
-  const apiEndpoint = '/pg/v1/pay';
+  const apiEndpoint = '/checkout/v2/pay';
 
-  const checksum = signRequest(base64Payload, apiEndpoint, saltKey, saltIndex);
-
-  // 6. Call PhonePe API
+  // 6. Call PhonePe V2 API
   try {
-    const response = await fetch(`${PHONEPE_HOST_URL}${apiEndpoint}`, {
+    const accessToken = await getPhonePeOAuthToken();
+    const fullUrl = `${PHONEPE_HOST_URL}${apiEndpoint}`;
+
+    console.warn('PhonePe V2 Request Debug:', {
+      url: fullUrl,
+      merchantOrderId: payload.merchantOrderId,
+    });
+
+    const response = await fetch(fullUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-VERIFY': checksum,
+        'Authorization': `O-Bearer ${accessToken}`,
       },
-      body: JSON.stringify({
-        request: base64Payload,
-      }),
+      body: JSON.stringify(payload),
     });
 
     const data = await response.json();
 
-    if (data.success && data.data.instrumentResponse.redirectInfo.url) {
-      return { success: true, url: data.data.instrumentResponse.redirectInfo.url };
+    console.warn('PhonePe V2 Full Response:', JSON.stringify(data, null, 2));
+
+    // V2 /checkout/v2/pay returns orderId and redirectUrl on success.
+    if (data.orderId && data.redirectUrl) {
+      console.warn('PhonePe V2 Redirecting to:', data.redirectUrl);
+
+      // 7. Clear Cart (After successful redirect initiation)
+      try {
+        console.warn('Attempting to clear cart for user...');
+        const clearRes = await clearCartAction();
+        console.warn('Clear Cart Result:', clearRes);
+      }
+      catch (e) {
+        console.error('Failed to clear cart after payment initiation:', e);
+      }
+
+      return { success: true, url: data.redirectUrl };
     }
     else {
       // Mark payment failed
+      console.error('PhonePe V2 Initiation Failed:', {
+        status: response.status,
+        message: data.message,
+        code: data.code,
+        data: data.data,
+      });
       await db.update(payments).set({ status: 'failed', rawPayload: data }).where(eq(payments.merchantTransactionId, merchantTransactionId));
       return { success: false, error: data.message || 'Payment initiation failed' };
     }
   }
   catch (error: any) {
-    console.error('PhonePe Error:', error);
+    console.error('PhonePe V2 Error:', error);
     await db.update(payments).set({ status: 'failed' }).where(eq(payments.merchantTransactionId, merchantTransactionId));
     return { success: false, error: error.message };
   }

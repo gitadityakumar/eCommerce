@@ -8,12 +8,14 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { removeFromCartAction, updateCartItemQuantityAction } from '@/lib/actions/storefront-cart';
 import { formatINR } from '@/lib/currency';
+import { useUserCartStore } from '@/store/user-cart';
 
 interface CartItemProps {
   item: any; // Using any for brevity in this step, but ideal would be a proper type
 }
 
 export function CartItem({ item }: CartItemProps) {
+  const setUserCount = useUserCartStore(s => s.setCount);
   const [isPending, startTransition] = useTransition();
   const variant = item.variant;
   const product = variant.product;
@@ -25,6 +27,9 @@ export function CartItem({ item }: CartItemProps) {
       if (!result.success) {
         toast.error('Failed to update quantity');
       }
+      else if (result.count !== undefined) {
+        setUserCount(result.count);
+      }
     });
   };
 
@@ -35,6 +40,9 @@ export function CartItem({ item }: CartItemProps) {
         toast.error('Failed to remove item');
       }
       else {
+        if (result.count !== undefined) {
+          setUserCount(result.count);
+        }
         toast.success('Item removed from cart');
       }
     });

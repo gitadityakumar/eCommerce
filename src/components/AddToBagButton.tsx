@@ -1,8 +1,12 @@
 'use client';
 
 import { ShoppingBag } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
+import { addToCartAction } from '@/lib/actions/storefront-cart';
+import { useAuthStore } from '@/store/auth';
 import { useCartStore } from '@/store/cart';
+import { useUserCartStore } from '@/store/user-cart';
 import { useVariantStore } from '@/store/variant';
 
 export interface AddToBagButtonProps {
@@ -16,6 +20,9 @@ export default function AddToBagButton({ productId, name, variants, galleryVaria
   const selectedSize = useVariantStore(s => s.getSelectedSize(productId));
   const selectedColorIndex = useVariantStore(s => s.getSelected(productId, 0));
   const addItem = useCartStore(s => s.addItem);
+  const setUserCount = useUserCartStore(s => s.setCount);
+  const user = useAuthStore(s => s.user);
+  const [isAdding, setIsAdding] = useState(false);
 
   // Logic to determine if valid variant is selected and in stock
   const selectedColorName = galleryVariants[selectedColorIndex]?.color;
@@ -24,29 +31,53 @@ export default function AddToBagButton({ productId, name, variants, galleryVaria
     v.color?.name === selectedColorName && v.size?.name === selectedSize,
   );
 
-  // If we require strict selection (Color + Size), button is disabled if either is missing or if specific variant is OOS.
-  // Exception: If product checks for "only color needed" (no sizes), this logic would need adjustment,
-  // but current requirements emphasize sizes.
-
   const isSelectionComplete = !!selectedColorName && !!selectedSize;
   const inStock = specificVariant ? ((specificVariant.inventory?.available ?? 0) > 0) : false;
 
-  const isDisabled = !isSelectionComplete || !inStock;
+  const isDisabled = !isSelectionComplete || !inStock || isAdding;
 
-  const handleAddToBag = () => {
+  const handleAddToBag = async () => {
     if (!specificVariant || isDisabled)
       return;
 
-    addItem({
-      id: specificVariant.id,
-      name: `${name} - ${selectedColorName} / ${selectedSize}`,
-      price: Number(specificVariant.salePrice || specificVariant.price),
-      image: galleryVariants[selectedColorIndex]?.images[0],
-    });
+    const itemName = `${name} - ${selectedColorName} / ${selectedSize}`;
 
-    toast.success('Added to bag', {
-      description: `${name} (${selectedColorName}, ${selectedSize}) has been added to your cart.`,
-    });
+    if (user) {
+      setIsAdding(true);
+      try {
+        const result = await addToCartAction(specificVariant.id, 1);
+        if (result.success) {
+          if (result.count !== undefined) {
+            setUserCount(result.count);
+          }
+          toast.success('Added to bag', {
+            description: `${itemName} has been added to your archival collection.`,
+          });
+        }
+        else {
+          toast.error(result.error || 'Failed to add to bag');
+        }
+      }
+      catch (error) {
+        console.error('Error adding to bag:', error);
+        toast.error('An unexpected error occurred');
+      }
+      finally {
+        setIsAdding(false);
+      }
+    }
+    else {
+      addItem({
+        id: specificVariant.id,
+        name: itemName,
+        price: Number(specificVariant.salePrice || specificVariant.price),
+        image: galleryVariants[selectedColorIndex]?.images[0],
+      });
+
+      toast.success('Added to bag', {
+        description: `${itemName} has been added to your guest cart.`,
+      });
+    }
   };
 
   return (
@@ -60,7 +91,7 @@ export default function AddToBagButton({ productId, name, variants, galleryVaria
       }`}
     >
       <ShoppingBag className="h-5 w-5" />
-      {inStock ? 'Add to Bag' : 'Out of Stock'}
+      {isAdding ? 'Adding...' : inStock ? 'Add to Bag' : 'Out of Stock'}
     </button>
   );
 }

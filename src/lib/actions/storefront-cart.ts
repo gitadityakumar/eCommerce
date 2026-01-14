@@ -2,79 +2,35 @@
 
 import { and, eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
-import { getCurrentUser, guestSession } from '@/lib/auth/actions';
+import { getCurrentUser } from '@/lib/auth/actions';
 import { db } from '@/lib/db';
-import { cartItems, carts, guests } from '@/lib/db/schema/index';
+import { cartItems, carts } from '@/lib/db/schema/index';
 
 /**
  * Retrieves the current cart ID or creates one if it doesn't exist.
- * Handles both authenticated users and guest sessions.
+ * ONLY for authenticated users.
  */
 async function getOrCreateCartId() {
   const user = await getCurrentUser();
-  const { sessionToken: guestToken } = await guestSession();
 
-  if (user) {
-    // Check if user has a cart
-    const existingCart = await db.query.carts.findFirst({
-      where: eq(carts.userId, user.id),
-    });
-
-    if (existingCart)
-      return existingCart.id;
-
-    // Check if user has a guest cart to claim
-    const { sessionToken: guestToken } = await guestSession();
-    if (guestToken) {
-      const guest = await db.query.guests.findFirst({
-        where: eq(guests.sessionToken, guestToken),
-      });
-
-      if (guest) {
-        const guestCart = await db.query.carts.findFirst({
-          where: eq(carts.guestId, guest.id),
-        });
-
-        if (guestCart) {
-          // Claim the guest cart for the user
-          await db.update(carts)
-            .set({ userId: user.id, guestId: null })
-            .where(eq(carts.id, guestCart.id));
-          return guestCart.id;
-        }
-      }
-    }
-
-    // Create a new cart for the user
-    const [newCart] = await db.insert(carts).values({
-      userId: user.id,
-    }).returning({ id: carts.id });
-
-    return newCart.id;
+  if (!user) {
+    return null;
   }
 
-  if (guestToken) {
-    const guest = await db.query.guests.findFirst({
-      where: eq(guests.sessionToken, guestToken),
-    });
+  // Check if user has a cart
+  const existingCart = await db.query.carts.findFirst({
+    where: eq(carts.userId, user.id),
+  });
 
-    if (guest) {
-      const existingCart = await db.query.carts.findFirst({
-        where: eq(carts.guestId, guest.id),
-      });
+  if (existingCart)
+    return existingCart.id;
 
-      if (existingCart)
-        return existingCart.id;
+  // Create a new cart for the user
+  const [newCart] = await db.insert(carts).values({
+    userId: user.id,
+  }).returning({ id: carts.id });
 
-      const [newCart] = await db.insert(carts).values({
-        guestId: guest.id,
-      }).returning({ id: carts.id });
-
-      return newCart.id;
-    }
-  }
-
-  return null;
+  return newCart.id;
 }
 
 /**
@@ -107,6 +63,21 @@ export async function getCartAction() {
 }
 
 /**
+ * Get the total quantity of items in the authenticated user's cart.
+ */
+export async function getCartCountAction() {
+  const cartId = await getOrCreateCartId();
+  if (!cartId)
+    return 0;
+
+  const items = await db.query.cartItems.findMany({
+    where: eq(cartItems.cartId, cartId),
+  });
+
+  return items.reduce((acc, item) => acc + item.quantity, 0);
+}
+
+/**
  * Add a product variant to the cart.
  */
 export async function addToCartAction(variantId: string, quantity: number = 1) {
@@ -136,7 +107,8 @@ export async function addToCartAction(variantId: string, quantity: number = 1) {
   }
 
   revalidatePath('/cart');
-  return { success: true };
+  const count = await getCartCountAction();
+  return { success: true, count };
 }
 
 /**
@@ -151,7 +123,8 @@ export async function updateCartItemQuantityAction(itemId: string, quantity: num
     .where(eq(cartItems.id, itemId));
 
   revalidatePath('/cart');
-  return { success: true };
+  const count = await getCartCountAction();
+  return { success: true, count };
 }
 
 /**
@@ -162,7 +135,8 @@ export async function removeFromCartAction(itemId: string) {
     .where(eq(cartItems.id, itemId));
 
   revalidatePath('/cart');
-  return { success: true };
+  const count = await getCartCountAction();
+  return { success: true, count };
 }
 
 /**
@@ -171,11 +145,11 @@ export async function removeFromCartAction(itemId: string) {
 export async function clearCartAction() {
   const cartId = await getOrCreateCartId();
   if (!cartId)
-    return { success: true };
+    return { success: true, count: 0 };
 
   await db.delete(cartItems)
-    .where(eq(cartItems.id, cartId));
+    .where(eq(cartItems.cartId, cartId));
 
   revalidatePath('/cart');
-  return { success: true };
+  return { success: true, count: 0 };
 }

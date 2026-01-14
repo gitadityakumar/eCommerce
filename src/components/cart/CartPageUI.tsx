@@ -2,9 +2,9 @@
 
 import { ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
-
 import Link from 'next/link';
 import { Suspense, useEffect, useState } from 'react';
+import { useAuthStore } from '@/store/auth';
 import { useCartStore } from '@/store/cart';
 import { CartItem } from './CartItem';
 import { ClientCartItem } from './ClientCartItem';
@@ -16,7 +16,7 @@ interface CartPageUIProps {
 }
 
 export function CartPageUI({ cart }: CartPageUIProps) {
-  // ... (previous logic stays the same)
+  const user = useAuthStore(s => s.user);
   const serverItems = cart?.items || [];
   const serverItemCount = serverItems.reduce((acc: number, item: any) => acc + item.quantity, 0);
 
@@ -28,7 +28,7 @@ export function CartPageUI({ cart }: CartPageUIProps) {
     setMounted(true);
   }, []);
 
-  const showingClient = serverItemCount === 0 && mounted;
+  const showingClient = !user && mounted;
   const items = showingClient ? clientItems : serverItems;
   const itemCount = showingClient ? clientItemCount : serverItemCount;
 

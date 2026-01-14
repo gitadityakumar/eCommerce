@@ -13,6 +13,7 @@ import { Menu } from '@/components/ui/navbar-menu';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/auth';
 import { useCartStore } from '@/store/cart';
+import { useUserCartStore } from '@/store/user-cart';
 import { ProfileDropdown } from './ProfileDropdown';
 
 const NAV_LINKS = [
@@ -29,9 +30,18 @@ export default function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { isAuthenticated } = useAuthStore();
-  const cartItemCount = useCartStore(s => s.getItemCount());
+  const guestItemCount = useCartStore(s => s.getItemCount());
+  const userItemCount = useUserCartStore(s => s.count);
+  const fetchUserCount = useUserCartStore(s => s.fetchCount);
 
-  useEffect(() => setMounted(true), []);
+  const cartItemCount = isAuthenticated ? userItemCount : guestItemCount;
+
+  useEffect(() => {
+    setMounted(true);
+    if (isAuthenticated) {
+      fetchUserCount();
+    }
+  }, [isAuthenticated, fetchUserCount]);
 
   return (
     <div className="sticky top-0 z-50 w-full h-15 border-b border-border-subtle bg-background/80 backdrop-blur-md transition-all duration-300 flex items-center justify-center">

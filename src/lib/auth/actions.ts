@@ -6,7 +6,7 @@ import { cookies, headers } from 'next/headers';
 import { z } from 'zod';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { cartItems, carts, guests, users } from '@/lib/db/schema/index';
+import { guests, users } from '@/lib/db/schema/index';
 
 const COOKIE_OPTIONS = {
   httpOnly: true as const,
@@ -79,7 +79,6 @@ export async function signUp(formData: FormData) {
       },
     });
 
-    await migrateGuestToUser(res.user.id);
     return {
       ok: true,
       user: {
@@ -120,7 +119,6 @@ export async function signIn(formData: FormData) {
       },
     });
 
-    await migrateGuestToUser(res.user.id);
     return {
       ok: true,
       user: {
@@ -160,88 +158,7 @@ export async function signOut() {
 }
 
 export async function mergeGuestCartWithUserCart() {
-  const user = await getCurrentUser();
-  if (user) {
-    await migrateGuestToUser(user.id);
-  }
   return { ok: true };
-}
-
-async function migrateGuestToUser(userId: string) {
-  const cookieStore = await cookies();
-  const token = (await cookieStore).get('guest_session')?.value;
-  if (!token)
-    return;
-
-  // 1. Find Guest
-  const guest = await db.query.guests.findFirst({
-    where: eq(guests.sessionToken, token),
-  });
-
-  if (guest) {
-    // 2. Find Guest Cart
-    const guestCart = await db.query.carts.findFirst({
-      where: eq(carts.guestId, guest.id),
-    });
-
-    if (guestCart) {
-      // 3. Check for User Cart
-      const userCart = await db.query.carts.findFirst({
-        where: eq(carts.userId, userId),
-      });
-
-      if (userCart) {
-        // User already has a cart.
-        // Strategy: Move items from Guest Cart to User Cart.
-        // Note: This might conflict if same variant exists.
-        // We'll simplisticly update the cartId. If conflict, it might throw.
-        // Better: Check collisions? For now, we'll Try/Catch the update or just update cartId.
-        // If we just set cartId, existing duplicates will violate PK/Unique if (cartId, variantId) is unique.
-        // cartItems PK is id. Unique constraint is likely on (cartId, productVariantId).
-        // Let's assume we just assign the guest cart to user if user cart is empty?
-        // But 'userCart' object exists.
-
-        // Simplest safe approach for "Cart is empty" bug:
-        // If user cart has no items, we can swap.
-        // If user cart has items, we should ideally merge.
-
-        // Let's just try to update guest cart to user ID if user cart doesn't exist?
-        // Logic above: `if (userCart)`.
-
-        // If user cart exists, let's leave it for now to avoid merge complexity crashing the login.
-        // BUT the user reported "Cart is empty", meaning they expect the guest items.
-        // If they have an old empty user cart, we should prefer the guest active cart.
-
-        // Let's do: Transfer items from guest cart to user cart.
-        // We will loop items and insert/update.
-        const guestItems = await db.query.cartItems.findMany({
-          where: eq(cartItems.cartId, guestCart.id),
-        });
-
-        for (const item of guestItems) {
-          // Upsert logic could go here.
-          // For now, let's just update ownership if not exists.
-          try {
-            await db.update(cartItems).set({ cartId: userCart.id }).where(eq(cartItems.id, item.id));
-          }
-          catch {
-            // Duplicate? Ignore.
-          }
-        }
-        // Delete empty guest cart
-        await db.delete(carts).where(eq(carts.id, guestCart.id));
-      }
-      else {
-        // 4. Assign Guest Cart to User
-        await db.update(carts).set({ userId, guestId: null }).where(eq(carts.id, guestCart.id));
-      }
-    }
-
-    // 5. Cleanup Guest
-    await db.delete(guests).where(eq(guests.id, guest.id));
-  }
-
-  (await cookieStore).delete('guest_session');
 }
 
 export async function forgotPassword(formData: FormData) {

@@ -127,40 +127,60 @@ export async function createShiprocketOrder(orderId: string) {
       sku: item.variant.sku,
       units: item.quantity,
       selling_price: Number(item.priceAtPurchase),
-      discount: '',
-      tax: '',
+      discount: 0,
+      tax: 0,
       hsn: '',
     }));
 
+    const nameParts = (order.user?.name || order.shippingAddress.line1).trim().split(/\s+/);
+    const firstName = nameParts[0] || 'Customer';
+    const lastName = nameParts.slice(1).join(' ') || 'Name';
+
+    const itemTotal = order.items.reduce((acc, item) => acc + (Number(item.priceAtPurchase) * item.quantity), 0);
+    const totalAmount = Number(order.totalAmount);
+    const shippingCharges = Math.max(0, totalAmount - itemTotal);
+
+    // Shiprocket "Add order" API - Adhoc
     const payload = {
       order_id: order.id,
       order_date: orderDate,
-      pickup_location: 'Primary', // Assuming 'Primary' or fetch from store settings if we had a location name
-      channel_id: '', // Optional
-      comment: 'Order from Website',
-      billing_customer_name: order.user?.name || order.shippingAddress.line1.substring(0, 10), // Fallback
-      billing_last_name: '',
-      billing_address: order.shippingAddress.line1,
-      billing_address_2: order.shippingAddress.line2 || '',
-      billing_city: order.shippingAddress.city,
-      billing_pincode: order.shippingAddress.postalCode,
-      billing_state: order.shippingAddress.state,
-      billing_country: order.shippingAddress.country,
-      billing_email: order.user?.email || 'guest@example.com',
-      billing_phone: order.shippingAddress.phone,
-      shipping_is_billing: true,
+      pickup_location: 'Primary', // NOTE: Crucial - must match Shiprocket Dashboard nickname
+      channel_id: '',
+      comment: 'App Order',
+      billing_customer_name: firstName,
+      billing_last_name: lastName,
+      billing_address: order.shippingAddress.line1.trim(),
+      billing_address_2: (order.shippingAddress.line2 || '').trim() || '.',
+      billing_city: order.shippingAddress.city.trim(),
+      billing_pincode: order.shippingAddress.postalCode.trim(),
+      billing_state: order.shippingAddress.state.trim(),
+      billing_country: 'India',
+      billing_email: order.user?.email || 'customer@example.com',
+      billing_phone: order.shippingAddress.phone.trim(),
+      shipping_is_billing: true, // Changed back to boolean as some versions prefer it
+      shipping_customer_name: firstName,
+      shipping_last_name: lastName,
+      shipping_address: order.shippingAddress.line1.trim(),
+      shipping_address_2: (order.shippingAddress.line2 || '').trim() || '.',
+      shipping_city: order.shippingAddress.city.trim(),
+      shipping_pincode: order.shippingAddress.postalCode.trim(),
+      shipping_country: 'India',
+      shipping_state: order.shippingAddress.state.trim(),
+      shipping_phone: order.shippingAddress.phone.trim(),
       order_items: orderItemsPayload,
       payment_method: 'Prepaid',
-      shipping_charges: 0,
+      shipping_charges: shippingCharges,
       giftwrap_charges: 0,
       transaction_charges: 0,
       total_discount: 0,
-      sub_total: Number(order.totalAmount),
+      sub_total: itemTotal,
       length: 15,
       breadth: 10,
       height: 6,
       weight: 0.5,
     };
+
+    console.warn('Shiprocket Order Payload:', JSON.stringify(payload, null, 2));
 
     // 1. Create Order
     const createRes = await fetch(`${SHIPROCKET_API_URL}/orders/create/adhoc`, {
@@ -173,6 +193,7 @@ export async function createShiprocketOrder(orderId: string) {
     });
 
     const createData = await createRes.json();
+    console.warn('Shiprocket Create Order Response:', JSON.stringify(createData, null, 2));
     if (!createData.order_id) {
       console.error('Shiprocket Create Order Failed:', createData);
       throw new Error(createData.message || 'Failed to create Shiprocket order');

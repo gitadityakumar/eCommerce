@@ -32,17 +32,45 @@ interface Courier {
   estimated_delivery_days?: string | number;
 }
 
+interface CheckoutItem {
+  id: string;
+  variantId?: string;
+  quantity: number;
+  name: string;
+  price: number;
+  image: string;
+}
+
 interface CheckoutProps {
   initialAddresses: any[];
   storeSettings: any;
   user: any;
+  serverCart: any;
 }
 
-export default function Checkout({ initialAddresses, storeSettings, user }: CheckoutProps) {
+export default function Checkout({ initialAddresses, storeSettings, user, serverCart }: CheckoutProps) {
   const router = useRouter();
-  const items = useCartStore(s => s.items);
-  const total = useCartStore(s => s.total); // Re-added total as it's used later
+  const clientItems = useCartStore(s => s.items);
+  const clientTotal = useCartStore(s => s.total);
   const [isHydrated, setIsHydrated] = useState(false);
+
+  // Determine which items to use.
+  // If user is logged in, we MUST use the server cart to match initiatePayment logic.
+  // Note: Since we "never merge", if guest logs in, they see their (potentially empty) server cart.
+  const items: CheckoutItem[] = user
+    ? (serverCart?.items?.map((item: any) => ({
+        id: item.id,
+        variantId: item.productVariantId,
+        quantity: item.quantity,
+        name: item.variant?.product?.name + (item.variant?.color ? ` - ${item.variant.color.name}` : '') + (item.variant?.size ? ` / ${item.variant.size.name}` : ''),
+        price: Number(item.variant?.salePrice || item.variant?.price || 0),
+        image: item.variant?.images?.[0]?.url || item.variant?.images?.[0] || '',
+      })) || [])
+    : clientItems;
+
+  const total = user
+    ? (items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0))
+    : clientTotal;
 
   useEffect(() => {
     setIsHydrated(true);
@@ -458,7 +486,7 @@ export default function Checkout({ initialAddresses, storeSettings, user }: Chec
 
               {/* Product List */}
               <div className="space-y-6 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar mb-8">
-                {items.map((item, index) => (
+                {items.map((item: CheckoutItem, index: number) => (
                   <div key={index} className="flex gap-4 group">
                     <div className="relative h-16 w-16 bg-background border border-border-subtle/50 rounded-xl overflow-hidden shrink-0">
                       {item.image && (
