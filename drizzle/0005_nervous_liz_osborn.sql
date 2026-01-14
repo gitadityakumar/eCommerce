@@ -1,0 +1,1 @@
+ALTER TABLE "orders" ADD COLUMN "courier_company_id" text;

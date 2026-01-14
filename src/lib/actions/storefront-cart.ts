@@ -23,6 +23,28 @@ async function getOrCreateCartId() {
     if (existingCart)
       return existingCart.id;
 
+    // Check if user has a guest cart to claim
+    const { sessionToken: guestToken } = await guestSession();
+    if (guestToken) {
+      const guest = await db.query.guests.findFirst({
+        where: eq(guests.sessionToken, guestToken),
+      });
+
+      if (guest) {
+        const guestCart = await db.query.carts.findFirst({
+          where: eq(carts.guestId, guest.id),
+        });
+
+        if (guestCart) {
+          // Claim the guest cart for the user
+          await db.update(carts)
+            .set({ userId: user.id, guestId: null })
+            .where(eq(carts.id, guestCart.id));
+          return guestCart.id;
+        }
+      }
+    }
+
     // Create a new cart for the user
     const [newCart] = await db.insert(carts).values({
       userId: user.id,

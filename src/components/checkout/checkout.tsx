@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { validateCoupon } from '@/actions/coupons';
+import { initiatePayment } from '@/actions/payment';
 import { checkShippingServiceability } from '@/actions/shipping';
 import { AddressForm } from '@/app/(root)/profile/addresses/AddressForm';
 import { Button } from '@/components/ui/button';
@@ -157,6 +158,39 @@ export default function Checkout({ initialAddresses, storeSettings, user }: Chec
     // Let's stick to router.refresh() combined with a brief wait if needed, or just let revalidatePath handle it.
     // Actually, better to just reload for now to ensure consistency, as per previous implementation.
     window.location.reload();
+  };
+
+  const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
+
+  const handlePayment = async () => {
+    if (!selectedAddressId || !selectedCourierId || !selectedCourier)
+      return;
+
+    setIsPaymentProcessing(true);
+    try {
+      const res = await initiatePayment(
+        selectedAddressId,
+        selectedAddressId, // Billing same as shipping for now
+        selectedCourier.id,
+        selectedCourier.price,
+        selectedCourier.name,
+        taxAmount,
+        discount,
+      );
+
+      if (res.success && res.url) {
+        router.push(res.url); // Redirect to PhonePe
+      }
+      else {
+        toast.error(res.error || 'Payment initiation failed');
+        setIsPaymentProcessing(false);
+      }
+    }
+    catch (error) {
+      console.error(error);
+      toast.error('Something went wrong');
+      setIsPaymentProcessing(false);
+    }
   };
 
   return (
@@ -553,12 +587,13 @@ export default function Checkout({ initialAddresses, storeSettings, user }: Chec
                 </div>
 
                 <Button
-                  disabled={!selectedAddressId || !selectedCourierId || isLoadingCouriers}
+                  onClick={handlePayment}
+                  disabled={!selectedAddressId || !selectedCourierId || isLoadingCouriers || isPaymentProcessing}
                   className="w-full py-8 rounded-full bg-accent text-white font-bold text-xs md:text-sm tracking-[0.3em] uppercase hover:bg-accent/90 shadow-[0_20px_50px_-12px_rgba(236,72,153,0.3)] hover:shadow-[0_20px_50px_-12px_rgba(236,72,153,0.5)] transition-all duration-700 flex items-center justify-center gap-3 group relative overflow-hidden"
                   size="lg"
                 >
                   <span className="relative z-10">
-                    Complete Transaction
+                    {isPaymentProcessing ? 'Securing Transaction...' : 'Complete Transaction'}
                   </span>
                   <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                 </Button>

@@ -2,7 +2,7 @@ import { jsonb, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-co
 import { z } from 'zod';
 import { orders } from './orders';
 
-export const paymentMethodEnum = pgEnum('payment_method', ['stripe', 'paypal', 'cod']);
+export const paymentMethodEnum = pgEnum('payment_method', ['stripe', 'paypal', 'cod', 'phonepe']);
 export const paymentStatusEnum = pgEnum('payment_status', ['initiated', 'completed', 'failed']);
 
 export const payments = pgTable('payments', {
@@ -12,6 +12,7 @@ export const payments = pgTable('payments', {
   status: paymentStatusEnum('status').notNull().default('initiated'),
   paidAt: timestamp('paid_at'),
   transactionId: text('transaction_id'),
+  merchantTransactionId: text('merchant_transaction_id').unique(),
   rawPayload: jsonb('raw_payload'),
 });
 
@@ -21,6 +22,7 @@ export const insertPaymentSchema = z.object({
   status: z.enum(['initiated', 'completed', 'failed']).optional(),
   paidAt: z.date().optional().nullable(),
   transactionId: z.string().optional().nullable(),
+  merchantTransactionId: z.string().optional().nullable(),
 });
 export const selectPaymentSchema = insertPaymentSchema.extend({
   id: z.string().uuid(),

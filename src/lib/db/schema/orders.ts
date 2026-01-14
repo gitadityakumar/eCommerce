@@ -24,6 +24,11 @@ export const orders = pgTable('orders', {
   totalAmount: numeric('total_amount', { precision: 15, scale: 2 }).notNull(), // INR precision
   shippingAddressId: uuid('shipping_address_id').references(() => addresses.id, { onDelete: 'set null' }),
   billingAddressId: uuid('billing_address_id').references(() => addresses.id, { onDelete: 'set null' }),
+  shiprocketOrderId: text('shiprocket_order_id'),
+  shiprocketShipmentId: text('shiprocket_shipment_id'),
+  awbCode: text('awb_code'),
+  courierName: text('courier_name'),
+  courierCompanyId: text('courier_company_id'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
