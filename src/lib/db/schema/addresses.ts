@@ -14,6 +14,7 @@ export const addresses = pgTable('addresses', {
   state: text('state').notNull(),
   country: text('country').notNull(),
   postalCode: text('postal_code').notNull(),
+  phone: text('phone').notNull(),
   isDefault: boolean('is_default').notNull().default(false),
 });
 
@@ -26,6 +27,7 @@ export const insertAddressSchema = z.object({
   state: z.string().min(1),
   country: z.string().min(1),
   postalCode: z.string().min(1),
+  phone: z.string().regex(/^[6-9]\d{9}$/, 'Please enter a valid 10-digit Indian mobile number'),
   isDefault: z.boolean().optional(),
 });
 export const selectAddressSchema = insertAddressSchema.extend({

@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, CheckCircle2, Lock, MapPin, Tag, X } from 'lucide-react';
+import { Check, CheckCircle2, Lock, MapPin, Phone, Tag, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -144,7 +144,7 @@ export default function Checkout({ initialAddresses, storeSettings, user }: Chec
                     </div>
 
                     <div className="p-8 border border-accent bg-accent/5 ring-1 ring-accent/20 rounded-3xl relative overflow-hidden group transition-all duration-500">
-                      <div className="flex justify-between items-start mb-6">
+                      <div className="flex justify-between items-start mb-2">
                         <div>
                           <h3 className="text-xl font-playfair text-text-primary mb-1">
                             Delivering to
@@ -158,7 +158,7 @@ export default function Checkout({ initialAddresses, storeSettings, user }: Chec
                         <Button
                           variant="ghost"
                           onClick={() => setIsChangingAddress(true)}
-                          className="text-xs uppercase tracking-widest font-bold text-accent hover:bg-accent/10 rounded-xl px-4"
+                          className="text-xs uppercase tracking-widest font-bold text-accent hover:bg-accent/30 hover:text-accent rounded-xl px-4 transition-all duration-300"
                         >
                           Change
                         </Button>
@@ -166,14 +166,8 @@ export default function Checkout({ initialAddresses, storeSettings, user }: Chec
 
                       {selectedAddress
                         ? (
-                            <div className="space-y-2 p-4 bg-surface/40 r">
+                            <div className="space-y-2 p-2 bg-surface/40 r">
                               <div className="flex items-center gap-3 mb-2">
-                                {/* <div className="p-2 rounded-lg bg-accent text-white">
-                                  <Home size={14} />
-                                </div> */}
-                                {/* <p className="text-[10px] font-bold uppercase tracking-widest text-text-primary">
-                                  {selectedAddress.type}
-                                </p> */}
                               </div>
                               <div className="space-y-1">
                                 <p className="text-sm font-semibold tracking-tight text-text-primary">{selectedAddress.line1}</p>
@@ -190,6 +184,12 @@ export default function Checkout({ initialAddresses, storeSettings, user }: Chec
                                 <p className="text-[10px] uppercase tracking-widest font-bold text-text-secondary/40 pt-1">
                                   {selectedAddress.country}
                                 </p>
+                                <div className="flex items-center gap-2 mt-2 pt-2 border-t border-border-subtle/50">
+                                  <Phone size={12} className="text-accent/60" />
+                                  <p className="text-xs text-text-primary font-medium tracking-wide">
+                                    {selectedAddress.phone}
+                                  </p>
+                                </div>
                               </div>
                             </div>
                           )
@@ -284,8 +284,8 @@ export default function Checkout({ initialAddresses, storeSettings, user }: Chec
 
             {/* Add Address Modal */}
             <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
-              <DialogContent className="sm:max-w-[600px] bg-background border-border-subtle rounded-3xl overflow-hidden p-0">
-                <div className="p-8 md:p-10">
+              <DialogContent className="sm:max-w-[600px] bg-background border-border-subtle rounded-3xl overflow-hidden p-0 max-h-[90vh]">
+                <div className="p-8 md:p-10 overflow-y-auto max-h-[calc(90vh-2rem)]">
                   <DialogHeader className="mb-8">
                     <DialogTitle className="text-3xl font-playfair tracking-tight text-text-primary">
                       New Archival Coordinate

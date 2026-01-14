@@ -1,6 +1,6 @@
 'use client';
 
-import { MapPin } from 'lucide-react';
+import { MapPin, Phone } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -13,6 +13,7 @@ interface Address {
   state: string;
   country: string;
   postalCode: string;
+  phone: string;
   isDefault: boolean;
 }
 
@@ -75,6 +76,10 @@ export function CustomerAddressCard({ addresses }: CustomerAddressCardProps) {
                 {address.postalCode}
               </p>
               <p className="text-muted-foreground">{address.country}</p>
+              <div className="flex items-center gap-2 mt-2 text-muted-foreground/80">
+                <Phone className="h-3 w-3" />
+                <span className="text-xs">{address.phone}</span>
+              </div>
             </div>
           </div>
         ))}

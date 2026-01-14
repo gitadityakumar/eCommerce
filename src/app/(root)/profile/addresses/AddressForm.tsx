@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Phone } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -34,6 +34,7 @@ const addressSchema = z.object({
   state: z.string().min(1, 'State is required'),
   country: z.string().min(1, 'Country is required'),
   postalCode: z.string().min(1, 'Postal code is required'),
+  phone: z.string().regex(/^[6-9]\d{9}$/, 'Please enter a valid 10-digit Indian mobile number'),
   isDefault: z.boolean(),
 });
 
@@ -54,6 +55,7 @@ export function AddressForm({ onSuccess }: AddressFormProps) {
       state: '',
       country: '',
       postalCode: '',
+      phone: '',
       isDefault: false,
     },
   });
@@ -148,6 +150,28 @@ export function AddressForm({ onSuccess }: AddressFormProps) {
             )}
           />
         </div>
+
+        <FormField
+          control={form.control}
+          name="phone"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary mb-2 flex items-center gap-2">
+                <Phone size={12} className="text-accent" />
+                Mobile Number
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="9876543210"
+                  {...field}
+                  maxLength={10}
+                  className="bg-transparent border-border-subtle focus:border-accent focus:ring-0 transition-all duration-300 rounded-none border-t-0 border-l-0 border-r-0 border-b px-0 pb-2 h-10 text-text-primary placeholder:text-text-secondary/30 placeholder:font-light"
+                />
+              </FormControl>
+              <FormMessage className="text-[10px] font-medium text-destructive mt-1" />
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}

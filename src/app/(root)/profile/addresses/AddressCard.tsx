@@ -1,6 +1,6 @@
 'use client';
 
-import { Building2, CheckCircle2, Home, Loader2, MapPin, Trash2 } from 'lucide-react';
+import { Building2, CheckCircle2, Home, Loader2, MapPin, Phone, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { deleteAddress, setDefaultAddress } from '@/actions/addresses';
@@ -28,6 +28,8 @@ interface AddressCardProps {
     state: string;
     country: string;
     postalCode: string;
+
+    phone: string;
     isDefault: boolean;
   };
 }
@@ -119,6 +121,11 @@ export function AddressCard({ address }: AddressCardProps) {
               {address.country}
             </p>
           </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Phone size={16} className="text-accent/40 shrink-0" />
+          <p className="text-sm text-text-secondary/80 font-light tracking-wide">{address.phone}</p>
         </div>
       </div>
 
