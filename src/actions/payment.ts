@@ -10,9 +10,9 @@ import { orderItems, orders, payments } from '@/lib/db/schema';
 const PHONEPE_HOST_URL = (process.env.PHONEPE_BASE_SANDBOX_URL || process.env.PHONEPE_BASE_URL || 'https://api-preprod.phonepe.com/apis/pg-sandbox').replace(/\/$/, '').trim();
 const APP_URL = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/$/, '').trim();
 
-const CLIENT_ID = 'M23GP1KUPUW4M_2512260843';
-const CLIENT_SECRET = 'MTA3MmY5MTgtODliMy00NjA4LWE0MGMtOTU3MjNmMjBmMWM1';
-const CLIENT_VERSION = '1';
+const CLIENT_ID = process.env.PHONEPE_CLIENT_ID || ' ';
+const CLIENT_SECRET = process.env.PHONEPE_CLIENT_SECRET || ' ';
+const CLIENT_VERSION = process.env.PHONEPE_CLIENT_VERSION || ' ';
 
 async function getPhonePeOAuthToken() {
   const params = new URLSearchParams();

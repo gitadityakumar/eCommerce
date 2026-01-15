@@ -1,5 +1,48 @@
-function page() {
-  return <div>sucess page</div>;
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import { getCachedOrderById } from '@/actions/orders';
+import { OrderSuccessPage } from '@/components/checkout/steps/success/success-state';
+import { auth } from '@/lib/auth';
+
+interface PageProps {
+  searchParams: Promise<{ orderId?: string }>;
 }
 
-export default page;
+async function OrderSuccessContent({ searchParams }: { searchParams: PageProps['searchParams'] }) {
+  const { orderId } = await searchParams;
+
+  if (!orderId) {
+    redirect('/');
+  }
+
+  const headersList = await headers();
+  const session = await auth.api.getSession({
+    headers: headersList,
+  });
+
+  if (!session) {
+    redirect('/auth/login');
+  }
+
+  const order = await getCachedOrderById(orderId, session.user.id);
+
+  if (!order) {
+    redirect('/');
+  }
+
+  // Basic ownership check
+  if (order.userId !== session.user.id) {
+    redirect('/');
+  }
+
+  return <OrderSuccessPage order={order} />;
+}
+
+export default function Page({ searchParams }: PageProps) {
+  return (
+    <Suspense fallback={<div className="container py-24 text-center">Loading your order details...</div>}>
+      <OrderSuccessContent searchParams={searchParams} />
+    </Suspense>
+  );
+}

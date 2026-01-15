@@ -1,7 +1,7 @@
 'use server';
 
 import { eq } from 'drizzle-orm';
-import { revalidatePath } from 'next/cache';
+import { cacheLife, cacheTag, revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 import { z } from 'zod';
 import { auth } from '@/lib/auth';
@@ -52,7 +52,11 @@ export async function getOrderById(id: string) {
           with: {
             variant: {
               with: {
-                product: true,
+                product: {
+                  with: {
+                    images: true,
+                  },
+                },
                 color: true,
                 size: true,
               },
@@ -70,6 +74,13 @@ export async function getOrderById(id: string) {
     console.error('Error fetching order:', error);
     return null;
   }
+}
+
+export async function getCachedOrderById(id: string, userId: string) {
+  'use cache';
+  cacheLife('minutes');
+  cacheTag(`order-${id}`, `user-orders-${userId}`);
+  return getOrderById(id);
 }
 
 export async function updateOrderStatus(orderId: string, status: (typeof orderStatusEnum.enumValues)[number]) {
