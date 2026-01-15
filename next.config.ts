@@ -1,8 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  // let me add some cache components settings
-  cacheComponents: true,
+
   // lets adds some temp image domain
   images: {
     remotePatterns: [

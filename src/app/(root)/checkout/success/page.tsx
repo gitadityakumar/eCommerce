@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
-import { getCachedOrderById } from '@/actions/orders';
+import { getOrderById } from '@/actions/orders';
 import { getStoreSettings } from '@/actions/settings';
 import { OrderSuccessPage } from '@/components/checkout/steps/success/success-state';
 import { auth } from '@/lib/auth';
@@ -27,7 +27,7 @@ async function OrderSuccessContent({ searchParams }: { searchParams: PageProps['
   }
 
   const [order, settings] = await Promise.all([
-    getCachedOrderById(orderId, session.user.id),
+    getOrderById(orderId),
     getStoreSettings(),
   ]);
 

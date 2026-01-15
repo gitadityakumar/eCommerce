@@ -119,7 +119,7 @@ export function ProfileDropdown() {
               <span className="text-sm font-light text-text-primary tracking-wide group-hover:text-accent transition-colors">My Profile</span>
             </DropdownMenuItem>
           </Link>
-          <Link href="/orders">
+          <Link href="/my-orders">
             <DropdownMenuItem className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer hover:bg-accent/5 focus:bg-accent/5 transition-colors group">
               <Package size={18} className="text-text-secondary group-hover:text-accent transition-colors" />
               <span className="text-sm font-light text-text-primary tracking-wide group-hover:text-accent transition-colors">My Orders</span>

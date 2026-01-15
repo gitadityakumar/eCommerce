@@ -1,7 +1,7 @@
 'use server';
 
 import { eq } from 'drizzle-orm';
-import { cacheLife, cacheTag, revalidatePath } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 import { z } from 'zod';
 import { auth } from '@/lib/auth';
@@ -40,6 +40,48 @@ export async function getOrders() {
   }
 }
 
+export async function getUserOrders() {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session) {
+      return [];
+    }
+
+    const userOrders = await db.query.orders.findMany({
+      where: eq(orders.userId, session.user.id),
+      with: {
+        items: {
+          with: {
+            variant: {
+              with: {
+                product: {
+                  with: {
+                    images: true,
+                  },
+                },
+                color: true,
+                size: true,
+              },
+            },
+          },
+        },
+        fulfillments: true,
+        payments: true,
+      },
+      orderBy: (orders, { desc }) => [desc(orders.createdAt)],
+    });
+
+    return userOrders;
+  }
+  catch (error) {
+    console.error('Error fetching user orders:', error);
+    return [];
+  }
+}
+
 export async function getOrderById(id: string) {
   try {
     const order = await db.query.orders.findFirst({
@@ -74,13 +116,6 @@ export async function getOrderById(id: string) {
     console.error('Error fetching order:', error);
     return null;
   }
-}
-
-export async function getCachedOrderById(id: string, userId: string) {
-  'use cache';
-  cacheLife('minutes');
-  cacheTag(`order-${id}`, `user-orders-${userId}`);
-  return getOrderById(id);
 }
 
 export async function updateOrderStatus(orderId: string, status: (typeof orderStatusEnum.enumValues)[number]) {

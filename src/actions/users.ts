@@ -52,7 +52,6 @@ export async function getCustomerById(id: string) {
         addresses: true,
         orders: {
           orderBy: [desc(orders.createdAt)],
-          limit: 10,
         },
         reviews: {
           with: {
