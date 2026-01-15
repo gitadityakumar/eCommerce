@@ -2,6 +2,7 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import { getCachedOrderById } from '@/actions/orders';
+import { getStoreSettings } from '@/actions/settings';
 import { OrderSuccessPage } from '@/components/checkout/steps/success/success-state';
 import { auth } from '@/lib/auth';
 
@@ -25,7 +26,10 @@ async function OrderSuccessContent({ searchParams }: { searchParams: PageProps['
     redirect('/auth/login');
   }
 
-  const order = await getCachedOrderById(orderId, session.user.id);
+  const [order, settings] = await Promise.all([
+    getCachedOrderById(orderId, session.user.id),
+    getStoreSettings(),
+  ]);
 
   if (!order) {
     redirect('/');
@@ -36,7 +40,7 @@ async function OrderSuccessContent({ searchParams }: { searchParams: PageProps['
     redirect('/');
   }
 
-  return <OrderSuccessPage order={order} />;
+  return <OrderSuccessPage order={order} settings={settings} />;
 }
 
 export default function Page({ searchParams }: PageProps) {

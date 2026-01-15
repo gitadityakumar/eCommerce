@@ -268,3 +268,48 @@
   animation: gradient-x 8s ease infinite;
 }
 /* Rebuild trigger */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+
+  /* Hide navigation, buttons, and other UI elements */
+  nav,
+  header,
+  footer,
+  button,
+  .no-print,
+  [role='button'] {
+    display: none !important;
+  }
+
+  /* Reset card shadows and borders for cleaner print */
+  .card,
+  .border {
+    box-shadow: none !important;
+    border-color: #eee !important;
+  }
+
+  /* Ensure the main content expands */
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .grid {
+    display: block !important;
+  }
+
+  .lg\:col-span-2,
+  .space-y-8 {
+    width: 100% !important;
+  }
+}

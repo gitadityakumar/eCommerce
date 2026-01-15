@@ -1,35 +1,69 @@
+'use client';
+
 import type { getOrderById } from '@/actions/orders';
+import type { getStoreSettings } from '@/actions/settings';
 import {
   CheckCircle,
   CreditCard,
   Download,
+  Loader2,
   MapPin,
   Package,
-  Printer,
   Truck,
 } from 'lucide-react';
 import Image from 'next/image';
-
 import Link from 'next/link';
+
+import { useState } from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+
 import { formatINR } from '@/lib/currency';
 import { cn } from '@/lib/utils';
 
+import { ReceiptDocument } from './receipt-document';
+
 type OrderData = NonNullable<Awaited<ReturnType<typeof getOrderById>>>;
+type StoreSettings = Awaited<ReturnType<typeof getStoreSettings>>;
 
 interface OrderSuccessPageProps {
   order: OrderData;
+  settings: StoreSettings;
   className?: string;
 }
 
 function OrderSuccessPage({
   order,
+  settings,
   className,
 }: OrderSuccessPageProps) {
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    try {
+      setIsDownloading(true);
+      const { pdf } = await import('@react-pdf/renderer');
+      const blob = await pdf(<ReceiptDocument order={order} settings={settings} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Receipt-${order.id.slice(0, 8).toUpperCase()}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+    catch (error) {
+      console.error('Failed to generate PDF:', error);
+    }
+    finally {
+      setIsDownloading(false);
+    }
+  };
+
   const getStatusBadge = (status: OrderData['status']) => {
     const variants: Record<
       OrderData['status'],
@@ -106,24 +140,20 @@ function OrderSuccessPage({
 
         {/* Order Info Bar */}
         <Card className="mb-10 border-border-subtle bg-surface/30 backdrop-blur-sm shadow-soft rounded-2xl overflow-hidden border">
-          <CardContent className="flex flex-wrap items-center justify-between gap-6 p-6 md:p-8">
-            <div className="flex flex-wrap items-center gap-x-12 gap-y-4 font-montserrat uppercase tracking-[0.2em] text-[10px]">
-              <div>
-                <p className="text-text-secondary mb-1">Order Number</p>
-                <p className="font-semibold text-text-primary text-sm">{order.id.slice(0, 8).toUpperCase()}</p>
-              </div>
-              <Separator
-                orientation="vertical"
-                className="hidden h-12 bg-border-subtle md:block"
-              />
-              <div>
-                <p className="text-text-secondary mb-1">Order Date</p>
-                <p className="font-semibold text-text-primary text-sm">{new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-              </div>
+          <CardContent className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border-subtle items-center p-6 md:p-8">
+            <div className="pb-6 sm:pb-0 sm:pr-8 text-center sm:text-left">
+              <p className="text-text-secondary mb-1 font-montserrat uppercase tracking-[0.2em] text-[10px]">Order Number</p>
+              <p className="font-semibold text-text-primary text-sm font-montserrat">{order.id.slice(0, 8).toUpperCase()}</p>
             </div>
-            <Badge className={cn('px-4 py-1.5 rounded-full text-[10px] font-montserrat font-bold tracking-widest uppercase shadow-sm border-none', statusBadge.className)}>
-              {statusBadge.label}
-            </Badge>
+            <div className="py-6 sm:py-0 sm:px-8 text-center">
+              <p className="text-text-secondary mb-1 font-montserrat uppercase tracking-[0.2em] text-[10px]">Order Date</p>
+              <p className="font-semibold text-text-primary text-sm font-montserrat">{new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+            </div>
+            <div className="pt-6 sm:pt-0 sm:pl-8 flex justify-center sm:justify-end">
+              <Badge className={cn('px-6 py-2 rounded-full text-[10px] font-montserrat font-bold tracking-widest uppercase shadow-sm border-none', statusBadge.className)}>
+                {statusBadge.label}
+              </Badge>
+            </div>
           </CardContent>
         </Card>
 
@@ -321,21 +351,28 @@ function OrderSuccessPage({
 
             {/* Actions */}
             <Card className="shadow-none bg-transparent border-none">
-              <CardContent className="space-y-4 p-0">
-                <Button className="w-full h-12 bg-primary hover:bg-accent text-primary-foreground font-montserrat font-bold tracking-widest uppercase transition-all duration-300 rounded-xl shadow-soft" asChild>
-                  <Link href="/my-orders">
-                    <Package className="mr-2 size-4" />
-                    Order Archives
-                  </Link>
-                </Button>
-                <div className="grid grid-cols-2 gap-4">
-                  <Button className="h-11 border-primary/10 text-primary hover:border-accent hover:bg-accent hover:text-white transition-all duration-500 rounded-xl font-montserrat font-bold text-[10px] tracking-widest uppercase bg-primary/5 shadow-sm" variant="outline">
-                    <Download className="mr-2 size-3" />
-                    Receipt
+              <CardContent className="p-0">
+                <div className="flex gap-3">
+                  <Button className="w-2/3 h-11 bg-primary hover:bg-accent text-primary-foreground font-montserrat font-bold text-[10px] tracking-widest uppercase transition-all duration-300 rounded-xl shadow-soft" asChild>
+                    <Link href="/my-orders">
+                      <Package className="mr-2 size-3" />
+                      Orders
+                    </Link>
                   </Button>
-                  <Button className="h-11 border-primary/10 text-primary hover:border-accent hover:bg-accent hover:text-white transition-all duration-500 rounded-xl font-montserrat font-bold text-[10px] tracking-widest uppercase bg-primary/5 shadow-sm" variant="outline">
-                    <Printer className="mr-2 size-3" />
-                    Print
+                  <Button
+                    className="w-1/3 h-11 px-1 border-primary/10 text-primary hover:border-accent hover:bg-accent hover:text-white transition-all duration-500 rounded-xl font-montserrat font-bold text-[10px] tracking-widest uppercase bg-primary/5 shadow-sm disabled:opacity-50"
+                    variant="outline"
+                    onClick={handleDownload}
+                    disabled={isDownloading}
+                  >
+                    {isDownloading
+                      ? (
+                          <Loader2 className="size-3 animate-spin" />
+                        )
+                      : (
+                          <Download className="size-3" />
+                        )}
+                    Receipt
                   </Button>
                 </div>
               </CardContent>
