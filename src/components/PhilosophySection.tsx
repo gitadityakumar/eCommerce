@@ -3,11 +3,12 @@
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function PhilosophySection() {
   return (
     <section className="overflow-hidden bg-background pt-32 pb-32 relative transition-colors duration-500">
-      <div className="max-w-screen-xl mx-auto px-6 md:px-12 relative z-10">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-12 items-center">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -16,7 +17,7 @@ export default function PhilosophySection() {
             transition={{ duration: 0.8 }}
             className="lg:col-span-5"
           >
-            <div className="relative aspect-[3/4] overflow-hidden rounded-sm group shadow-soft">
+            <div className="relative aspect-3/4 overflow-hidden rounded-sm group shadow-soft">
               <Image
                 src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/4734259a-bad7-422f-981e-ce01e79184f2_1600w.jpg"
                 alt="Signature Velvet Bow"
@@ -55,15 +56,16 @@ export default function PhilosophySection() {
             <p className="text-xl text-text-secondary font-light leading-relaxed mb-10 max-w-lg">
               We believe an accessory is not an addition, but a completion. Our bows are architectural statements, crafted from vintage Japanese silks and French velvets, designed to define the silhouette of the modern muse.
             </p>
-            <motion.a
-              whileHover={{ x: 10 }}
-              href="#"
-              className="inline-flex items-center gap-3 text-text-primary border-b border-border-subtle pb-2 hover:border-accent transition-all duration-500 uppercase text-xs tracking-widest"
-            >
-              Read the Journal
-              {' '}
-              <ArrowRight className="w-3 h-3 text-accent" />
-            </motion.a>
+            <Link href="/collections">
+              <motion.div
+                whileHover={{ x: 10 }}
+                className="inline-flex items-center gap-3 text-text-primary border-b border-border-subtle pb-2 hover:border-accent transition-all duration-500 uppercase text-xs tracking-widest cursor-pointer"
+              >
+                Read the Journal
+                {' '}
+                <ArrowRight className="w-3 h-3 text-accent" />
+              </motion.div>
+            </Link>
           </motion.div>
         </div>
       </div>

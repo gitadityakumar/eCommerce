@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function SpotlightSection() {
   return (
@@ -23,7 +24,7 @@ export default function SpotlightSection() {
           transition={{ duration: 0.8 }}
         >
           <div className="text-text-secondary text-xs tracking-[0.4em] uppercase mb-4 flex items-center gap-4">
-            <span className="w-12 h-[1px] bg-border-subtle"></span>
+            <span className="w-12 h-px bg-border-subtle"></span>
             {' '}
             Spotlight
           </div>
@@ -37,14 +38,16 @@ export default function SpotlightSection() {
             Thousands of freshwater pearls hand-sewn onto structural organza. A shimmering halo that catches the light with every movement.
           </p>
           <div className="flex items-center gap-8">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-accent text-white px-10 py-4 text-xs font-bold tracking-[0.2em] uppercase hover:bg-accent/90 transition-colors shadow-soft rounded-full"
-            >
-              Purchase
-            </motion.button>
-            <span className="text-text-primary font-light text-xl">$350.00</span>
+            <Link href="/products">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-accent text-white px-10 py-4 text-xs font-bold tracking-[0.2em] uppercase hover:bg-accent/90 transition-colors shadow-soft rounded-full"
+              >
+                Purchase
+              </motion.button>
+            </Link>
+            <span className="text-text-primary font-light text-xl">₹35,000.00</span>
           </div>
         </motion.div>
 

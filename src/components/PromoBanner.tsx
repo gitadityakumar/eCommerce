@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function PromoBanner() {
   return (
@@ -15,7 +16,7 @@ export default function PromoBanner() {
         <div className="absolute inset-0 bg-background/40 dark:bg-black/60 z-10 transition-colors duration-500"></div>
         <Image
           src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=2073&auto=format&fit=crop"
-          className="w-full h-full object-cover opacity-80 dark:opacity-40 grayscale-[20%] dark:grayscale-0 transition-opacity duration-700"
+          className="w-full h-full object-cover opacity-80 dark:opacity-40 grayscale-20 dark:grayscale-0 transition-opacity duration-700"
           alt="Seasonal Promo"
           fill
         />
@@ -33,13 +34,15 @@ export default function PromoBanner() {
         <p className="text-text-secondary font-light text-lg mb-10 max-w-lg mx-auto leading-relaxed">
           Exclusive pieces featuring Swarovski crystals and rare vintage lace. Crafted for the modern muse.
         </p>
-        <motion.button
-          whileHover={{ scale: 1.05, y: -4 }}
-          whileTap={{ scale: 0.95 }}
-          className="bg-accent text-white px-12 py-4 text-xs font-bold tracking-[0.2em] uppercase hover:bg-accent/90 transition-all shadow-soft rounded-full hover:shadow-[0_0_30px_oklch(0.6_0.2_25/0.4)]"
-        >
-          Shop the Drop
-        </motion.button>
+        <Link href="/collections">
+          <motion.button
+            whileHover={{ scale: 1.05, y: -4 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-accent text-white px-12 py-4 text-xs font-bold tracking-[0.2em] uppercase hover:bg-accent/90 transition-all shadow-soft rounded-full hover:shadow-[0_0_30px_oklch(0.6_0.2_25/0.4)]"
+          >
+            Shop the Drop
+          </motion.button>
+        </Link>
       </motion.div>
     </section>
   );
