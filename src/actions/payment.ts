@@ -8,7 +8,11 @@ import { db } from '@/lib/db';
 import { orderItems, orders, payments } from '@/lib/db/schema';
 
 const PHONEPE_HOST_URL = (process.env.PHONEPE_BASE_SANDBOX_URL || process.env.PHONEPE_BASE_URL || 'https://api-preprod.phonepe.com/apis/pg-sandbox').replace(/\/$/, '').trim();
-const APP_URL = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/$/, '').trim();
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '').trim();
+
+if (!APP_URL) {
+  throw new Error('NEXT_PUBLIC_APP_URL is not defined');
+}
 
 const CLIENT_ID = process.env.PHONEPE_CLIENT_ID || ' ';
 const CLIENT_SECRET = process.env.PHONEPE_CLIENT_SECRET || ' ';
@@ -152,7 +156,15 @@ export async function initiatePayment(
       body: JSON.stringify(payload),
     });
 
-    const data = await response.json();
+    const responseText = await response.text();
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    }
+    catch {
+      console.error('PhonePe V2 Invalid JSON Response:', responseText);
+      throw new Error(`PhonePe API returned invalid JSON: ${responseText}`);
+    }
 
     console.warn('PhonePe V2 Full Response:', JSON.stringify(data, null, 2));
 
@@ -166,8 +178,8 @@ export async function initiatePayment(
         const clearRes = await clearCartAction();
         console.warn('Clear Cart Result:', clearRes);
       }
-      catch (e) {
-        console.error('Failed to clear cart after payment initiation:', e);
+      catch {
+        console.error('Failed to clear cart after payment initiation');
       }
 
       return { success: true, url: data.redirectUrl };

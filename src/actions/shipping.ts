@@ -144,7 +144,7 @@ export async function createShiprocketOrder(orderId: string) {
     const payload = {
       order_id: order.id,
       order_date: orderDate,
-      pickup_location: 'Primary', // NOTE: Crucial - must match Shiprocket Dashboard nickname
+      pickup_location: 'warehouse', // Must match Shiprocket Dashboard nickname
       channel_id: '',
       comment: 'App Order',
       billing_customer_name: firstName,

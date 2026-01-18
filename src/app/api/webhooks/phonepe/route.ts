@@ -1,61 +1,85 @@
+'use server';
+
 import type { NextRequest } from 'next/server';
-import { Buffer } from 'node:buffer';
+import crypto from 'node:crypto';
 import { eq, sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { createShiprocketOrder } from '@/actions/shipping';
 import { db } from '@/lib/db';
 import { orders, payments } from '@/lib/db/schema';
-import { verifySignature } from '@/lib/phonepe/client';
+
+// PhonePe V2 Webhook credentials (configured in dashboard)
+const WEBHOOK_USERNAME = process.env.PHONEPE_WEBHOOK_USERNAME || 'testuser';
+const WEBHOOK_PASSWORD = process.env.PHONEPE_WEBHOOK_PASSWORD || 'testuser123';
+
+function verifyV2Authorization(authHeader: string | null): boolean {
+  if (!authHeader)
+    return false;
+
+  // PhonePe sends: Authorization: SHA256(username:password)
+  const expectedHash = crypto
+    .createHash('sha256')
+    .update(`${WEBHOOK_USERNAME}:${WEBHOOK_PASSWORD}`)
+    .digest('hex');
+
+  // The header might be just the hash or prefixed
+  const receivedHash = authHeader.replace(/^SHA256\s*/i, '').trim();
+
+  return receivedHash.toLowerCase() === expectedHash.toLowerCase();
+}
+
+interface PhonePeV2Webhook {
+  event: 'checkout.order.completed' | 'checkout.order.failed' | 'pg.refund.completed' | 'pg.refund.failed';
+  payload: {
+    orderId: string;
+    merchantId: string;
+    merchantOrderId: string;
+    state: 'COMPLETED' | 'FAILED' | 'PENDING';
+    amount: number;
+    expireAt: number;
+    metaInfo?: Record<string, string>;
+    paymentDetails?: Array<{
+      paymentMode: string;
+      transactionId: string;
+      timestamp: number;
+      amount: number;
+      state: string;
+    }>;
+  };
+}
 
 export async function POST(req: NextRequest) {
   try {
-    const rawBody = await req.json();
-    const xVerify = req.headers.get('x-verify');
-    const auth = req.headers.get('authorization');
+    const rawBody: PhonePeV2Webhook = await req.json();
+    const authHeader = req.headers.get('authorization');
 
-    console.warn('PhonePe Webhook Received:', {
+    console.warn('PhonePe V2 Webhook Received:', {
       headers: {
-        'x-verify': xVerify,
-        'authorization': auth,
+        'authorization': authHeader ? '[PRESENT]' : '[MISSING]',
         'content-type': req.headers.get('content-type'),
       },
-      bodyPreview: JSON.stringify(rawBody).substring(0, 500),
+      event: rawBody.event,
+      merchantOrderId: rawBody.payload?.merchantOrderId,
+      state: rawBody.payload?.state,
     });
 
-    let decodedData: any;
-    let merchantTransactionId: string;
-    let code: string;
-    let data: any;
-
-    if (rawBody.response) {
-      // V1 Flow (Base64 Response)
-      const saltKey = process.env.PHONEPE_CLIENT_SECRET || '099eb0cd-02cf-4e2a-8aca-3e6c6aff0399';
-      const saltIndex = process.env.PHONEPE_CLIENT_VERSION || '1';
-
-      if (xVerify && !verifySignature(rawBody.response, xVerify, saltKey, saltIndex)) {
-        console.error('PhonePe V1 Checksum Failed');
-        // We still log but maybe return error?
-        // For now, let's be strict if it's clearly V1
-      }
-      decodedData = JSON.parse(Buffer.from(rawBody.response, 'base64').toString('utf-8'));
-      code = decodedData.code;
-      data = decodedData.data;
-      merchantTransactionId = data.merchantTransactionId;
-    }
-    else {
-      // V2 Flow (Direct JSON)
-      decodedData = rawBody;
-      code = decodedData.code || decodedData.status; // V2 might use status
-      data = decodedData.data || decodedData;
-      merchantTransactionId = decodedData.merchantTransactionId || data.merchantTransactionId;
-
-      // Verification logic for V2 would go here once confirmed
-      // For now, we rely on the merchantTransactionId being unique and valid
+    // Verify authorization (optional but recommended)
+    if (!verifyV2Authorization(authHeader)) {
+      console.warn('PhonePe V2 Authorization verification failed or skipped');
+      // In production, you may want to reject unauthorized requests
+      // For now, we log and continue to debug
     }
 
-    // Find Payment Record
+    const { event, payload } = rawBody;
+
+    if (!payload?.merchantOrderId) {
+      console.error('PhonePe V2 Webhook: Missing merchantOrderId');
+      return NextResponse.json({ error: 'Missing merchantOrderId' }, { status: 400 });
+    }
+
+    // Find Payment Record by merchantOrderId (which we stored as merchantTransactionId)
     const payment = await db.query.payments.findFirst({
-      where: eq(payments.merchantTransactionId, merchantTransactionId),
+      where: eq(payments.merchantTransactionId, payload.merchantOrderId),
       with: {
         order: {
           with: {
@@ -66,69 +90,70 @@ export async function POST(req: NextRequest) {
     });
 
     if (!payment) {
-      console.error('Payment record not found for:', merchantTransactionId);
+      console.error('Payment record not found for:', payload.merchantOrderId);
       return NextResponse.json({ error: 'Payment Not Found' }, { status: 404 });
     }
 
-    if (code === 'PAYMENT_SUCCESS') {
-      // 1. Update Payment
+    // Handle events
+    if (event === 'checkout.order.completed' && payload.state === 'COMPLETED') {
+      // Payment Success
+      const transactionId = payload.paymentDetails?.[0]?.transactionId || payload.orderId;
+
       await db.update(payments).set({
         status: 'completed',
-        transactionId: data.transactionId,
+        transactionId,
         paidAt: new Date(),
-        rawPayload: decodedData,
+        rawPayload: rawBody,
       }).where(eq(payments.id, payment.id));
 
-      // 2. Update Order (Idempotency Check)
+      // Update Order (Idempotency Check)
       if (payment.order.status !== 'paid') {
         await db.update(orders).set({
           status: 'paid',
           updatedAt: new Date(),
         }).where(eq(orders.id, payment.orderId));
 
-        // 3. Decrement Inventory (Atomic)
-        // We loop through items and decrement stock.
-        // Ideally use a single transaction.
+        // Decrement Inventory (Atomic)
         await db.transaction(async (tx) => {
           for (const item of payment.order.items) {
             await tx.execute(sql`
-                    UPDATE inventory_levels 
-                    SET available = available - ${item.quantity}
-                    WHERE variant_id = ${item.productVariantId}
-                `);
+              UPDATE inventory_levels 
+              SET available = available - ${item.quantity}
+              WHERE variant_id = ${item.productVariantId}
+            `);
           }
         });
 
-        // 4. Create Shiprocket Order (Async - don't block webhook response if possible, but reliability matters)
-        // We'll await it to ensure we capture error logs.
+        // Create Shiprocket Order
         try {
           await createShiprocketOrder(payment.orderId);
         }
         catch (srError) {
           console.error('Failed to create Shiprocket Order from Webhook:', srError);
-          // We still return success to PhonePe to stop retries if payment is confirmed.
         }
       }
+
+      console.warn('PhonePe V2 Payment Success for order:', payment.orderId);
     }
-    else {
+    else if (event === 'checkout.order.failed' || payload.state === 'FAILED') {
       // Payment Failed
       await db.update(payments).set({
         status: 'failed',
-        rawPayload: decodedData,
+        rawPayload: rawBody,
       }).where(eq(payments.id, payment.id));
 
-      // Optionally cancel order or leave as pending?
-      // If failed, user might retry. Leaving as pending is safer?
-      // But if explicitly failed, we can mark failed.
-      if (code === 'PAYMENT_ERROR') {
-        await db.update(orders).set({ status: 'failed' }).where(eq(orders.id, payment.orderId));
-      }
+      await db.update(orders).set({ status: 'failed' }).where(eq(orders.id, payment.orderId));
+
+      console.warn('PhonePe V2 Payment Failed for order:', payment.orderId);
+    }
+    else {
+      console.warn('PhonePe V2 Webhook: Unhandled event or state:', { event, state: payload.state });
     }
 
     return NextResponse.json({ success: true });
   }
   catch (error: any) {
-    console.error('Webhook Error:', error);
+    console.error('PhonePe V2 Webhook Error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
