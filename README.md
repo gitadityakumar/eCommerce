@@ -27,7 +27,7 @@
 3. [Key Features](#key-features)
 4. [Getting Started](#getting-started)
 5. [Project Structure](#project-structure)
-6. [Database Schema](#database-schema)
+
 
 ## <a name="overview">Overview</a>
 
