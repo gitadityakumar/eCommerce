@@ -153,22 +153,25 @@ export async function getAllProducts(
         .select({
           productId: productImages.productId,
           url: productImages.url,
-          rn: sql<number>`row_number() over (partition by ${productImages.productId} order by ${productImages.isPrimary} desc, ${productImages.sortOrder} asc)`.as(
+          rn: sql<number>`row_number() over (partition by ${productImages.productId} order by (case when ${productImages.variantId} is not null then 0 else 1 end) asc, ${productImages.isPrimary} desc, ${productImages.sortOrder} asc)`.as(
             'rn',
           ),
         })
         .from(productImages)
-        .innerJoin(
+        .leftJoin(
           productVariants,
           eq(productVariants.id, productImages.variantId),
         )
         .where(
-          inArray(
-            productVariants.colorId,
-            db
-              .select({ id: colors.id })
-              .from(colors)
-              .where(inArray(colors.slug, filters!.colorSlugs!)),
+          or(
+            inArray(
+              productVariants.colorId,
+              db
+                .select({ id: colors.id })
+                .from(colors)
+                .where(inArray(colors.slug, filters!.colorSlugs!)),
+            ),
+            isNull(productImages.variantId),
           ),
         )
         .as('pi')
