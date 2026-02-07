@@ -64,7 +64,7 @@ export default function Checkout({ initialAddresses, storeSettings, user, server
         quantity: item.quantity,
         name: item.variant?.product?.name + (item.variant?.color ? ` - ${item.variant.color.name}` : '') + (item.variant?.size ? ` / ${item.variant.size.name}` : ''),
         price: Number(item.variant?.salePrice || item.variant?.price || 0),
-        image: item.variant?.images?.[0]?.url || item.variant?.images?.[0] || '',
+        image: item.variant?.images?.[0]?.url || item.variant?.images?.[0] || item.variant?.product?.images?.[0]?.url || '',
       })) || [])
     : clientItems;
 

@@ -19,7 +19,7 @@ export default function Footer() {
             >
               Preety Twist
             </Link>
-            <p className="text-neutral-500 text-sm font-light leading-relaxed max-w-xs">
+            <p className="text-neutral-400 text-sm font-light leading-relaxed max-w-xs">
               Redefining the art of hair accessories through uncompromising
               quality and modern design.
             </p>
@@ -33,7 +33,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/products"
-                  className="text-neutral-500 hover:text-white transition-colors text-sm font-light tracking-wide"
+                  className="text-neutral-400 hover:text-white transition-colors text-sm font-light tracking-wide"
                 >
                   All Accessories
                 </Link>
@@ -41,7 +41,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/products?sort=newest"
-                  className="text-neutral-500 hover:text-white transition-colors text-sm font-light tracking-wide"
+                  className="text-neutral-400 hover:text-white transition-colors text-sm font-light tracking-wide"
                 >
                   New Arrivals
                 </Link>
@@ -49,7 +49,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/collections"
-                  className="text-neutral-500 hover:text-white transition-colors text-sm font-light tracking-wide"
+                  className="text-neutral-400 hover:text-white transition-colors text-sm font-light tracking-wide"
                 >
                   Collections
                 </Link>
@@ -57,7 +57,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/products?collection=velvet-edit"
-                  className="text-neutral-500 hover:text-white transition-colors text-sm font-light tracking-wide"
+                  className="text-neutral-400 hover:text-white transition-colors text-sm font-light tracking-wide"
                 >
                   The Velvet Edit
                 </Link>
@@ -73,7 +73,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/contact"
-                  className="text-neutral-500 hover:text-white transition-colors text-sm font-light tracking-wide"
+                  className="text-neutral-400 hover:text-white transition-colors text-sm font-light tracking-wide"
                 >
                   Contact Us
                 </Link>
@@ -81,7 +81,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/faq"
-                  className="text-neutral-500 hover:text-white transition-colors text-sm font-light tracking-wide"
+                  className="text-neutral-400 hover:text-white transition-colors text-sm font-light tracking-wide"
                 >
                   FAQ
                 </Link>
@@ -89,7 +89,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/terms"
-                  className="text-neutral-500 hover:text-white transition-colors text-sm font-light tracking-wide"
+                  className="text-neutral-400 hover:text-white transition-colors text-sm font-light tracking-wide"
                 >
                   Shipping & Returns
                 </Link>
@@ -97,7 +97,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/privacy"
-                  className="text-neutral-500 hover:text-white transition-colors text-sm font-light tracking-wide"
+                  className="text-neutral-400 hover:text-white transition-colors text-sm font-light tracking-wide"
                 >
                   Privacy Policy
                 </Link>
@@ -113,7 +113,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/profile"
-                  className="text-neutral-500 hover:text-white transition-colors text-sm font-light tracking-wide"
+                  className="text-neutral-400 hover:text-white transition-colors text-sm font-light tracking-wide"
                 >
                   Profile
                 </Link>
@@ -121,7 +121,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/my-orders"
-                  className="text-neutral-500 hover:text-white transition-colors text-sm font-light tracking-wide"
+                  className="text-neutral-400 hover:text-white transition-colors text-sm font-light tracking-wide"
                 >
                   Order History
                 </Link>
@@ -129,7 +129,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/wishlist"
-                  className="text-neutral-500 hover:text-white transition-colors text-sm font-light tracking-wide"
+                  className="text-neutral-400 hover:text-white transition-colors text-sm font-light tracking-wide"
                 >
                   Wishlist
                 </Link>
@@ -137,7 +137,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/cart"
-                  className="text-neutral-500 hover:text-white transition-colors text-sm font-light tracking-wide"
+                  className="text-neutral-400 hover:text-white transition-colors text-sm font-light tracking-wide"
                 >
                   Shopping Bag
                 </Link>
@@ -148,7 +148,7 @@ export default function Footer() {
 
         <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/5">
           <div className="flex gap-6 mb-4 md:mb-0">
-            <span className="text-neutral-700 text-xs">
+            <span className="text-neutral-500 text-xs">
               ©
               {currentYear}
               {' '}
@@ -160,7 +160,7 @@ export default function Footer() {
               href="https://instagram.com/preetytwist"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-neutral-500 hover:text-white transition-colors"
+              className="text-neutral-400 hover:text-white transition-colors"
             >
               <IconBrandInstagram className="w-4 h-4" />
             </a>
@@ -168,7 +168,7 @@ export default function Footer() {
               href="https://x.com/preetytwist"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-neutral-500 hover:text-white transition-colors"
+              className="text-neutral-400 hover:text-white transition-colors"
             >
               <IconBrandX className="w-4 h-4" />
             </a>
@@ -176,7 +176,7 @@ export default function Footer() {
               href="https://facebook.com/preetytwist"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-neutral-500 hover:text-white transition-colors"
+              className="text-neutral-400 hover:text-white transition-colors"
             >
               <IconBrandMeta className="w-4 h-4" />
             </a>

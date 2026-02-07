@@ -48,7 +48,11 @@ export async function getCartAction() {
         with: {
           variant: {
             with: {
-              product: true,
+              product: {
+                with: {
+                  images: true,
+                },
+              },
               color: true,
               size: true,
               images: true,
