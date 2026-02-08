@@ -8,6 +8,7 @@ import {
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { Menu } from '@/components/ui/navbar-menu';
 import { cn } from '@/lib/utils';
@@ -28,7 +29,9 @@ export default function Navbar() {
   const [active, setActive] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
   const { isAuthenticated } = useAuthStore();
   const guestItemCount = useCartStore(s => s.getItemCount());
   const userItemCount = useUserCartStore(s => s.count);
@@ -42,6 +45,14 @@ export default function Navbar() {
       fetchUserCount();
     }
   }, [isAuthenticated, fetchUserCount]);
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchOpen(false);
+      setSearchQuery('');
+    }
+  };
 
   return (
     <div className="sticky top-0 z-50 w-full h-15 border-b border-border-subtle bg-background/80 backdrop-blur-md transition-all duration-300 flex items-center justify-center">
@@ -88,7 +99,17 @@ export default function Navbar() {
                     ref={searchInputRef}
                     type="search"
                     placeholder="Search Atelier..."
-                    onBlur={() => setIsSearchOpen(false)}
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSearch();
+                      }
+                    }}
+                    onBlur={() => {
+                      if (!searchQuery)
+                        setIsSearchOpen(false);
+                    }}
                     className="bg-transparent border-none! outline-none! ring-0! ring-offset-0! text-xs text-text-primary placeholder:text-text-secondary/60 ml-10 w-full pr-4 appearance-none"
                     autoFocus
                   />
@@ -96,7 +117,14 @@ export default function Navbar() {
               )}
             </AnimatePresence>
             <button
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              onClick={() => {
+                if (isSearchOpen) {
+                  handleSearch();
+                }
+                else {
+                  setIsSearchOpen(true);
+                }
+              }}
               className={cn(
                 'hover:bg-accent/5 hover:text-accent transition-all duration-300 p-2 z-10 rounded-full h-10 w-10 flex items-center justify-center',
                 isSearchOpen ? 'absolute left-0 text-accent' : 'text-text-primary hover:bg-accent/5',
