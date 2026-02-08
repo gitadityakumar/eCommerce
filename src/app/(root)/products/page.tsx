@@ -34,6 +34,10 @@ export default async function ProductsPage({
     activeBadges.push(label);
   });
 
+  if (parsed.search) {
+    activeBadges.push(`Search: ${parsed.search}`);
+  }
+
   return (
     <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 min-h-screen bg-background transition-colors duration-500">
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12 border-b border-border-subtle pb-8">
