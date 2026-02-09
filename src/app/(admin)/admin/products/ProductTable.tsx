@@ -15,6 +15,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import Image from 'next/image';
 import Link from 'next/link';
 import * as React from 'react';
 import { Badge } from '@/components/ui/badge';
@@ -42,18 +43,43 @@ interface Product {
   status: string;
   category?: { name: string } | null;
   brand?: { name: string } | null;
+  images?: { url: string; isPrimary: boolean }[];
 }
 
 const columns: ColumnDef<Product>[] = [
   {
     accessorKey: 'name',
     header: 'Product',
-    cell: ({ row }) => (
-      <div className="flex flex-col">
-        <span className="font-medium">{row.original.name}</span>
-        <span className="text-muted-foreground text-xs">{row.original.slug}</span>
-      </div>
-    ),
+    cell: ({ row }) => {
+      const primaryImage = row.original.images?.find(img => img.isPrimary) || row.original.images?.[0];
+      return (
+        <div className="flex items-center gap-3">
+          <div className="relative size-10 shrink-0 overflow-hidden rounded-lg border border-border-subtle bg-surface-subtle">
+            {primaryImage
+              ? (
+                  <Image
+                    src={primaryImage.url}
+                    alt={row.original.name}
+                    fill
+                    className="object-cover"
+                  />
+                )
+              : (
+                  <div className="flex size-full items-center justify-center text-[10px] text-muted-foreground bg-accent/5">
+                    No Item
+                  </div>
+                )}
+          </div>
+          <div className="flex flex-col">
+            <span className="font-medium text-text-primary line-clamp-1">{row.original.name}</span>
+            <span className="text-muted-foreground text-[10px] font-mono leading-none tracking-tight">
+              ID:
+              {row.original.id.slice(0, 8)}
+            </span>
+          </div>
+        </div>
+      );
+    },
   },
   {
     accessorKey: 'category.name',
