@@ -42,6 +42,7 @@ export async function getProducts() {
       with: {
         category: true,
         brand: true,
+        images: true,
       },
       orderBy: [desc(products.createdAt)],
     });
