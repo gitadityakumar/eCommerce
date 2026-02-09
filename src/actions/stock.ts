@@ -101,10 +101,15 @@ export async function getInventory() {
   try {
     const variants = await db.query.productVariants.findMany({
       with: {
-        product: true,
+        product: {
+          with: {
+            images: true,
+          },
+        },
         color: true,
         size: true,
         inventory: true,
+        images: true,
       },
     });
 
