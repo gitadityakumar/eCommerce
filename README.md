@@ -154,7 +154,7 @@ Review the prerequisites and follow the steps below to deploy the development en
 
    The application will be available at `http://localhost:3000`.
 
-## <a name="project-structure"> Project Structure</a>
+## <a name="project-structure -"> Project Structure</a>
 
 The codebase follows a scalable feature-based structure within the `src` directory.
 
