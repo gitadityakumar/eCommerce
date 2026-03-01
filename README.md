@@ -30,7 +30,7 @@
 
 ## <a name="overview">Overview</a>
 
-This project represents a production-grade e-commerce application built on the Next.js 15 framework. It leverages a modern, type-safe stack to deliver a robust shopping experience, featuring server-side rendering for SEO optimization, secure authentication flows, and a responsive implementation of the PreetyTwist design language.
+This project represents a production-grade e-commerce application built on the Next.js 16 framework. It leverages a modern, type-safe stack to deliver a robust shopping experience, featuring server-side rendering for SEO optimization, secure authentication flows, and a responsive implementation of the PreetyTwist design language.
 
 The platform is designed with modularity in mind, utilizing a component-based architecture and a scalable backend infrastructure powered by Neon PostgreSQL and Drizzle ORM.
 
