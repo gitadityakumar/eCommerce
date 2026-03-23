@@ -388,7 +388,7 @@ export default function Checkout({ initialAddresses, storeSettings, user, server
 
             {/* Add Address Modal */}
             <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
-              <DialogContent className="sm:max-w-[600px] bg-background border-border-subtle rounded-3xl overflow-hidden p-0 max-h-[90vh]">
+              <DialogContent className="sm:max-w-150 bg-background border-border-subtle rounded-3xl overflow-hidden p-0 max-h-[90vh]">
                 <div className="p-8 md:p-10 overflow-y-auto max-h-[calc(90vh-2rem)]">
                   <DialogHeader className="mb-8">
                     <DialogTitle className="text-3xl font-playfair tracking-tight text-text-primary">
@@ -474,7 +474,7 @@ export default function Checkout({ initialAddresses, storeSettings, user, server
 
           {/* Right Side: Order Summary */}
           <div className="lg:col-span-5 lg:sticky lg:top-28">
-            <div className="bg-surface border border-border-subtle/50 rounded-3xl p-8 md:p-10 flex flex-col shadow-soft min-h-[600px]">
+            <div className="bg-surface border border-border-subtle/50 rounded-3xl p-8 md:p-10 flex flex-col shadow-soft min-h-150">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-playfair tracking-tight text-text-primary">Order Manifest</h2>
                 <span className="text-[10px] uppercase tracking-widest font-bold text-accent bg-accent/5 px-3 py-1 rounded-full">
@@ -485,7 +485,7 @@ export default function Checkout({ initialAddresses, storeSettings, user, server
               </div>
 
               {/* Product List */}
-              <div className="space-y-6 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar mb-8">
+              <div className="space-y-6 max-h-75 overflow-y-auto pr-2 custom-scrollbar mb-8">
                 {items.map((item: CheckoutItem, index: number) => (
                   <div key={index} className="flex gap-4 group">
                     <div className="relative h-16 w-16 bg-background border border-border-subtle/50 rounded-xl overflow-hidden shrink-0">
@@ -545,7 +545,7 @@ export default function Checkout({ initialAddresses, storeSettings, user, server
                     variant="outline"
                     onClick={handleApplyCoupon}
                     disabled={isApplying || !!appliedCoupon || !couponCode}
-                    className="rounded-xl px-6 border-accent/20 text-accent hover:bg-accent hover:text-white font-bold text-[10px] tracking-widest uppercase transition-all duration-500 h-[46px]"
+                    className="rounded-xl px-6 border-accent/20 text-accent hover:bg-accent hover:text-white font-bold text-[10px] tracking-widest uppercase transition-all duration-500 h-11.5"
                   >
                     {isApplying ? '...' : 'Apply'}
                   </Button>
