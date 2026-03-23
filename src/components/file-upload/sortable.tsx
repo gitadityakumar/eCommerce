@@ -2,29 +2,16 @@
 
 import { CloudUpload, GripVertical, XIcon } from 'lucide-react';
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Sortable, SortableItem, SortableItemHandle } from '@/components/ui/sortable';
-import { uploadFileToR2 } from '@/lib/cfstorage/r2-upload';
 import { cn } from '@/lib/utils';
 
 interface ImageFile {
   id: string;
   file: File;
   preview: string;
-  progress: number;
-  status: 'uploading' | 'completed' | 'error';
-  error?: string;
-}
-
-interface SortableImage {
-  id: string;
-  src: string;
-  alt: string;
-  type: 'default' | 'uploaded';
-  status?: 'uploading' | 'completed' | 'error';
-  progress?: number;
 }
 
 interface ImageUploadProps {
@@ -33,39 +20,19 @@ interface ImageUploadProps {
   accept?: string;
   className?: string;
   onImagesChange?: (images: ImageFile[]) => void;
+  /** @deprecated Images are now uploaded on form submission */
   onUploadComplete?: (images: ImageFile[]) => void;
 }
 
 export default function SortableImageUpload({
-  maxFiles = 5, // Changed to 5 as per UI reference
-  maxSize = 10 * 1024 * 1024, // 10MB as per UI reference
+  maxFiles = 5,
+  maxSize = 10 * 1024 * 1024,
   accept = 'image/*',
   className,
   onImagesChange,
-  onUploadComplete,
 }: ImageUploadProps) {
   const [images, setImages] = useState<ImageFile[]>([]);
   const [isDragging, setIsDragging] = useState(false);
-  const [allImages, setAllImages] = useState<SortableImage[]>([]);
-
-  // Helper function to create SortableImage from ImageFile
-  const createSortableImage = useCallback(
-    (imageFile: ImageFile): SortableImage => ({
-      id: imageFile.id,
-      src: imageFile.preview,
-      alt: imageFile.file.name,
-      type: 'uploaded',
-      status: imageFile.status,
-      progress: imageFile.progress,
-    }),
-    [],
-  );
-
-  // Ensure arrays never contain undefined items
-  useEffect(() => {
-    setAllImages(prev => prev.filter(item => item && item.id));
-    setImages(prev => prev.filter(item => item && item.id));
-  }, []);
 
   const validateFile = (file: File): string | null => {
     if (!file.type.startsWith('image/')) {
@@ -74,59 +41,27 @@ export default function SortableImageUpload({
     if (file.size > maxSize) {
       return `File size must be less than ${(maxSize / 1024 / 1024).toFixed(1)}MB`;
     }
-    if (images.length >= maxFiles) {
-      return `Maximum ${maxFiles} files allowed`;
-    }
     return null;
   };
 
-  const handleUpload = useCallback(async (imageFile: ImageFile) => {
-    try {
-      const publicUrl = await uploadFileToR2(imageFile.file, {
-        folder: 'products',
-        onProgress: (progress) => {
-          setImages(prev => prev.map(img => (img.id === imageFile.id ? { ...img, progress } : img)));
-          setAllImages(prev => prev.map(img => img.id === imageFile.id ? { ...img, progress } : img));
-        },
-      });
-
-      const updateState = (prev: ImageFile) => (prev.id === imageFile.id ? { ...prev, progress: 100, status: 'completed' as const, preview: publicUrl } : prev);
-
-      setImages((currentImages) => {
-        const updatedImages = currentImages.map(updateState);
-        if (updatedImages.every(img => img.status === 'completed')) {
-          onUploadComplete?.(updatedImages);
-        }
-        return updatedImages;
-      });
-
-      setAllImages(prev => prev.map(img => img.id === imageFile.id ? { ...img, progress: 100, status: 'completed' as const, src: publicUrl } : img));
-    }
-    catch (error) {
-      console.error('R2 Upload Error:', error);
-      const updateError = (img: any) => img.id === imageFile.id ? { ...img, status: 'error' as const, error: 'Upload failed' } : img;
-      setImages(prev => prev.map(updateError));
-      setAllImages(prev => prev.map(updateError));
-    }
-  }, [onUploadComplete]);
-
   const addImages = useCallback(
     (files: FileList | File[]) => {
-      const newImages: ImageFile[] = [];
+      const remainingSlots = maxFiles - images.length;
+      if (remainingSlots <= 0)
+        return;
 
-      Array.from(files).forEach((file) => {
+      const newImages: ImageFile[] = [];
+      const filesArray = Array.from(files).slice(0, remainingSlots);
+
+      filesArray.forEach((file) => {
         const error = validateFile(file);
-        if (error) {
-          // Silent fail for errors as requested (no alerts)
+        if (error)
           return;
-        }
 
         const imageFile: ImageFile = {
           id: `${Date.now()}-${Math.random()}`,
           file,
           preview: URL.createObjectURL(file),
-          progress: 0,
-          status: 'uploading',
         };
 
         newImages.push(imageFile);
@@ -136,33 +71,22 @@ export default function SortableImageUpload({
         const updatedImages = [...images, ...newImages];
         setImages(updatedImages);
         onImagesChange?.(updatedImages);
-
-        // Add new images to allImages for sorting
-        const newSortableImages = newImages.map(createSortableImage);
-        setAllImages(prev => [...prev, ...newSortableImages]);
-
-        // Start real R2 upload
-        newImages.forEach((imageFile) => {
-          handleUpload(imageFile);
-        });
       }
     },
-    [images, maxSize, maxFiles, onImagesChange, createSortableImage, handleUpload],
+    [images, maxSize, maxFiles, onImagesChange],
   );
 
   const removeImage = useCallback(
     (id: string) => {
-      // Remove from allImages
-      setAllImages(prev => prev.filter(img => img.id !== id));
-
-      // If it's an uploaded image, also remove from images array and revoke URL
-      const uploadedImage = images.find(img => img.id === id);
-      if (uploadedImage) {
-        URL.revokeObjectURL(uploadedImage.preview);
-        setImages(prev => prev.filter(img => img.id !== id));
+      const imageToRemove = images.find(img => img.id === id);
+      if (imageToRemove) {
+        URL.revokeObjectURL(imageToRemove.preview);
+        const updatedImages = images.filter(img => img.id !== id);
+        setImages(updatedImages);
+        onImagesChange?.(updatedImages);
       }
     },
-    [images],
+    [images, onImagesChange],
   );
 
   const handleDragEnter = useCallback((e: React.DragEvent) => {
@@ -221,7 +145,6 @@ export default function SortableImageUpload({
 
   return (
     <div className={cn('w-full max-w-4xl', className)}>
-      {/* Instructions */}
       <div className="mb-4 text-center">
         <p className="text-sm text-muted-foreground">
           Upload up to
@@ -233,14 +156,12 @@ export default function SortableImageUpload({
           {formatBytes(maxSize)}
           {' '}
           each).
-          {' '}
           <br />
           Drag and drop images to reorder.
-          {images.length > 0 && ` ${images.length}/${maxFiles} uploaded.`}
+          {images.length > 0 && ` ${images.length}/${maxFiles} selected.`}
         </p>
       </div>
 
-      {/* Upload Area */}
       <Card
         className={cn(
           'border-dashed shadow-none rounded-md transition-colors mb-6',
@@ -272,90 +193,54 @@ export default function SortableImageUpload({
         </CardContent>
       </Card>
 
-      {/* Image Grid with Sortable */}
       <div className="mt-6">
-        {/* Combined Images Sortable */}
         <Sortable
-          value={allImages.map(item => item.id)}
+          value={images.map(item => item.id)}
           onValueChange={(newItemIds) => {
-            // Reconstruct the allImages array based on the new order
-            const newAllImages = newItemIds
-              .map((itemId) => {
-                // First try to find in allImages (default images)
-                const existingImage = allImages.find(img => img.id === itemId);
-                if (existingImage)
-                  return existingImage;
-
-                // If not found, it's a newly uploaded image
-                const uploadedImage = images.find(img => img.id === itemId);
-                if (uploadedImage) {
-                  return createSortableImage(uploadedImage);
-                }
-                return null;
-              })
-              .filter((item): item is SortableImage => item !== null);
-
-            setAllImages(newAllImages);
+            const newImages = newItemIds
+              .map(itemId => images.find(img => img.id === itemId))
+              .filter((item): item is ImageFile => !!item);
+            setImages(newImages);
+            onImagesChange?.(newImages);
           }}
           getItemValue={item => item}
           strategy="grid"
           className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 auto-rows-fr"
-          onDragEnd={() => {}}
         >
-          {allImages.map(item => (
+          {images.map((item, index) => (
             <SortableItem key={item.id} value={item.id}>
               <div className="flex items-center justify-center rounded-md bg-accent/50 shadow-none shrink-0 relative group border border-border hover:z-10 data-[dragging=true]:z-50 transition-all duration-200 hover:bg-accent/70 h-[120px] overflow-hidden">
                 <Image
-                  src={item.src}
+                  src={item.preview}
                   fill
-                  className={cn(
-                    'object-cover rounded-md pointer-events-none transition-opacity duration-300',
-                    item.status === 'uploading' ? 'opacity-40' : 'opacity-100',
-                  )}
-                  alt={item.alt}
+                  className="object-cover rounded-md pointer-events-none transition-opacity duration-300 opacity-100"
+                  alt={item.file.name}
                   unoptimized
                 />
 
-                {/* Loader Overlay */}
-                {item.status === 'uploading' && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-3">
-                    <div className="relative size-8 mb-1.5">
-                      {/* Circular Progress (fallback using Progress component if it were circular, but we'll use a CSS ring or just text for simplicity/speed) */}
-                      <div className="absolute inset-0 rounded-full border-2 border-border" />
-                      <div
-                        className="absolute inset-0 rounded-full border-2 border-primary border-t-transparent animate-spin"
-                      />
-                    </div>
-                    <span className="text-[10px] font-medium text-foreground">
-                      {Math.round(item.progress ?? 0)}
-                      %
-                    </span>
+                {index === 0 && (
+                  <div className="absolute top-2 left-2 px-2 py-0.5 bg-accent text-white text-[8px] font-bold tracking-widest uppercase rounded-full shadow-soft z-10 pointer-events-none">
+                    Primary
                   </div>
                 )}
 
-                {/* Drag Handle - Hidden during upload */}
-                {item.status !== 'uploading' && (
-                  <SortableItemHandle className="absolute top-2 start-2 opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing">
-                    <Button variant="outline" size="icon" className="size-6 rounded-full bg-background/80 backdrop-blur-sm">
-                      <GripVertical className="size-3.5" />
-                    </Button>
-                  </SortableItemHandle>
-                )}
-
-                {/* Remove Button Overlay - Hidden during upload */}
-                {item.status !== 'uploading' && (
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeImage(item.id);
-                    }}
-                    variant="outline"
-                    size="icon"
-                    className="shadow-sm absolute top-2 end-2 size-6 opacity-0 group-hover:opacity-100 rounded-full bg-background/80 backdrop-blur-sm"
-                  >
-                    <XIcon className="size-3.5" />
+                <SortableItemHandle className="absolute top-2 start-2 opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing">
+                  <Button variant="outline" size="icon" className="size-6 rounded-full bg-background/80 backdrop-blur-sm">
+                    <GripVertical className="size-3.5" />
                   </Button>
-                )}
+                </SortableItemHandle>
+
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeImage(item.id);
+                  }}
+                  variant="outline"
+                  size="icon"
+                  className="shadow-sm absolute top-2 end-2 size-6 opacity-0 group-hover:opacity-100 rounded-full bg-background/80 backdrop-blur-sm"
+                >
+                  <XIcon className="size-3.5" />
+                </Button>
               </div>
             </SortableItem>
           ))}

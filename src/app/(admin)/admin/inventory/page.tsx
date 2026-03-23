@@ -1,4 +1,5 @@
 import { Package, Search } from 'lucide-react';
+import Image from 'next/image';
 import { getInventory } from '@/actions/stock';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -58,14 +59,39 @@ export default async function InventoryPage() {
               return (
                 <TableRow key={item.variantId}>
                   <TableCell>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{item.variant.product.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {item.variant.color?.name || 'No Color'}
-                        {' '}
-                        /
-                        {item.variant.size?.name || 'No Size'}
-                      </span>
+                    <div className="flex items-center gap-3">
+                      <div className="relative size-10 shrink-0 overflow-hidden rounded-lg border border-border-subtle bg-surface-subtle">
+                        {(() => {
+                          const variantImage = item.variant.images?.find(img => img.isPrimary) || item.variant.images?.[0];
+                          const productImage = item.variant.product.images?.find(img => img.isPrimary) || item.variant.product.images?.[0];
+                          const displayImage = variantImage || productImage;
+
+                          return displayImage
+                            ? (
+                                <Image
+                                  src={displayImage.url}
+                                  alt={item.variant.product.name}
+                                  fill
+                                  className="object-cover"
+                                />
+                              )
+                            : (
+                                <div className="flex size-full items-center justify-center text-[10px] text-muted-foreground bg-accent/5">
+                                  No Item
+                                </div>
+                              );
+                        })()}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="font-medium text-text-primary line-clamp-1">{item.variant.product.name}</span>
+                        <span className="text-[10px] text-text-secondary font-light tracking-tight">
+                          {item.variant.color?.name || 'No Color'}
+                          {' '}
+                          /
+                          {' '}
+                          {item.variant.size?.name || 'No Size'}
+                        </span>
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell className="font-mono text-xs">{item.variant.sku}</TableCell>

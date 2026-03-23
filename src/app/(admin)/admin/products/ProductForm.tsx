@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { uploadFileToR2 } from '@/lib/cfstorage/r2-upload';
 
 interface Category {
   id: string;
@@ -100,6 +101,7 @@ interface ProductFormProps {
 export function ProductForm({ categories, brands, genders, colors, sizes }: ProductFormProps) {
   const router = useRouter();
   const [isPending, setIsPending] = React.useState(false);
+  const [stagedImages, setStagedImages] = React.useState<{ id: string; file: File; preview: string }[]>([]);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -111,7 +113,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
       brandId: '',
       genderId: '',
       status: 'draft',
-      images: [{ url: '', isPrimary: true }],
+      images: [],
       variants: [{
         sku: '',
         price: '',
@@ -135,44 +137,68 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
     window.submitStarted = true;
     setIsPending(true);
 
-    // Map "none" string back to null for database
-    const submitValues = {
-      ...values,
-      variants: values.variants.map(v => ({
-        ...v,
-        availableStock: v.availableStock ? Number(v.availableStock) : 0,
-        weight: v.weight ? Number(v.weight) : null,
-        dimensions: v.dimensions
-          ? {
-              length: v.dimensions.length ? Number(v.dimensions.length) : null,
-              width: v.dimensions.width ? Number(v.dimensions.width) : null,
-              height: v.dimensions.height ? Number(v.dimensions.height) : null,
-            }
-          : null,
-        colorId: v.colorId === 'none' ? null : v.colorId,
-        sizeId: v.sizeId === 'none' ? null : v.sizeId,
-      })),
-    };
+    const uploadToast = toast.loading('Uploading images...');
 
     try {
+      // 1. Upload images to R2
+      const uploadedImagePromises = stagedImages.map(async (image, index) => {
+        const url = await uploadFileToR2(image.file, {
+          folder: 'products',
+        });
+        return {
+          url,
+          isPrimary: index === 0,
+        };
+      });
+
+      const uploadedImages = await Promise.all(uploadedImagePromises);
+
+      if (uploadedImages.length === 0) {
+        toast.error('At least one image is required', { id: uploadToast });
+        setIsPending(false);
+        return;
+      }
+
+      toast.loading('Creating product...', { id: uploadToast });
+
+      // 2. Submit values with uploaded image URLs
+      const submitValues = {
+        ...values,
+        images: uploadedImages,
+        variants: values.variants.map(v => ({
+          ...v,
+          availableStock: v.availableStock ? Number(v.availableStock) : 0,
+          weight: v.weight ? Number(v.weight) : null,
+          dimensions: v.dimensions
+            ? {
+                length: v.dimensions.length ? Number(v.dimensions.length) : null,
+                width: v.dimensions.width ? Number(v.dimensions.width) : null,
+                height: v.dimensions.height ? Number(v.dimensions.height) : null,
+              }
+            : null,
+          colorId: v.colorId === 'none' ? null : v.colorId,
+          sizeId: v.sizeId === 'none' ? null : v.sizeId,
+        })),
+      };
+
       const result = await createProduct(submitValues as CreateProductInput);
       // @ts-expect-error - Debugging form submission result
       window.lastSubmitResult = result;
       setIsPending(false);
 
       if (result.success) {
-        toast.success('Product created successfully');
+        toast.success('Product created successfully', { id: uploadToast });
         form.reset();
         router.push('/admin/products');
         router.refresh();
       }
       else {
-        toast.error(result.error || 'Failed to create product');
+        toast.error(result.error || 'Failed to create product', { id: uploadToast });
       }
     }
     catch (error) {
-      console.error('Error calling createProduct:', error);
-      toast.error('An unexpected error occurred');
+      console.error('Error in submission:', error);
+      toast.error('An unexpected error occurred during submission', { id: uploadToast });
       setIsPending(false);
     }
   }
@@ -296,11 +322,11 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                           <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Spectrum Category</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                              <SelectTrigger className="h-14 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all">
+                              <SelectTrigger className="h-14 bg-background border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all">
                                 <SelectValue placeholder="Instate Category" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent className="bg-surface border-border-subtle rounded-xl shadow-soft">
+                            <SelectContent className="bg-surface border-border-subtle rounded-xl shadow-soft backdrop-blur-md">
                               {categories.map(cat => (
                                 <SelectItem key={cat.id} value={cat.id} className="text-sm font-light">{cat.name}</SelectItem>
                               ))}
@@ -318,11 +344,11 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                           <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Noble House</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                              <SelectTrigger className="h-14 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all">
+                              <SelectTrigger className="h-14 bg-background border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all">
                                 <SelectValue placeholder="Instate Brand" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent className="bg-surface border-border-subtle rounded-xl shadow-soft">
+                            <SelectContent className="bg-surface border-border-subtle rounded-xl shadow-soft backdrop-blur-md">
                               {brands.map(brand => (
                                 <SelectItem key={brand.id} value={brand.id} className="text-sm font-light">{brand.name}</SelectItem>
                               ))}
@@ -340,11 +366,11 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                           <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Archetype</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                              <SelectTrigger className="h-14 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all">
+                              <SelectTrigger className="h-14 bg-background border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all">
                                 <SelectValue placeholder="Instate Archetype" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent className="bg-surface border-border-subtle rounded-xl shadow-soft">
+                            <SelectContent className="bg-surface border-border-subtle rounded-xl shadow-soft backdrop-blur-md">
                               {genders.map(g => (
                                 <SelectItem key={g.id} value={g.id} className="text-sm font-light">{g.label}</SelectItem>
                               ))}
@@ -364,11 +390,11 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                         <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Status</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger className="h-14 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all">
+                            <SelectTrigger className="h-14 bg-background border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all">
                               <SelectValue placeholder="Current Phase" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="bg-surface border-border-subtle rounded-xl shadow-soft">
+                          <SelectContent className="bg-surface border-border-subtle rounded-xl shadow-soft backdrop-blur-md">
                             <SelectItem value="draft" className="text-[10px] font-bold tracking-widest uppercase">Draft Archive</SelectItem>
                             <SelectItem value="published" className="text-[10px] font-bold tracking-widest uppercase text-accent">Published Editorial</SelectItem>
                             <SelectItem value="archived" className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Hidden Archive</SelectItem>
@@ -430,7 +456,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                             <FormItem>
                               <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Archival SKU</FormLabel>
                               <FormControl>
-                                <Input placeholder="E.g. NOIR-AM270-BLK" className="h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-mono text-[10px] tracking-widest" {...field} />
+                                <Input placeholder="E.g. NOIR-AM270-BLK" className="h-12 bg-background border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-mono text-[10px] tracking-widest" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -443,7 +469,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                             <FormItem>
                               <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Valuation (INR)</FormLabel>
                               <FormControl>
-                                <Input type="number" step="0.01" min="0" placeholder="0.00" className="h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light" {...field} />
+                                <Input type="number" step="0.01" min="0" placeholder="0.00" className="h-12 bg-background border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -456,7 +482,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                             <FormItem>
                               <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Initial Reserve</FormLabel>
                               <FormControl>
-                                <Input placeholder="0" className="h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light" {...field} value={field.value ?? ''} />
+                                <Input placeholder="0" className="h-12 bg-background border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light" {...field} value={field.value ?? ''} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -473,11 +499,11 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                               <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Hue Selection (Optional)</FormLabel>
                               <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
                                 <FormControl>
-                                  <SelectTrigger className="h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light">
+                                  <SelectTrigger className="h-12 bg-background border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light">
                                     <SelectValue placeholder="Select hue" />
                                   </SelectTrigger>
                                 </FormControl>
-                                <SelectContent className="bg-surface border-border-subtle rounded-xl shadow-soft">
+                                <SelectContent className="bg-surface border-border-subtle rounded-xl shadow-soft backdrop-blur-md">
                                   <SelectItem value="none" className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">No Hue</SelectItem>
                                   {colors.map(color => (
                                     <SelectItem key={color.id} value={color.id} className="text-sm font-light">
@@ -504,11 +530,11 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                               <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Dimensional Scale (Optional)</FormLabel>
                               <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
                                 <FormControl>
-                                  <SelectTrigger className="h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light">
+                                  <SelectTrigger className="h-12 bg-background border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light">
                                     <SelectValue placeholder="Select scale" />
                                   </SelectTrigger>
                                 </FormControl>
-                                <SelectContent className="bg-surface border-border-subtle rounded-xl shadow-soft">
+                                <SelectContent className="bg-surface border-border-subtle rounded-xl shadow-soft backdrop-blur-md">
                                   <SelectItem value="none" className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">No Scale</SelectItem>
                                   {sizes.map(size => (
                                     <SelectItem key={size.id} value={size.id} className="text-sm font-light">{size.name}</SelectItem>
@@ -529,7 +555,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                             <FormItem>
                               <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Mass (kg)</FormLabel>
                               <FormControl>
-                                <Input type="number" step="0.01" min="0" className="h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light" {...field} value={field.value ?? ''} />
+                                <Input type="number" step="0.01" min="0" className="h-12 bg-background border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light" {...field} value={field.value ?? ''} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -542,7 +568,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                             <FormItem>
                               <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Length</FormLabel>
                               <FormControl>
-                                <Input type="number" min="0" className="h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light" {...field} value={field.value ?? ''} />
+                                <Input type="number" min="0" className="h-12 bg-background border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light" {...field} value={field.value ?? ''} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -555,7 +581,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                             <FormItem>
                               <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Width</FormLabel>
                               <FormControl>
-                                <Input type="number" min="0" className="h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light" {...field} value={field.value ?? ''} />
+                                <Input type="number" min="0" className="h-12 bg-background border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light" {...field} value={field.value ?? ''} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -568,7 +594,7 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                             <FormItem>
                               <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Height</FormLabel>
                               <FormControl>
-                                <Input type="number" min="0" className="h-12 bg-background/50 border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light" {...field} value={field.value ?? ''} />
+                                <Input type="number" min="0" className="h-12 bg-background border-border-subtle rounded-xl focus:ring-accent/20 focus:border-accent/40 transition-all font-light" {...field} value={field.value ?? ''} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -589,19 +615,12 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
                 </CardHeader>
                 <CardContent>
                   <SortableImageUpload
-                    onUploadComplete={(uploadedImages) => {
-                      const formImages = uploadedImages
-                        .filter(img => img.status === 'completed')
-                        .map(img => ({
-                          url: img.preview, // The public URL is stored in preview after upload
-                          isPrimary: false, // Default logic, can be refined
-                        }));
-
-                      if (formImages.length > 0) {
-                        formImages[0].isPrimary = true;
-                      }
-
-                      form.setValue('images', formImages, { shouldValidate: true });
+                    onImagesChange={(images) => {
+                      setStagedImages(images);
+                      form.setValue('images', images.map((img, index) => ({
+                        url: img.preview,
+                        isPrimary: index === 0,
+                      })), { shouldValidate: true });
                     }}
                   />
                   {form.formState.errors.images && (
