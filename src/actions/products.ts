@@ -3,8 +3,10 @@
 import { desc } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import { requireAdmin } from '@/lib/auth/guards';
 import { db } from '@/lib/db';
 import { colors, genders, inventoryLevels, productImages, products, productVariants, sizes } from '@/lib/db/schema';
+import { normalizeImageUrl } from '@/lib/images';
 
 const createProductSchema = z.object({
   name: z.string().min(1),
@@ -46,7 +48,13 @@ export async function getProducts() {
       },
       orderBy: [desc(products.createdAt)],
     });
-    return allProducts;
+    return allProducts.map(product => ({
+      ...product,
+      images: product.images.map(image => ({
+        ...image,
+        url: normalizeImageUrl(image.url) ?? image.url,
+      })),
+    }));
   }
   catch (error) {
     console.error('Error fetching products:', error);
@@ -76,6 +84,7 @@ export async function getBrands() {
 
 export async function createProduct(input: CreateProductInput) {
   try {
+    await requireAdmin();
     const validated = createProductSchema.parse(input);
 
     const result = await db.transaction(async (tx) => {

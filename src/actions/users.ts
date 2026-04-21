@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 import { z } from 'zod';
 import { auth } from '@/lib/auth';
+import { requireAdmin } from '@/lib/auth/guards';
 import { db } from '@/lib/db';
 import { auditLogs, orders, userRoleEnum, users } from '@/lib/db/schema';
 
@@ -20,6 +21,7 @@ const updateCustomerVerificationSchema = z.object({
 
 export async function getCustomers(search?: string, role?: string, verified?: boolean) {
   try {
+    await requireAdmin();
     const filters = [];
     if (search) {
       filters.push(or(ilike(users.name, `%${search}%`), ilike(users.email, `%${search}%`)));
@@ -46,6 +48,7 @@ export async function getCustomers(search?: string, role?: string, verified?: bo
 
 export async function getCustomerById(id: string) {
   try {
+    await requireAdmin();
     const customer = await db.query.users.findFirst({
       where: eq(users.id, id),
       with: {

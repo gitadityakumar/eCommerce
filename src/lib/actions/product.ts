@@ -31,6 +31,7 @@ import {
   users,
 
 } from '@/lib/db/schema';
+import { normalizeImageUrl } from '@/lib/images';
 
 interface ProductListItem {
   id: string;
@@ -248,7 +249,7 @@ string | null
   const productsOut: ProductListItem[] = rows.map(r => ({
     id: r.id,
     name: r.name,
-    imageUrl: r.imageUrl,
+    imageUrl: normalizeImageUrl(r.imageUrl) ?? null,
     minPrice: r.minPrice === null ? null : Number(r.minPrice),
     maxPrice: r.maxPrice === null ? null : Number(r.maxPrice),
     createdAt: r.createdAt,
@@ -430,7 +431,7 @@ r.variantSalePrice !== null ? String(r.variantSalePrice) : null,
         id: r.imageId,
         productId: head.productId,
         variantId: r.imageVariantId ?? null,
-        url: r.imageUrl!,
+        url: normalizeImageUrl(r.imageUrl)!,
         sortOrder: r.imageSortOrder ?? 0,
         isPrimary: r.imageIsPrimary ?? false,
       });
@@ -550,7 +551,7 @@ string | null
 
   const out: RecommendedProduct[] = [];
   for (const r of rows) {
-    const img = r.imageUrl?.trim();
+    const img = normalizeImageUrl(r.imageUrl?.trim());
     if (!img)
       continue;
     out.push({

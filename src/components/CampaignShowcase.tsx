@@ -40,6 +40,8 @@ export default function CampaignShowcase() {
                   className="object-cover group-hover:scale-105 transition-all duration-700 opacity-90 group-hover:opacity-100 dark:opacity-80"
                   alt="Model Portrait"
                   fill
+                  sizes="(min-width: 768px) 50vw, 100vw"
+                  loading="eager"
                 />
                 <div className="absolute bottom-0 left-0 w-full p-8 bg-linear-to-t from-black/60 to-transparent">
                   <p className="text-white text-3xl font-serif italic mb-2">The Grand Bow</p>
@@ -64,6 +66,8 @@ export default function CampaignShowcase() {
                   className="object-cover hover:scale-110 transition-transform duration-1000 opacity-90 dark:opacity-80"
                   alt="Texture Detail"
                   fill
+                  sizes="(min-width: 768px) 50vw, 100vw"
+                  loading="eager"
                 />
                 <div className="absolute inset-0 bg-linear-to-b from-transparent to-black/60 z-10 flex items-end justify-center pb-8"></div>
                 <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500"></div>

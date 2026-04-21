@@ -11,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { normalizeImageUrl } from '@/lib/images';
 import { StockAdjustmentModal } from './_components/StockAdjustmentModal';
 
 export default async function InventoryPage() {
@@ -65,13 +66,15 @@ export default async function InventoryPage() {
                           const variantImage = item.variant.images?.find(img => img.isPrimary) || item.variant.images?.[0];
                           const productImage = item.variant.product.images?.find(img => img.isPrimary) || item.variant.product.images?.[0];
                           const displayImage = variantImage || productImage;
+                          const imageUrl = normalizeImageUrl(displayImage?.url);
 
-                          return displayImage
+                          return imageUrl
                             ? (
                                 <Image
-                                  src={displayImage.url}
+                                  src={imageUrl}
                                   alt={item.variant.product.name}
                                   fill
+                                  sizes="40px"
                                   className="object-cover"
                                 />
                               )

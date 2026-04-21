@@ -28,6 +28,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { formatINR } from '@/lib/currency';
+import { normalizeImageUrl } from '@/lib/images';
 import { cn } from '@/lib/utils';
 
 type OrderData = Awaited<ReturnType<typeof getUserOrders>>[number];
@@ -117,51 +118,56 @@ function OrderCard({ order }: { order: OrderData }) {
 
       {/* Items List */}
       <CardContent className="p-8 space-y-8">
-        {order.items.map((item, idx) => (
-          <div key={item.id} className="relative group">
-            {idx > 0 && <Separator className="bg-border-subtle/20 mb-8" />}
-            <div className="flex gap-8">
-              <div className="w-28 shrink-0">
-                <AspectRatio ratio={4 / 5} className="overflow-hidden rounded-2xl bg-muted/30 border border-border-subtle/30 shadow-sm">
-                  {item.variant?.product?.images?.[0]
-                    ? (
-                        <Image
-                          src={item.variant.product.images[0].url}
-                          alt={item.variant.product.name}
-                          fill
-                          className="object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                      )
-                    : (
-                        <div className="flex size-full items-center justify-center bg-muted/20 text-text-secondary text-[10px] font-montserrat uppercase tracking-wider text-center p-2 italic leading-relaxed">
-                          Atelier Item
-                        </div>
-                      )}
-                </AspectRatio>
-              </div>
+        {order.items.map((item, idx) => {
+          const imageUrl = normalizeImageUrl(item.variant?.product?.images?.[0]?.url);
 
-              <div className="flex-1 flex flex-col justify-between py-1">
-                <div className="flex justify-between items-start gap-4">
-                  <div className="space-y-1">
-                    <h3 className="font-playfair text-xl text-text-primary tracking-tight">
-                      {item.variant?.product?.name || 'Artisan Accessory'}
-                    </h3>
-                    <p className="font-inter text-xs text-text-secondary font-medium tracking-tight">
-                      {item.variant?.color?.name || 'Standard'}
-                      {' '}
-                      •
-                      {' '}
-                      {item.variant?.size?.name || 'OS'}
+          return (
+            <div key={item.id} className="relative group">
+              {idx > 0 && <Separator className="bg-border-subtle/20 mb-8" />}
+              <div className="flex gap-8">
+                <div className="w-28 shrink-0">
+                  <AspectRatio ratio={4 / 5} className="overflow-hidden rounded-2xl bg-muted/30 border border-border-subtle/30 shadow-sm">
+                    {imageUrl
+                      ? (
+                          <Image
+                            src={imageUrl}
+                            alt={item.variant.product.name}
+                            fill
+                            sizes="112px"
+                            className="object-cover transition-transform duration-700 group-hover:scale-105"
+                          />
+                        )
+                      : (
+                          <div className="flex size-full items-center justify-center bg-muted/20 text-text-secondary text-[10px] font-montserrat uppercase tracking-wider text-center p-2 italic leading-relaxed">
+                            Atelier Item
+                          </div>
+                        )}
+                  </AspectRatio>
+                </div>
+
+                <div className="flex-1 flex flex-col justify-between py-1">
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="space-y-1">
+                      <h3 className="font-playfair text-xl text-text-primary tracking-tight">
+                        {item.variant?.product?.name || 'Artisan Accessory'}
+                      </h3>
+                      <p className="font-inter text-xs text-text-secondary font-medium tracking-tight">
+                        {item.variant?.color?.name || 'Standard'}
+                        {' '}
+                        •
+                        {' '}
+                        {item.variant?.size?.name || 'OS'}
+                      </p>
+                    </div>
+                    <p className="font-montserrat font-bold text-text-primary">
+                      {formatINR(Number(item.priceAtPurchase))}
                     </p>
                   </div>
-                  <p className="font-montserrat font-bold text-text-primary">
-                    {formatINR(Number(item.priceAtPurchase))}
-                  </p>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </CardContent>
 
       {/* Footer Actions */}

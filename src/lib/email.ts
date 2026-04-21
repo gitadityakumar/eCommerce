@@ -25,7 +25,7 @@ export async function sendEmail({
     console.warn(`To: ${to}`);
     console.warn(`Subject: ${subject}`);
     if (magicLinkUrl)
-      console.warn(`Magic Link URL: ${magicLinkUrl}`);
+      console.warn('Magic Link URL: [REDACTED]');
     console.warn('---------------------');
     return { ok: true, message: 'Logged to console' };
   }

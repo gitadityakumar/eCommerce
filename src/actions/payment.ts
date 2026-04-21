@@ -1,11 +1,14 @@
 'use server';
 
-import { eq } from 'drizzle-orm';
+import { and, eq, gte } from 'drizzle-orm';
+import { headers } from 'next/headers';
 import { v4 as uuidv4 } from 'uuid';
 import { clearCartAction, getCartAction } from '@/lib/actions/storefront-cart';
-import { getCurrentUser } from '@/lib/auth/actions';
+import { requireUser } from '@/lib/auth/guards';
 import { db } from '@/lib/db';
-import { orderItems, orders, payments } from '@/lib/db/schema';
+import { addresses, coupons, inventoryLevels, orderItems, orders, payments, storeSettings } from '@/lib/db/schema';
+import { checkRateLimit, rateLimitKey } from '@/lib/security/rate-limit';
+import { checkShippingServiceability } from './shipping';
 
 const PHONEPE_HOST_URL = (process.env.PHONEPE_BASE_SANDBOX_URL || process.env.PHONEPE_BASE_URL || 'https://api-preprod.phonepe.com/apis/pg-sandbox').replace(/\/$/, '').trim();
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '').trim();
@@ -29,7 +32,6 @@ async function getPhonePeOAuthToken() {
 
   console.warn('PhonePe OAuth Request:', {
     url: `${PHONEPE_HOST_URL}${authEndpoint}`,
-    client_id: CLIENT_ID,
     client_version: CLIENT_VERSION,
     has_secret: !!CLIENT_SECRET,
   });
@@ -63,34 +65,102 @@ export async function initiatePayment(
   shippingAddressId: string,
   billingAddressId: string,
   courierId: string,
-  courierPrice: number,
-  courierName: string,
-  taxAmount: number = 0,
-  couponDiscount: number = 0,
+  _courierPrice: number,
+  _courierName: string,
+  _taxAmount: number = 0,
+  _couponDiscount: number = 0,
+  couponCode?: string,
 ) {
-  const user = await getCurrentUser();
+  const user = await requireUser();
+  const requestHeaders = await headers();
+  const ip = requestHeaders.get('x-forwarded-for')?.split(',')[0]?.trim()
+    || requestHeaders.get('x-real-ip')
+    || user.id;
+  const limit = checkRateLimit(rateLimitKey('payment', `${user.id}:${ip}`), 10, 15 * 60 * 1000);
+  if (!limit.ok) {
+    return { success: false, error: 'Too many payment attempts' };
+  }
+
   const cart = await getCartAction();
 
   if (!cart || cart.items.length === 0) {
     throw new Error('Cart is empty');
   }
 
+  const [shippingAddress, billingAddress] = await Promise.all([
+    db.query.addresses.findFirst({
+      where: and(eq(addresses.id, shippingAddressId), eq(addresses.userId, user.id)),
+    }),
+    db.query.addresses.findFirst({
+      where: and(eq(addresses.id, billingAddressId), eq(addresses.userId, user.id)),
+    }),
+  ]);
+
+  if (!shippingAddress || !billingAddress) {
+    throw new Error('Invalid address');
+  }
+
   // 1. Calculate Total (Server-side validation)
   let subtotal = 0;
   for (const item of cart.items) {
-    subtotal += Number(item.variant.price) * item.quantity;
+    subtotal += Number(item.variant.salePrice || item.variant.price) * item.quantity;
 
-    // Check Stock
-    // Check Stock (Placeholder for strict inventory check)
-    // const variant = await db.query.productVariants.findFirst(...)
+    const inventory = await db.query.inventoryLevels.findFirst({
+      where: and(eq(inventoryLevels.variantId, item.productVariantId), gte(inventoryLevels.available, item.quantity)),
+    });
 
-    // Note: The schema for product_variants has 'in_stock' added in 0003, but inventory_levels table exists.
-    // The user rules say: "Decrement stock ... atomic... use SELECT ... FOR UPDATE".
-    // For now, we'll check inventory_levels if available, or just proceed if 'in_stock' is true.
-    // Given the complexity of stock checking without transaction here (since we redirect), we do a soft check.
+    if (!inventory) {
+      throw new Error('One or more items are out of stock');
+    }
   }
 
-  const amount = subtotal + courierPrice + taxAmount - couponDiscount;
+  const serviceability = await checkShippingServiceability(shippingAddress.postalCode, subtotal);
+  if (!serviceability.success || !serviceability.data) {
+    throw new Error(serviceability.error || 'Shipping is unavailable for this address');
+  }
+
+  const selectedCourier = serviceability.data.find((c: { id: string }) => c.id === courierId);
+  if (!selectedCourier) {
+    throw new Error('Invalid courier selection');
+  }
+
+  const settings = await db.select().from(storeSettings).limit(1).then(rows => rows[0] || null);
+  let couponDiscount = 0;
+  let normalizedCouponCode: string | undefined;
+
+  if (couponCode?.trim()) {
+    const coupon = await db.query.coupons.findFirst({
+      where: eq(coupons.code, couponCode.trim().toUpperCase()),
+    });
+
+    const now = new Date();
+    if (
+      !coupon
+      || coupon.startsAt > now
+      || (coupon.expiresAt && coupon.expiresAt < now)
+      || (coupon.maxUsage && coupon.usedCount >= coupon.maxUsage)
+      || (coupon.minOrderAmount && subtotal < Number(coupon.minOrderAmount))
+    ) {
+      throw new Error('Invalid or expired promo code');
+    }
+
+    normalizedCouponCode = coupon.code;
+    couponDiscount = coupon.discountType === 'percentage'
+      ? (subtotal * Number(coupon.discountValue)) / 100
+      : Number(coupon.discountValue);
+    couponDiscount = Math.min(couponDiscount, subtotal);
+  }
+
+  const subtotalAfterDiscount = subtotal - couponDiscount;
+  const taxAmount = settings?.isTaxEnabled
+    ? (subtotalAfterDiscount * Number(settings.taxPercentage)) / 100
+    : 0;
+  const amount = subtotalAfterDiscount + selectedCourier.price + taxAmount;
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    throw new Error('Invalid order amount');
+  }
+
   const merchantTransactionId = `MT${uuidv4().replace(/-/g, '').substring(0, 20)}`;
 
   // 2. Create Order (Pending)
@@ -100,9 +170,8 @@ export async function initiatePayment(
     totalAmount: amount.toFixed(2),
     shippingAddressId,
     billingAddressId,
-    // Store courier info temporarily or permanently? Schema has courierName/awb but not courierId/price directly?
-    // We added courierName to orders.
-    courierName,
+    courierName: selectedCourier.name,
+    courierCompanyId: selectedCourier.id,
   }).returning({ id: orders.id });
 
   // 3. Create Order Items (Snapshot)
@@ -111,7 +180,7 @@ export async function initiatePayment(
       orderId: newOrder.id,
       productVariantId: item.productVariantId,
       quantity: item.quantity,
-      priceAtPurchase: String(item.variant.price),
+      priceAtPurchase: String(item.variant.salePrice || item.variant.price),
     });
   }
 
@@ -121,6 +190,9 @@ export async function initiatePayment(
     method: 'phonepe',
     status: 'initiated',
     merchantTransactionId,
+    rawPayload: normalizedCouponCode
+      ? { couponCode: normalizedCouponCode, couponDiscount, taxAmount, courierId: selectedCourier.id }
+      : { taxAmount, courierId: selectedCourier.id },
   });
 
   // 5. Prepare PhonePe V2 Payload (Corrected structure for Web Standard Checkout)
@@ -166,17 +238,11 @@ export async function initiatePayment(
       throw new Error(`PhonePe API returned invalid JSON: ${responseText}`);
     }
 
-    console.warn('PhonePe V2 Full Response:', JSON.stringify(data, null, 2));
-
     // V2 /checkout/v2/pay returns orderId and redirectUrl on success.
     if (data.orderId && data.redirectUrl) {
-      console.warn('PhonePe V2 Redirecting to:', data.redirectUrl);
-
       // 7. Clear Cart (After successful redirect initiation)
       try {
-        console.warn('Attempting to clear cart for user...');
-        const clearRes = await clearCartAction();
-        console.warn('Clear Cart Result:', clearRes);
+        await clearCartAction();
       }
       catch {
         console.error('Failed to clear cart after payment initiation');

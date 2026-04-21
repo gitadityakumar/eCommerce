@@ -12,7 +12,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent z-10" />
             <div className="absolute inset-0 bg-accent/20 mix-blend-overlay z-10" />
             <Image
-              src="https://ik.imagekit.io/nq9atqhjb/ChatGPT%20Image%20Dec%2027,%202025,%2005_31_59%20PM.png?q=80&w=1000"
+              src="https://ik.imagekit.io/nq9atqhjb/authpage.png?q=80&w=1000"
               alt="Authentication"
               fill
               className="object-cover scale-105 hover:scale-100 transition-transform duration-10000"

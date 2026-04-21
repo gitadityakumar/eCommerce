@@ -1,8 +1,11 @@
 'use server';
 
 import { eq } from 'drizzle-orm';
+import { headers } from 'next/headers';
+import { requireUser } from '@/lib/auth/guards';
 import { db } from '@/lib/db';
 import { orders } from '@/lib/db/schema';
+import { checkRateLimit, rateLimitKey } from '@/lib/security/rate-limit';
 
 const SHIPROCKET_API_URL = 'https://apiv2.shiprocket.in/v1/external';
 
@@ -32,6 +35,20 @@ async function getShiprocketToken() {
 
 export async function checkShippingServiceability(deliveryPincode: string, declaredValue: number) {
   try {
+    const user = await requireUser();
+    const requestHeaders = await headers();
+    const ip = requestHeaders.get('x-forwarded-for')?.split(',')[0]?.trim()
+      || requestHeaders.get('x-real-ip')
+      || user.id;
+    const limit = checkRateLimit(rateLimitKey('shipping', `${user.id}:${ip}`), 30, 15 * 60 * 1000);
+    if (!limit.ok) {
+      return { success: false, error: 'Too many shipping requests' };
+    }
+
+    if (!/^\d{6}$/.test(deliveryPincode) || !Number.isFinite(declaredValue) || declaredValue <= 0) {
+      return { success: false, error: 'Invalid shipping request' };
+    }
+
     // 1. Get Store Settings for pickup pincode
     const settings = await db.query.storeSettings.findFirst();
     if (!settings?.pincode) {
@@ -180,8 +197,6 @@ export async function createShiprocketOrder(orderId: string) {
       weight: 0.5,
     };
 
-    console.warn('Shiprocket Order Payload:', JSON.stringify(payload, null, 2));
-
     // 1. Create Order
     const createRes = await fetch(`${SHIPROCKET_API_URL}/orders/create/adhoc`, {
       method: 'POST',
@@ -193,7 +208,6 @@ export async function createShiprocketOrder(orderId: string) {
     });
 
     const createData = await createRes.json();
-    console.warn('Shiprocket Create Order Response:', JSON.stringify(createData, null, 2));
     if (!createData.order_id) {
       console.error('Shiprocket Create Order Failed:', createData);
       throw new Error(createData.message || 'Failed to create Shiprocket order');

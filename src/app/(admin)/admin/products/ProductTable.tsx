@@ -35,6 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { normalizeImageUrl } from '@/lib/images';
 
 interface Product {
   id: string;
@@ -52,15 +53,17 @@ const columns: ColumnDef<Product>[] = [
     header: 'Product',
     cell: ({ row }) => {
       const primaryImage = row.original.images?.find(img => img.isPrimary) || row.original.images?.[0];
+      const imageUrl = normalizeImageUrl(primaryImage?.url);
       return (
         <div className="flex items-center gap-3">
           <div className="relative size-10 shrink-0 overflow-hidden rounded-lg border border-border-subtle bg-surface-subtle">
-            {primaryImage
+            {imageUrl
               ? (
                   <Image
-                    src={primaryImage.url}
+                    src={imageUrl}
                     alt={row.original.name}
                     fill
+                    sizes="40px"
                     className="object-cover"
                   />
                 )

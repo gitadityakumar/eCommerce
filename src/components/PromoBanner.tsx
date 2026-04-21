@@ -19,6 +19,8 @@ export default function PromoBanner() {
           className="w-full h-full object-cover opacity-80 dark:opacity-40 grayscale-20 dark:grayscale-0 transition-opacity duration-700"
           alt="Seasonal Promo"
           fill
+          sizes="100vw"
+          loading="eager"
         />
       </motion.div>
 

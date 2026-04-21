@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { normalizeImageUrl } from '@/lib/images';
 
 export interface CardProps {
   title: string;
@@ -28,13 +29,14 @@ export default function Card({
 }: CardProps) {
   const displayPrice
     = price === undefined ? undefined : typeof price === 'number' ? `₹${price.toFixed(2)}` : price;
+  const normalizedImageSrc = normalizeImageUrl(imageSrc) ?? imageSrc;
   const content = (
     <article
       className={`group rounded-xl bg-surface border border-border-subtle transition-all duration-300 hover:shadow-soft hover:border-accent/30 ${className}`}
     >
       <div className="relative aspect-square overflow-hidden rounded-t-xl bg-bg-secondary">
         <Image
-          src={imageSrc}
+          src={normalizedImageSrc}
           alt={imageAlt}
           fill
           sizes="(min-width: 1280px) 360px, (min-width: 1024px) 300px, (min-width: 640px) 45vw, 90vw"

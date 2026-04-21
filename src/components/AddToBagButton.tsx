@@ -4,6 +4,7 @@ import { ShoppingBag } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { addToCartAction } from '@/lib/actions/storefront-cart';
+import { normalizeImageUrl } from '@/lib/images';
 import { useAuthStore } from '@/store/auth';
 import { useCartStore } from '@/store/cart';
 import { useUserCartStore } from '@/store/user-cart';
@@ -71,7 +72,7 @@ export default function AddToBagButton({ productId, name, variants, galleryVaria
         id: specificVariant.id,
         name: itemName,
         price: Number(specificVariant.salePrice || specificVariant.price),
-        image: galleryVariants[selectedColorIndex]?.images[0],
+        image: normalizeImageUrl(galleryVariants[selectedColorIndex]?.images[0]) ?? undefined,
       });
 
       toast.success('Added to bag', {

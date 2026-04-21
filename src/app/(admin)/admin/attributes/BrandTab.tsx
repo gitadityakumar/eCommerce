@@ -244,7 +244,7 @@ export function BrandTab({ initialData }: BrandTabProps) {
                                     target.style.display = 'none';
                                     const parent = target.parentElement;
                                     if (parent) {
-                                      parent.innerHTML = brand.logoUrl || '—';
+                                      parent.textContent = brand.logoUrl || '—';
                                       parent.className = 'text-xs text-muted-foreground';
                                     }
                                   }}

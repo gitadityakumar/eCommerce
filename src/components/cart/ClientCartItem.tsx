@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { formatINR } from '@/lib/currency';
+import { normalizeImageUrl } from '@/lib/images';
 import { useCartStore } from '@/store/cart';
 
 interface ClientCartItemProps {
@@ -21,6 +22,7 @@ interface ClientCartItemProps {
 export function ClientCartItem({ item }: ClientCartItemProps) {
   const updateQuantity = useCartStore(s => s.updateQuantity);
   const removeItem = useCartStore(s => s.removeItem);
+  const image = normalizeImageUrl(item.image) || '/placeholder.png';
 
   const handleUpdateQuantity = (newQuantity: number) => {
     if (newQuantity < 1)
@@ -37,9 +39,10 @@ export function ClientCartItem({ item }: ClientCartItemProps) {
     <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 py-6 md:py-8 border-b border-border-subtle last:border-0 items-start group">
       <div className="relative aspect-square w-full sm:w-32 bg-bg-secondary rounded-xl overflow-hidden shrink-0 shadow-soft">
         <Image
-          src={item.image || '/placeholder.png'}
+          src={image}
           alt={item.name}
           fill
+          sizes="(min-width: 640px) 128px, 100vw"
           className="object-cover group-hover:scale-110 transition-transform duration-700 opacity-90 dark:opacity-80 group-hover:opacity-100"
         />
       </div>

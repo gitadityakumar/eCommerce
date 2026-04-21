@@ -13,6 +13,7 @@ export default function SpotlightSection() {
           className="w-full h-full object-cover transition-all duration-700 brightness-[0.8] dark:brightness-[0.25]"
           alt="Background Texture"
           fill
+          sizes="100vw"
         />
         <div className="absolute inset-0 bg-background/60 dark:bg-transparent" />
       </div>
@@ -64,6 +65,7 @@ export default function SpotlightSection() {
               className="w-full h-full object-cover border border-border-subtle"
               alt="Pearl Detail"
               fill
+              sizes="(min-width: 768px) 448px, 100vw"
             />
           </div>
           <motion.div
@@ -78,6 +80,7 @@ export default function SpotlightSection() {
               className="w-full h-full object-cover opacity-80 dark:opacity-60"
               alt="Texture Close Up"
               fill
+              sizes="256px"
             />
           </motion.div>
         </motion.div>

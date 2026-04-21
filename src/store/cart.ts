@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { normalizeImageUrl } from '@/lib/images';
 
 interface CartItem {
   id: string;
@@ -37,7 +38,7 @@ export const useCartStore = create<CartState>()(
         }
         else {
           set({
-            items: [...items, { ...item, quantity: 1 }],
+            items: [...items, { ...item, image: normalizeImageUrl(item.image) ?? undefined, quantity: 1 }],
           });
         }
 

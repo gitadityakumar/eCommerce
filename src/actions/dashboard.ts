@@ -1,6 +1,7 @@
 'use server';
 
 import { and, desc, eq, gte, ne, sql } from 'drizzle-orm';
+import { requireAdmin } from '@/lib/auth/guards';
 import { db } from '@/lib/db';
 import {
   auditLogs,
@@ -48,6 +49,7 @@ export interface DashboardStats {
 
 export async function getDashboardData(dateRange?: { from: Date; to: Date }): Promise<DashboardStats> {
   try {
+    await requireAdmin();
     const fromDate = dateRange?.from || new Date(new Date().setDate(new Date().getDate() - 30));
     const toDate = dateRange?.to || new Date();
 
