@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { removeFromCartAction, updateCartItemQuantityAction } from '@/lib/actions/storefront-cart';
 import { formatINR } from '@/lib/currency';
+import { normalizeImageUrl } from '@/lib/images';
 import { useUserCartStore } from '@/store/user-cart';
 
 interface CartItemProps {
@@ -19,7 +20,7 @@ export function CartItem({ item }: CartItemProps) {
   const [isPending, startTransition] = useTransition();
   const variant = item.variant;
   const product = variant.product;
-  const image = variant.images?.[0]?.url || product.images?.[0]?.url || '/placeholder.png';
+  const image = normalizeImageUrl(variant.images?.[0]?.url || product.images?.[0]?.url) || '/placeholder.png';
 
   const handleUpdateQuantity = (newQuantity: number) => {
     startTransition(async () => {
@@ -55,6 +56,7 @@ export function CartItem({ item }: CartItemProps) {
           src={image}
           alt={product.name}
           fill
+          sizes="(min-width: 640px) 128px, 100vw"
           className="object-cover group-hover:scale-110 transition-transform duration-700 opacity-90 dark:opacity-80 group-hover:opacity-100"
         />
       </div>

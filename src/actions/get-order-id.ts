@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { getOrders } from './src/actions/orders';
+import { getOrders } from './orders';
 
 async function main() {
   const orders = await getOrders();

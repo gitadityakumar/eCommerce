@@ -5,6 +5,36 @@ import { revalidatePath } from 'next/cache';
 import { getCurrentUser } from '@/lib/auth/actions';
 import { db } from '@/lib/db';
 import { cartItems, carts } from '@/lib/db/schema/index';
+import { normalizeImageUrl } from '@/lib/images';
+
+const MAX_CART_ITEM_QUANTITY = 25;
+
+function normalizeCartImages(cart: any) {
+  if (!cart) {
+    return cart;
+  }
+
+  return {
+    ...cart,
+    items: cart.items.map((item: any) => ({
+      ...item,
+      variant: {
+        ...item.variant,
+        images: item.variant.images.map((image: any) => ({
+          ...image,
+          url: normalizeImageUrl(image.url) ?? image.url,
+        })),
+        product: {
+          ...item.variant.product,
+          images: item.variant.product.images.map((image: any) => ({
+            ...image,
+            url: normalizeImageUrl(image.url) ?? image.url,
+          })),
+        },
+      },
+    })),
+  };
+}
 
 /**
  * Retrieves the current cart ID or creates one if it doesn't exist.
@@ -63,7 +93,7 @@ export async function getCartAction() {
     },
   });
 
-  return cart;
+  return normalizeCartImages(cart);
 }
 
 /**
@@ -89,6 +119,10 @@ export async function addToCartAction(variantId: string, quantity: number = 1) {
   if (!cartId)
     return { success: false, error: 'Could not retrieve or create cart' };
 
+  if (!Number.isInteger(quantity) || quantity < 1 || quantity > MAX_CART_ITEM_QUANTITY) {
+    return { success: false, error: 'Invalid quantity' };
+  }
+
   // Check if item already exists in cart
   const existingItem = await db.query.cartItems.findFirst({
     where: and(
@@ -98,8 +132,13 @@ export async function addToCartAction(variantId: string, quantity: number = 1) {
   });
 
   if (existingItem) {
+    const nextQuantity = existingItem.quantity + quantity;
+    if (nextQuantity > MAX_CART_ITEM_QUANTITY) {
+      return { success: false, error: `Maximum quantity is ${MAX_CART_ITEM_QUANTITY}` };
+    }
+
     await db.update(cartItems)
-      .set({ quantity: existingItem.quantity + quantity })
+      .set({ quantity: nextQuantity })
       .where(eq(cartItems.id, existingItem.id));
   }
   else {
@@ -119,12 +158,20 @@ export async function addToCartAction(variantId: string, quantity: number = 1) {
  * Update the quantity of a cart item.
  */
 export async function updateCartItemQuantityAction(itemId: string, quantity: number) {
+  const cartId = await getOrCreateCartId();
+  if (!cartId)
+    return { success: false, error: 'Could not retrieve cart' };
+
   if (quantity < 1)
     return removeFromCartAction(itemId);
 
+  if (!Number.isInteger(quantity) || quantity > MAX_CART_ITEM_QUANTITY) {
+    return { success: false, error: 'Invalid quantity' };
+  }
+
   await db.update(cartItems)
     .set({ quantity })
-    .where(eq(cartItems.id, itemId));
+    .where(and(eq(cartItems.id, itemId), eq(cartItems.cartId, cartId)));
 
   revalidatePath('/cart');
   const count = await getCartCountAction();
@@ -135,8 +182,12 @@ export async function updateCartItemQuantityAction(itemId: string, quantity: num
  * Remove an item from the cart.
  */
 export async function removeFromCartAction(itemId: string) {
+  const cartId = await getOrCreateCartId();
+  if (!cartId)
+    return { success: false, error: 'Could not retrieve cart' };
+
   await db.delete(cartItems)
-    .where(eq(cartItems.id, itemId));
+    .where(and(eq(cartItems.id, itemId), eq(cartItems.cartId, cartId)));
 
   revalidatePath('/cart');
   const count = await getCartCountAction();

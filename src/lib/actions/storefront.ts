@@ -14,6 +14,7 @@ import {
   reviews,
   sizes,
 } from '@/lib/db/schema';
+import { normalizeImageUrl } from '@/lib/images';
 
 export async function getStorefrontProduct(productId: string) {
   try {
@@ -67,7 +68,10 @@ export async function getStorefrontProduct(productId: string) {
       category,
       brand,
       gender,
-      images,
+      images: images.map(image => ({
+        ...image,
+        url: normalizeImageUrl(image.url) ?? image.url,
+      })),
       variants: variantsWithDetails,
       reviews: productReviews,
     };

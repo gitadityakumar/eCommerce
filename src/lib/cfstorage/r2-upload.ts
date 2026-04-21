@@ -19,6 +19,7 @@ export async function uploadFileToR2(file: File, options: UploadOptions = {}) {
     body: JSON.stringify({
       fileName: file.name,
       fileType: file.type,
+      fileSize: file.size,
       folder,
     }),
   });

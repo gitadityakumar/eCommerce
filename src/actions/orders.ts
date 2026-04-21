@@ -1,12 +1,14 @@
 'use server';
 
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 import { z } from 'zod';
 import { auth } from '@/lib/auth';
+import { requireAdmin, requireUser } from '@/lib/auth/guards';
 import { db } from '@/lib/db';
 import { auditLogs, fulfillments, orders, orderStatusEnum } from '@/lib/db/schema';
+import { normalizeImageUrl } from '@/lib/images';
 
 const updateStatusSchema = z.object({
   orderId: z.string().uuid(),
@@ -21,8 +23,36 @@ const fulfillmentSchema = z.object({
   status: z.string().default('pending'),
 });
 
+function normalizeOrderImages<T extends { items?: any[] } | null | undefined>(order: T): T {
+  if (!order) {
+    return order;
+  }
+
+  return {
+    ...order,
+    items: order.items?.map((item: any) => ({
+      ...item,
+      variant: item.variant
+        ? {
+            ...item.variant,
+            product: item.variant.product
+              ? {
+                  ...item.variant.product,
+                  images: item.variant.product.images?.map((image: any) => ({
+                    ...image,
+                    url: normalizeImageUrl(image.url) ?? image.url,
+                  })) ?? [],
+                }
+              : item.variant.product,
+          }
+        : item.variant,
+    })) ?? [],
+  } as T;
+}
+
 export async function getOrders() {
   try {
+    await requireAdmin();
     const allOrders = await db.query.orders.findMany({
       with: {
         user: true,
@@ -74,7 +104,7 @@ export async function getUserOrders() {
       orderBy: (orders, { desc }) => [desc(orders.createdAt)],
     });
 
-    return userOrders;
+    return userOrders.map(normalizeOrderImages);
   }
   catch (error) {
     console.error('Error fetching user orders:', error);
@@ -84,6 +114,7 @@ export async function getUserOrders() {
 
 export async function getOrderById(id: string) {
   try {
+    await requireAdmin();
     const order = await db.query.orders.findFirst({
       where: eq(orders.id, id),
       with: {
@@ -110,10 +141,47 @@ export async function getOrderById(id: string) {
       },
     });
 
-    return order;
+    return normalizeOrderImages(order);
   }
   catch (error) {
     console.error('Error fetching order:', error);
+    return null;
+  }
+}
+
+export async function getUserOrderById(id: string) {
+  try {
+    const user = await requireUser();
+    const order = await db.query.orders.findFirst({
+      where: and(eq(orders.id, id), eq(orders.userId, user.id)),
+      with: {
+        user: true,
+        shippingAddress: true,
+        billingAddress: true,
+        items: {
+          with: {
+            variant: {
+              with: {
+                product: {
+                  with: {
+                    images: true,
+                  },
+                },
+                color: true,
+                size: true,
+              },
+            },
+          },
+        },
+        payments: true,
+        fulfillments: true,
+      },
+    });
+
+    return normalizeOrderImages(order);
+  }
+  catch (error) {
+    console.error('Error fetching user order:', error);
     return null;
   }
 }

@@ -42,7 +42,7 @@ export function CartPageUI({ cart }: CartPageUIProps) {
         <div className="relative">
           <div className="absolute inset-0 bg-accent/10 blur-3xl rounded-full" />
           <Image
-            src="https://cdn.perpetuity.dev/assets/handbagforecomno-bg.png"
+            src="https://cdn.100xadi.com/assets/handbagforecomno-bg.png"
             alt="Empty Shopping Bag"
             width={400}
             height={400}

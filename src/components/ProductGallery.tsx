@@ -3,6 +3,7 @@
 import { ChevronLeft, ChevronRight, ImageOff } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { normalizeImageUrl } from '@/lib/images';
 import { useVariantStore } from '@/store/variant';
 
 interface Variant {
@@ -38,6 +39,10 @@ export default function ProductGallery({
     );
 
   const images = validVariants[variantIndex]?.images?.filter(isValidSrc) ?? [];
+  const normalizedImages = useMemo(
+    () => images.map(src => normalizeImageUrl(src) ?? src),
+    [images],
+  );
   const [activeIndex, setActiveIndex] = useState(0);
   const mainRef = useRef<HTMLDivElement>(null);
 
@@ -47,11 +52,11 @@ export default function ProductGallery({
 
   const go = useCallback(
     (dir: -1 | 1) => {
-      if (images.length === 0)
+      if (normalizedImages.length === 0)
         return;
-      setActiveIndex(i => (i + dir + images.length) % images.length);
+      setActiveIndex(i => (i + dir + normalizedImages.length) % normalizedImages.length);
     },
-    [images.length],
+    [normalizedImages.length],
   );
 
   useEffect(() => {
@@ -74,7 +79,7 @@ export default function ProductGallery({
   return (
     <section className={`flex w-full flex-col gap-4 lg:flex-row ${className}`}>
       <div className="order-2 flex gap-3 overflow-x-auto lg:order-1 lg:flex-col">
-        {images.map((src, i) => (
+        {normalizedImages.map((src, i) => (
           <button
             key={`${src}-${i}`}
             aria-label={`Thumbnail ${i + 1}`}
@@ -87,11 +92,11 @@ export default function ProductGallery({
       </div>
 
       <div ref={mainRef} className="order-1 relative w-full h-[500px] overflow-hidden rounded-xl bg-muted lg:order-2">
-        {images.length > 0
+        {normalizedImages.length > 0
           ? (
               <>
                 <Image
-                  src={images[activeIndex]}
+                  src={normalizedImages[activeIndex]}
                   alt="Product image"
                   fill
                   sizes="(min-width:1024px) 720px, 100vw"

@@ -20,6 +20,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatINR } from '@/lib/currency';
+import { normalizeImageUrl } from '@/lib/images';
 import { cn } from '@/lib/utils';
 import { useCartStore } from '@/store/cart';
 
@@ -64,9 +65,12 @@ export default function Checkout({ initialAddresses, storeSettings, user, server
         quantity: item.quantity,
         name: item.variant?.product?.name + (item.variant?.color ? ` - ${item.variant.color.name}` : '') + (item.variant?.size ? ` / ${item.variant.size.name}` : ''),
         price: Number(item.variant?.salePrice || item.variant?.price || 0),
-        image: item.variant?.images?.[0]?.url || item.variant?.images?.[0] || item.variant?.product?.images?.[0]?.url || '',
+        image: normalizeImageUrl(item.variant?.images?.[0]?.url || item.variant?.images?.[0] || item.variant?.product?.images?.[0]?.url) || '',
       })) || [])
-    : clientItems;
+    : clientItems.map(item => ({
+        ...item,
+        image: normalizeImageUrl(item.image) || '',
+      }));
 
   const total = user
     ? (items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0))
@@ -204,6 +208,7 @@ export default function Checkout({ initialAddresses, storeSettings, user, server
         selectedCourier.name,
         taxAmount,
         discount,
+        appliedCoupon?.code,
       );
 
       if (res.success && res.url) {

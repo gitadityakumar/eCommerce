@@ -2,6 +2,7 @@
 
 import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+import { requireAdmin } from '@/lib/auth/guards';
 import { db } from '@/lib/db';
 import { storeSettings } from '@/lib/db/schema';
 
@@ -18,6 +19,7 @@ export async function getStoreSettings() {
 
 export async function updateStoreSettings(data: Partial<typeof storeSettings.$inferInsert>) {
   try {
+    await requireAdmin();
     const existing = await getStoreSettings();
 
     if (existing) {

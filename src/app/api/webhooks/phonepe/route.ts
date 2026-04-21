@@ -1,19 +1,21 @@
 'use server';
 
 import type { NextRequest } from 'next/server';
+import { Buffer } from 'node:buffer';
 import crypto from 'node:crypto';
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, gte, ne, sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { createShiprocketOrder } from '@/actions/shipping';
 import { db } from '@/lib/db';
-import { orders, payments } from '@/lib/db/schema';
+import { inventoryLevels, orders, payments } from '@/lib/db/schema';
+import { checkRateLimit, rateLimitKey } from '@/lib/security/rate-limit';
 
 // PhonePe V2 Webhook credentials (configured in dashboard)
-const WEBHOOK_USERNAME = process.env.PHONEPE_WEBHOOK_USERNAME || 'testuser';
-const WEBHOOK_PASSWORD = process.env.PHONEPE_WEBHOOK_PASSWORD || 'testuser123';
+const WEBHOOK_USERNAME = process.env.PHONEPE_WEBHOOK_USERNAME;
+const WEBHOOK_PASSWORD = process.env.PHONEPE_WEBHOOK_PASSWORD;
 
 function verifyV2Authorization(authHeader: string | null): boolean {
-  if (!authHeader)
+  if (!authHeader || !WEBHOOK_USERNAME || !WEBHOOK_PASSWORD)
     return false;
 
   // PhonePe sends: Authorization: SHA256(username:password)
@@ -25,7 +27,10 @@ function verifyV2Authorization(authHeader: string | null): boolean {
   // The header might be just the hash or prefixed
   const receivedHash = authHeader.replace(/^SHA256\s*/i, '').trim();
 
-  return receivedHash.toLowerCase() === expectedHash.toLowerCase();
+  const expected = Buffer.from(expectedHash.toLowerCase(), 'utf8');
+  const received = Buffer.from(receivedHash.toLowerCase(), 'utf8');
+
+  return expected.length === received.length && crypto.timingSafeEqual(expected, received);
 }
 
 interface PhonePeV2Webhook {
@@ -50,6 +55,14 @@ interface PhonePeV2Webhook {
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      || req.headers.get('x-real-ip')
+      || 'unknown';
+    const limit = checkRateLimit(rateLimitKey('phonepe-webhook', ip), 120, 15 * 60 * 1000);
+    if (!limit.ok) {
+      return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+    }
+
     const rawBody: PhonePeV2Webhook = await req.json();
     const authHeader = req.headers.get('authorization');
 
@@ -63,11 +76,9 @@ export async function POST(req: NextRequest) {
       state: rawBody.payload?.state,
     });
 
-    // Verify authorization (optional but recommended)
     if (!verifyV2Authorization(authHeader)) {
-      console.warn('PhonePe V2 Authorization verification failed or skipped');
-      // In production, you may want to reject unauthorized requests
-      // For now, we log and continue to debug
+      console.warn('PhonePe V2 Authorization verification failed');
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { event, payload } = rawBody;
@@ -94,37 +105,58 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Payment Not Found' }, { status: 404 });
     }
 
+    const expectedAmount = Math.round(Number(payment.order.totalAmount) * 100);
+    if (payload.amount !== expectedAmount) {
+      console.error('PhonePe V2 amount mismatch:', {
+        merchantOrderId: payload.merchantOrderId,
+        expectedAmount,
+        receivedAmount: payload.amount,
+      });
+      return NextResponse.json({ error: 'Amount mismatch' }, { status: 400 });
+    }
+
     // Handle events
     if (event === 'checkout.order.completed' && payload.state === 'COMPLETED') {
       // Payment Success
       const transactionId = payload.paymentDetails?.[0]?.transactionId || payload.orderId;
+      let shouldCreateShipment = false;
 
-      await db.update(payments).set({
-        status: 'completed',
-        transactionId,
-        paidAt: new Date(),
-        rawPayload: rawBody,
-      }).where(eq(payments.id, payment.id));
+      await db.transaction(async (tx) => {
+        await tx.update(payments).set({
+          status: 'completed',
+          transactionId,
+          paidAt: new Date(),
+          rawPayload: rawBody,
+        }).where(eq(payments.id, payment.id));
 
-      // Update Order (Idempotency Check)
-      if (payment.order.status !== 'paid') {
-        await db.update(orders).set({
+        const [updatedOrder] = await tx.update(orders).set({
           status: 'paid',
           updatedAt: new Date(),
-        }).where(eq(orders.id, payment.orderId));
+        }).where(and(eq(orders.id, payment.orderId), ne(orders.status, 'paid'))).returning();
 
-        // Decrement Inventory (Atomic)
-        await db.transaction(async (tx) => {
+        if (updatedOrder) {
           for (const item of payment.order.items) {
-            await tx.execute(sql`
-              UPDATE inventory_levels 
-              SET available = available - ${item.quantity}
-              WHERE variant_id = ${item.productVariantId}
-            `);
-          }
-        });
+            const [updatedInventory] = await tx.update(inventoryLevels)
+              .set({
+                available: sql`${inventoryLevels.available} - ${item.quantity}`,
+                updatedAt: new Date(),
+              })
+              .where(and(
+                eq(inventoryLevels.variantId, item.productVariantId),
+                gte(inventoryLevels.available, item.quantity),
+              ))
+              .returning();
 
-        // Create Shiprocket Order
+            if (!updatedInventory) {
+              throw new Error(`Insufficient inventory for variant ${item.productVariantId}`);
+            }
+          }
+
+          shouldCreateShipment = true;
+        }
+      });
+
+      if (shouldCreateShipment) {
         try {
           await createShiprocketOrder(payment.orderId);
         }
@@ -136,6 +168,10 @@ export async function POST(req: NextRequest) {
       console.warn('PhonePe V2 Payment Success for order:', payment.orderId);
     }
     else if (event === 'checkout.order.failed' || payload.state === 'FAILED') {
+      if (payment.status === 'completed' || payment.order.status === 'paid') {
+        return NextResponse.json({ success: true });
+      }
+
       // Payment Failed
       await db.update(payments).set({
         status: 'failed',

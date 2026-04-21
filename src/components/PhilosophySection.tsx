@@ -23,6 +23,7 @@ export default function PhilosophySection() {
                 alt="Signature Velvet Bow"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[1.5s] opacity-90 dark:opacity-80"
                 fill
+                sizes="(min-width: 1024px) 42vw, 100vw"
               />
 
               {/* Hotspot */}

@@ -22,6 +22,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
 import { formatINR } from '@/lib/currency';
+import { normalizeImageUrl } from '@/lib/images';
 import { cn } from '@/lib/utils';
 
 import { ReceiptDocument } from './receipt-document';
@@ -169,68 +170,73 @@ function OrderSuccessPage({
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6 pt-6">
-                {order.items.map((item, index) => (
-                  <div key={item.id} className="group">
-                    <div className="flex gap-6">
-                      <div className="w-24 shrink-0 transition-transform duration-500 group-hover:scale-[1.02]">
-                        <AspectRatio
-                          ratio={4 / 5}
-                          className="overflow-hidden rounded-xl bg-muted border border-border-subtle shadow-sm"
-                        >
-                          {item.variant?.product?.images?.[0]
-                            ? (
-                                <Image
-                                  src={item.variant.product.images[0].url}
-                                  alt={item.variant.product.name}
-                                  fill
-                                  className="object-cover transition-opacity duration-500 group-hover:opacity-90"
-                                />
-                              )
-                            : (
-                                <div className="flex size-full items-center justify-center bg-muted text-text-secondary text-[10px] font-montserrat uppercase tracking-wider text-center p-2 italic leading-relaxed">
-                                  Prêt-à-Porter
-                                </div>
-                              )}
-                        </AspectRatio>
-                      </div>
-                      <div className="min-w-0 flex-1 flex flex-col justify-center">
-                        <h3 className="font-playfair text-lg text-text-primary tracking-tight transition-colors group-hover:text-accent duration-300">
-                          {item.variant?.product?.name || 'Artisan Accessory'}
-                        </h3>
-                        <div className="mt-2 flex flex-wrap items-center gap-2 font-inter text-[11px] uppercase tracking-widest text-text-secondary">
-                          <span className="bg-muted px-2 py-0.5 rounded transition-colors group-hover:bg-accent/5">{item.variant?.color?.name}</span>
-                          {item.variant?.size?.name && (
-                            <>
-                              <span className="text-border-subtle">|</span>
-                              <span className="bg-muted px-2 py-0.5 rounded transition-colors group-hover:bg-accent/5">{item.variant.size.name}</span>
-                            </>
+                {order.items.map((item, index) => {
+                  const imageUrl = normalizeImageUrl(item.variant?.product?.images?.[0]?.url);
+
+                  return (
+                    <div key={item.id} className="group">
+                      <div className="flex gap-6">
+                        <div className="w-24 shrink-0 transition-transform duration-500 group-hover:scale-[1.02]">
+                          <AspectRatio
+                            ratio={4 / 5}
+                            className="overflow-hidden rounded-xl bg-muted border border-border-subtle shadow-sm"
+                          >
+                            {imageUrl
+                              ? (
+                                  <Image
+                                    src={imageUrl}
+                                    alt={item.variant.product.name}
+                                    fill
+                                    sizes="96px"
+                                    className="object-cover transition-opacity duration-500 group-hover:opacity-90"
+                                  />
+                                )
+                              : (
+                                  <div className="flex size-full items-center justify-center bg-muted text-text-secondary text-[10px] font-montserrat uppercase tracking-wider text-center p-2 italic leading-relaxed">
+                                    Prêt-à-Porter
+                                  </div>
+                                )}
+                          </AspectRatio>
+                        </div>
+                        <div className="min-w-0 flex-1 flex flex-col justify-center">
+                          <h3 className="font-playfair text-lg text-text-primary tracking-tight transition-colors group-hover:text-accent duration-300">
+                            {item.variant?.product?.name || 'Artisan Accessory'}
+                          </h3>
+                          <div className="mt-2 flex flex-wrap items-center gap-2 font-inter text-[11px] uppercase tracking-widest text-text-secondary">
+                            <span className="bg-muted px-2 py-0.5 rounded transition-colors group-hover:bg-accent/5">{item.variant?.color?.name}</span>
+                            {item.variant?.size?.name && (
+                              <>
+                                <span className="text-border-subtle">|</span>
+                                <span className="bg-muted px-2 py-0.5 rounded transition-colors group-hover:bg-accent/5">{item.variant.size.name}</span>
+                              </>
+                            )}
+                          </div>
+                          <p className="mt-2 font-inter text-xs text-text-secondary/80">
+                            {item.quantity}
+                            {' '}
+                            Unit
+                            {item.quantity > 1 ? 's' : ''}
+                          </p>
+                        </div>
+                        <div className="text-right flex flex-col justify-center">
+                          <p className="font-montserrat font-semibold text-text-primary">
+                            {formatINR(Number(item.priceAtPurchase) * item.quantity)}
+                          </p>
+                          {item.quantity > 1 && (
+                            <p className="text-[10px] text-text-secondary font-inter tracking-wide mt-1">
+                              {formatINR(Number(item.priceAtPurchase))}
+                              {' '}
+                              each
+                            </p>
                           )}
                         </div>
-                        <p className="mt-2 font-inter text-xs text-text-secondary/80">
-                          {item.quantity}
-                          {' '}
-                          Unit
-                          {item.quantity > 1 ? 's' : ''}
-                        </p>
                       </div>
-                      <div className="text-right flex flex-col justify-center">
-                        <p className="font-montserrat font-semibold text-text-primary">
-                          {formatINR(Number(item.priceAtPurchase) * item.quantity)}
-                        </p>
-                        {item.quantity > 1 && (
-                          <p className="text-[10px] text-text-secondary font-inter tracking-wide mt-1">
-                            {formatINR(Number(item.priceAtPurchase))}
-                            {' '}
-                            each
-                          </p>
-                        )}
-                      </div>
+                      {index < order.items.length - 1 && (
+                        <Separator className="mt-6 bg-border-subtle opacity-50" />
+                      )}
                     </div>
-                    {index < order.items.length - 1 && (
-                      <Separator className="mt-6 bg-border-subtle opacity-50" />
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </CardContent>
             </Card>
 
@@ -331,6 +337,7 @@ function OrderSuccessPage({
                         src="/phone-pay.svg"
                         alt="PhonePe"
                         fill
+                        sizes="48px"
                         className="object-cover p-1"
                       />
                     </div>

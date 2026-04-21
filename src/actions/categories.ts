@@ -3,7 +3,7 @@
 import type { InsertCategory } from '@/lib/db/schema/categories';
 import { eq } from 'drizzle-orm';
 import { unstable_noStore as noStore, revalidatePath } from 'next/cache';
-import { getCurrentUser } from '@/lib/auth/actions';
+import { requireAdmin } from '@/lib/auth/guards';
 import { db } from '@/lib/db';
 import { auditLogs, categories } from '@/lib/db/schema';
 import { insertCategorySchema } from '@/lib/db/schema/categories';
@@ -21,10 +21,7 @@ export async function getCategories() {
 }
 
 export async function createCategory(data: InsertCategory) {
-  const user = await getCurrentUser();
-  if (!user) {
-    return { success: false, error: 'Unauthorized. Please log in.' };
-  }
+  const user = await requireAdmin();
 
   const validatedFields = insertCategorySchema.safeParse(data);
 
@@ -60,10 +57,7 @@ export async function createCategory(data: InsertCategory) {
 }
 
 export async function updateCategory(id: string, data: InsertCategory) {
-  const user = await getCurrentUser();
-  if (!user) {
-    return { success: false, error: 'Unauthorized' };
-  }
+  const user = await requireAdmin();
 
   const validatedFields = insertCategorySchema.safeParse(data);
 
@@ -110,10 +104,7 @@ export async function updateCategory(id: string, data: InsertCategory) {
 }
 
 export async function deleteCategory(id: string) {
-  const user = await getCurrentUser();
-  if (!user) {
-    return { success: false, error: 'Unauthorized' };
-  }
+  const user = await requireAdmin();
 
   try {
     const oldCategory = await db.query.categories.findFirst({

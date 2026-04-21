@@ -6,7 +6,7 @@ import type { InsertGender } from '@/lib/db/schema/filters/genders';
 import type { InsertSize } from '@/lib/db/schema/filters/sizes';
 import { eq } from 'drizzle-orm';
 import { unstable_noStore as noStore, revalidatePath } from 'next/cache';
-import { getCurrentUser } from '@/lib/auth/actions';
+import { requireAdmin } from '@/lib/auth/guards';
 import { db } from '@/lib/db';
 import {
   auditLogs,
@@ -39,9 +39,7 @@ export async function getColors() {
 }
 
 export async function createColor(data: InsertColor) {
-  const user = await getCurrentUser();
-  if (!user)
-    return { success: false, error: 'Unauthorized' };
+  const user = await requireAdmin();
 
   const validated = insertColorSchema.safeParse(data);
   if (!validated.success) {
@@ -72,9 +70,7 @@ export async function createColor(data: InsertColor) {
 }
 
 export async function updateColor(id: string, data: InsertColor) {
-  const user = await getCurrentUser();
-  if (!user)
-    return { success: false, error: 'Unauthorized' };
+  const user = await requireAdmin();
 
   const validated = insertColorSchema.safeParse(data);
   if (!validated.success) {
@@ -114,9 +110,7 @@ export async function updateColor(id: string, data: InsertColor) {
 }
 
 export async function deleteColor(id: string) {
-  const user = await getCurrentUser();
-  if (!user)
-    return { success: false, error: 'Unauthorized' };
+  const user = await requireAdmin();
 
   try {
     const oldColor = await db.query.colors.findFirst({ where: eq(colors.id, id) });
@@ -159,9 +153,7 @@ export async function getBrands() {
 }
 
 export async function createBrand(data: InsertBrand) {
-  const user = await getCurrentUser();
-  if (!user)
-    return { success: false, error: 'Unauthorized' };
+  const user = await requireAdmin();
 
   const validated = insertBrandSchema.safeParse(data);
   if (!validated.success) {
@@ -192,9 +184,7 @@ export async function createBrand(data: InsertBrand) {
 }
 
 export async function updateBrand(id: string, data: InsertBrand) {
-  const user = await getCurrentUser();
-  if (!user)
-    return { success: false, error: 'Unauthorized' };
+  const user = await requireAdmin();
 
   const validated = insertBrandSchema.safeParse(data);
   if (!validated.success) {
@@ -234,9 +224,7 @@ export async function updateBrand(id: string, data: InsertBrand) {
 }
 
 export async function deleteBrand(id: string) {
-  const user = await getCurrentUser();
-  if (!user)
-    return { success: false, error: 'Unauthorized' };
+  const user = await requireAdmin();
 
   try {
     const oldBrand = await db.query.brands.findFirst({ where: eq(brands.id, id) });
@@ -279,9 +267,7 @@ export async function getSizes() {
 }
 
 export async function createSize(data: InsertSize) {
-  const user = await getCurrentUser();
-  if (!user)
-    return { success: false, error: 'Unauthorized' };
+  const user = await requireAdmin();
 
   const validated = insertSizeSchema.safeParse(data);
   if (!validated.success) {
@@ -312,9 +298,7 @@ export async function createSize(data: InsertSize) {
 }
 
 export async function updateSize(id: string, data: InsertSize) {
-  const user = await getCurrentUser();
-  if (!user)
-    return { success: false, error: 'Unauthorized' };
+  const user = await requireAdmin();
 
   const validated = insertSizeSchema.safeParse(data);
   if (!validated.success) {
@@ -354,9 +338,7 @@ export async function updateSize(id: string, data: InsertSize) {
 }
 
 export async function deleteSize(id: string) {
-  const user = await getCurrentUser();
-  if (!user)
-    return { success: false, error: 'Unauthorized' };
+  const user = await requireAdmin();
 
   try {
     const oldSize = await db.query.sizes.findFirst({ where: eq(sizes.id, id) });
@@ -399,9 +381,7 @@ export async function getGenders() {
 }
 
 export async function createGender(data: InsertGender) {
-  const user = await getCurrentUser();
-  if (!user)
-    return { success: false, error: 'Unauthorized' };
+  const user = await requireAdmin();
 
   const validated = insertGenderSchema.safeParse(data);
   if (!validated.success) {
@@ -432,9 +412,7 @@ export async function createGender(data: InsertGender) {
 }
 
 export async function updateGender(id: string, data: InsertGender) {
-  const user = await getCurrentUser();
-  if (!user)
-    return { success: false, error: 'Unauthorized' };
+  const user = await requireAdmin();
 
   const validated = insertGenderSchema.safeParse(data);
   if (!validated.success) {
@@ -474,9 +452,7 @@ export async function updateGender(id: string, data: InsertGender) {
 }
 
 export async function deleteGender(id: string) {
-  const user = await getCurrentUser();
-  if (!user)
-    return { success: false, error: 'Unauthorized' };
+  const user = await requireAdmin();
 
   try {
     const oldGender = await db.query.genders.findFirst({ where: eq(genders.id, id) });
@@ -525,9 +501,7 @@ export async function getProductOptions(productId: string) {
 }
 
 export async function createProductOption(data: { productId: string; name: string; sortOrder: number }) {
-  const user = await getCurrentUser();
-  if (!user)
-    return { success: false, error: 'Unauthorized' };
+  const user = await requireAdmin();
 
   try {
     const [newOption] = await db.insert(productOptions).values(data).returning();
@@ -550,9 +524,7 @@ export async function createProductOption(data: { productId: string; name: strin
 }
 
 export async function deleteProductOption(id: string) {
-  const user = await getCurrentUser();
-  if (!user)
-    return { success: false, error: 'Unauthorized' };
+  const user = await requireAdmin();
 
   try {
     const oldOption = await db.query.productOptions.findFirst({ where: eq(productOptions.id, id) });
@@ -579,9 +551,7 @@ export async function deleteProductOption(id: string) {
 }
 
 export async function createProductOptionValue(data: { optionId: string; value: string; sortOrder: number }) {
-  const user = await getCurrentUser();
-  if (!user)
-    return { success: false, error: 'Unauthorized' };
+  const user = await requireAdmin();
 
   try {
     const [newValue] = await db.insert(productOptionValues).values(data).returning();
@@ -604,9 +574,7 @@ export async function createProductOptionValue(data: { optionId: string; value: 
 }
 
 export async function deleteProductOptionValue(id: string) {
-  const user = await getCurrentUser();
-  if (!user)
-    return { success: false, error: 'Unauthorized' };
+  const user = await requireAdmin();
 
   try {
     const oldValue = await db.query.productOptionValues.findFirst({ where: eq(productOptionValues.id, id) });

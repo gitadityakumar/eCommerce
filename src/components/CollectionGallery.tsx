@@ -58,7 +58,7 @@ export default function CollectionGallery() {
                   className="absolute inset-0 bg-linear-to-b from-transparent to-black/60 z-10 flex items-end justify-center pb-8"
                 >
                   <motion.button
-                    whileHover={{ scale: 1.05, backgroundColor: 'white', color: 'black' }}
+                    whileHover={{ scale: 1.05, backgroundColor: 'rgb(255, 255, 255)', color: 'rgb(0, 0, 0)' }}
                     className="text-white border border-white/30 px-8 py-3 text-xs tracking-widest uppercase backdrop-blur-md transition-all rounded-full"
                   >
                     Quick Add
@@ -69,6 +69,7 @@ export default function CollectionGallery() {
                   className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 opacity-90 group-hover:opacity-100 dark:opacity-80"
                   alt={item.title}
                   fill
+                  sizes="(min-width: 768px) 33vw, 100vw"
                 />
               </div>
               <div className="mt-8 text-center px-4">

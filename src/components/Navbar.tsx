@@ -62,10 +62,10 @@ export default function Navbar() {
           <Image
             src="/logo.svg"
             alt="PreetyTwist"
-            width={24}
-            height={24}
+            width={418}
+            height={347}
             priority
-            className="dark:invert"
+            className="h-5 w-6 dark:invert"
           />
         </Link>
 

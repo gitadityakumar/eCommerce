@@ -5,8 +5,10 @@ import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 import { z } from 'zod';
 import { auth } from '@/lib/auth';
+import { requireAdmin } from '@/lib/auth/guards';
 import { db } from '@/lib/db';
 import { auditLogs, inventoryLevels, stockLedger } from '@/lib/db/schema';
+import { normalizeImageUrl } from '@/lib/images';
 
 const adjustStockSchema = z.object({
   variantId: z.string().uuid(),
@@ -99,6 +101,7 @@ export async function adjustStock(input: z.infer<typeof adjustStockSchema>) {
 
 export async function getInventory() {
   try {
+    await requireAdmin();
     const variants = await db.query.productVariants.findMany({
       with: {
         product: {
@@ -120,7 +123,17 @@ export async function getInventory() {
       updatedAt: v.inventory?.updatedAt ?? v.createdAt,
       variant: {
         ...v,
-        product: v.product,
+        images: v.images.map(image => ({
+          ...image,
+          url: normalizeImageUrl(image.url) ?? image.url,
+        })),
+        product: {
+          ...v.product,
+          images: v.product.images.map(image => ({
+            ...image,
+            url: normalizeImageUrl(image.url) ?? image.url,
+          })),
+        },
         color: v.color,
         size: v.size,
       },

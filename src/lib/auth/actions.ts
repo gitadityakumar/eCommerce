@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { guests, users } from '@/lib/db/schema/index';
+import { checkRateLimit, rateLimitKey } from '@/lib/security/rate-limit';
 
 const COOKIE_OPTIONS = {
   httpOnly: true as const,
@@ -19,6 +20,13 @@ const COOKIE_OPTIONS = {
 const emailSchema = z.string().email();
 const passwordSchema = z.string().min(8).max(128);
 const nameSchema = z.string().min(1).max(100);
+
+async function getRequestIp() {
+  const requestHeaders = await headers();
+  return requestHeaders.get('x-forwarded-for')?.split(',')[0]?.trim()
+    || requestHeaders.get('x-real-ip')
+    || 'unknown';
+}
 
 export async function createGuestSession() {
   const cookieStore = await cookies();
@@ -62,6 +70,11 @@ const signUpSchema = z.object({
 
 export async function signUp(formData: FormData) {
   try {
+    const ip = await getRequestIp();
+    const limit = checkRateLimit(rateLimitKey('sign-up', ip), 5, 15 * 60 * 1000);
+    if (!limit.ok)
+      return { ok: false, error: 'Too many attempts. Please try again later.' };
+
     const rawData = {
       name: formData.get('name') as string,
       email: formData.get('email') as string,
@@ -105,6 +118,11 @@ const signInSchema = z.object({
 
 export async function signIn(formData: FormData) {
   try {
+    const ip = await getRequestIp();
+    const limit = checkRateLimit(rateLimitKey('sign-in', ip), 10, 15 * 60 * 1000);
+    if (!limit.ok)
+      return { ok: false, error: 'Too many attempts. Please try again later.' };
+
     const rawData = {
       email: formData.get('email') as string,
       password: formData.get('password') as string,
@@ -163,6 +181,11 @@ export async function mergeGuestCartWithUserCart() {
 
 export async function forgotPassword(formData: FormData) {
   try {
+    const ip = await getRequestIp();
+    const limit = checkRateLimit(rateLimitKey('forgot-password', ip), 5, 15 * 60 * 1000);
+    if (!limit.ok)
+      return { ok: false, error: 'Too many attempts. Please try again later.' };
+
     const email = formData.get('email') as string;
     const data = z.object({ email: emailSchema }).parse({ email });
 
@@ -172,7 +195,7 @@ export async function forgotPassword(formData: FormData) {
     });
 
     if (!user) {
-      return { ok: false, error: 'No account found with this email address.' };
+      return { ok: true };
     }
 
     try {
@@ -205,6 +228,11 @@ export async function forgotPassword(formData: FormData) {
 
 export async function updatePassword(formData: FormData) {
   try {
+    const ip = await getRequestIp();
+    const limit = checkRateLimit(rateLimitKey('reset-password', ip), 5, 15 * 60 * 1000);
+    if (!limit.ok)
+      return { ok: false, error: 'Too many attempts. Please try again later.' };
+
     const password = formData.get('password') as string;
     const token = formData.get('token') as string;
 
