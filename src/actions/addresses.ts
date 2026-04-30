@@ -6,6 +6,18 @@ import { getCurrentUser } from '@/lib/auth/actions';
 import { db } from '@/lib/db';
 import { addresses, insertAddressSchema } from '@/lib/db/schema/addresses';
 
+async function completeAddressMutation(action: () => Promise<void>, errorLabel: string) {
+  try {
+    await action();
+    revalidatePath('/profile/addresses');
+    return { success: true };
+  }
+  catch (error: any) {
+    console.error(errorLabel, error);
+    return { success: false, error: error.message };
+  }
+}
+
 export async function getAddresses() {
   const user = await getCurrentUser();
   if (!user)
@@ -51,18 +63,11 @@ export async function deleteAddress(addressId: string) {
   if (!user)
     return { success: false, error: 'Unauthorized' };
 
-  try {
+  return completeAddressMutation(async () => {
     await db
       .delete(addresses)
       .where(and(eq(addresses.id, addressId), eq(addresses.userId, user.id)));
-
-    revalidatePath('/profile/addresses');
-    return { success: true };
-  }
-  catch (error: any) {
-    console.error('Error deleting address:', error);
-    return { success: false, error: error.message };
-  }
+  }, 'Error deleting address:');
 }
 
 export async function setDefaultAddress(addressId: string) {
@@ -70,7 +75,7 @@ export async function setDefaultAddress(addressId: string) {
   if (!user)
     return { success: false, error: 'Unauthorized' };
 
-  try {
+  return completeAddressMutation(async () => {
     // Unset all other defaults
     await db
       .update(addresses)
@@ -82,12 +87,5 @@ export async function setDefaultAddress(addressId: string) {
       .update(addresses)
       .set({ isDefault: true })
       .where(and(eq(addresses.id, addressId), eq(addresses.userId, user.id)));
-
-    revalidatePath('/profile/addresses');
-    return { success: true };
-  }
-  catch (error: any) {
-    console.error('Error setting default address:', error);
-    return { success: false, error: error.message };
-  }
+  }, 'Error setting default address:');
 }

@@ -44,7 +44,7 @@ const formSchema = z.object({
 
 export type FormValues = z.infer<typeof formSchema>;
 
-export interface CollectionFormProps {
+interface CollectionFormProps {
   initialData?: FormValues & { id?: string };
   products: { id: string; name: string }[];
   onSuccess?: () => void;

@@ -4,24 +4,29 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, CheckCircle2, Lock, Tag, Truck, X } from 'lucide-react';
 
 import Link from 'next/link';
-import { useState } from 'react';
-import { toast } from 'sonner';
-import { validateCoupon } from '@/actions/coupons';
+import { useCouponCode } from '@/hooks/use-coupon-code';
 import { formatINR } from '@/lib/currency';
 
+interface OrderSummaryItem {
+  quantity: number;
+  price?: number;
+  variant?: {
+    price: number | string;
+  };
+}
+
 interface OrderSummaryProps {
-  items: any[];
+  items: OrderSummaryItem[];
 }
 
 export function OrderSummary({ items }: OrderSummaryProps) {
   const subtotal = items.reduce((acc, item) => {
-    return acc + Number(item.variant.price) * item.quantity;
+    const itemPrice = item.variant ? Number(item.variant.price) : Number(item.price ?? 0);
+    return acc + itemPrice * item.quantity;
   }, 0);
 
   // Coupon State
-  const [couponCode, setCouponCode] = useState('');
-  const [isApplying, setIsApplying] = useState(false);
-  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; type: string; value: number } | null>(null);
+  const { appliedCoupon, couponCode, handleApplyCoupon, isApplying, removeCoupon, setCouponCode } = useCouponCode(subtotal);
 
   const discount = appliedCoupon
     ? (appliedCoupon.type === 'percentage' ? (subtotal * appliedCoupon.value) / 100 : appliedCoupon.value)
@@ -30,37 +35,6 @@ export function OrderSummary({ items }: OrderSummaryProps) {
   const shippingTax = 0; // Placeholder
   const total = subtotal + shippingTax - discount;
   const isFreeShipping = subtotal > 1000; // Example threshold
-
-  const handleApplyCoupon = async () => {
-    if (!couponCode.trim())
-      return;
-    setIsApplying(true);
-    try {
-      const result = await validateCoupon(couponCode, subtotal);
-      if (result.success && result.data) {
-        setAppliedCoupon({
-          code: result.data.code,
-          type: result.data.discountType,
-          value: result.data.discountValue,
-        });
-        toast.success(`Promo code "${result.data.code}" applied successfully!`);
-      }
-      else {
-        toast.error(result.error || 'Invalid promo code');
-      }
-    }
-    catch {
-      toast.error('Failed to apply promo code');
-    }
-    finally {
-      setIsApplying(false);
-    }
-  };
-
-  const removeCoupon = () => {
-    setAppliedCoupon(null);
-    setCouponCode('');
-  };
 
   return (
     <div className="bg-surface border border-border-subtle rounded-2xl p-6 md:p-8 flex flex-col gap-6 md:gap-8 sticky top-28 shadow-soft transition-colors duration-500">

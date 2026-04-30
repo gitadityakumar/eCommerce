@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { validateCoupon } from '@/actions/coupons';
 import { initiatePayment } from '@/actions/payment';
 import { checkShippingServiceability } from '@/actions/shipping';
 import { AddressForm } from '@/app/(root)/profile/addresses/AddressForm';
@@ -19,6 +18,7 @@ import {
 } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useCouponCode } from '@/hooks/use-coupon-code';
 import { formatINR } from '@/lib/currency';
 import { normalizeImageUrl } from '@/lib/images';
 import { cn } from '@/lib/utils';
@@ -134,9 +134,7 @@ export default function Checkout({ initialAddresses, storeSettings, user, server
   }, [selectedAddress?.postalCode, isHydrated]);
 
   // Coupon State
-  const [couponCode, setCouponCode] = useState('');
-  const [isApplying, setIsApplying] = useState(false);
-  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; type: string; value: number } | null>(null);
+  const { appliedCoupon, couponCode, handleApplyCoupon, isApplying, removeCoupon, setCouponCode } = useCouponCode(total);
 
   const selectedCourier = couriers.find(c => c.id === selectedCourierId);
 
@@ -150,37 +148,6 @@ export default function Checkout({ initialAddresses, storeSettings, user, server
     : 0;
 
   const grandTotal = total + (selectedCourier?.price || 0) - discount + taxAmount;
-
-  const handleApplyCoupon = async () => {
-    if (!couponCode.trim())
-      return;
-    setIsApplying(true);
-    try {
-      const result = await validateCoupon(couponCode, total);
-      if (result.success && result.data) {
-        setAppliedCoupon({
-          code: result.data.code,
-          type: result.data.discountType,
-          value: result.data.discountValue,
-        });
-        toast.success(`Promo code "${result.data.code}" applied successfully!`);
-      }
-      else {
-        toast.error(result.error || 'Invalid promo code');
-      }
-    }
-    catch {
-      toast.error('Failed to apply promo code');
-    }
-    finally {
-      setIsApplying(false);
-    }
-  };
-
-  const removeCoupon = () => {
-    setAppliedCoupon(null);
-    setCouponCode('');
-  };
 
   const handleAddressCreated = () => {
     setShowAddModal(false);

@@ -1,9 +1,15 @@
 'use client';
 
 import { IconMail, IconShieldCheck } from '@tabler/icons-react';
-import { motion } from 'framer-motion';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import {
+  LegalContactCard,
+  LegalHero,
+  LegalIntroCard,
+  LegalLinks,
+  LegalNoticeCard,
+  LegalPageShell,
+  LegalSectionCard,
+} from '@/components/legal-page';
 
 interface PrivacySection {
   title: string;
@@ -109,204 +115,61 @@ const privacyData: PrivacySection[] = [
   },
 ];
 
-function PrivacySectionCard({
-  section,
-  sectionIndex,
-}: {
-  section: PrivacySection;
-  sectionIndex: number;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: sectionIndex * 0.08 }}
-      className="bg-card/50 backdrop-blur-sm border border-border rounded-xl overflow-hidden hover:border-accent/20 transition-colors duration-300"
-    >
-      {/* Section Header */}
-      <div className="px-6 py-5 border-b border-border bg-secondary/30">
-        <div className="flex items-center gap-3">
-          <span className="text-2xl">{section.icon}</span>
-          <h3 className="font-playfair text-xl md:text-2xl font-light text-foreground">
-            {section.title}
-          </h3>
-        </div>
-      </div>
-
-      {/* Section Content */}
-      <div className="px-6 py-5">
-        <ul className="space-y-3">
-          {section.content.map((item, index) => (
-            <motion.li
-              key={index}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, delay: sectionIndex * 0.08 + index * 0.05 }}
-              className="flex items-start gap-3"
-            >
-              <span className="text-accent mt-1.5 shrink-0">
-                <IconShieldCheck size={14} />
-              </span>
-              <span className="font-inter text-muted-foreground text-sm leading-relaxed">
-                {item}
-              </span>
-            </motion.li>
-          ))}
-        </ul>
-      </div>
-    </motion.div>
-  );
-}
-
 export default function PrivacyPage() {
   const lastUpdated = 'January 2026';
 
   return (
-    <div className="min-h-[80vh] bg-background text-foreground relative overflow-hidden">
-      {/* Background Ambience */}
-      <div className="absolute inset-0 pointer-events-none opacity-20 dark:opacity-10">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/20 rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[100px]" />
-      </div>
-
-      <div className="relative z-10 max-w-5xl mx-auto px-6 md:px-12 py-24 md:py-32">
-        {/* Header Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16 md:mb-20"
-        >
-          <span className="text-muted-foreground text-xs tracking-[0.3em] uppercase block mb-6">
-            Legal
-          </span>
-          <h1 className="font-playfair text-4xl md:text-6xl lg:text-7xl font-light tracking-tight mb-6">
+    <LegalPageShell>
+      <LegalHero
+        title={(
+          <>
             Privacy
             <br />
             <span className="text-accent">Policy</span>
-          </h1>
-          <p className="font-inter text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed">
-            Your privacy is important to us. This policy outlines how we collect,
-            use, and protect your personal information.
-          </p>
-          <p className="font-montserrat text-xs text-muted-foreground mt-6 tracking-widest uppercase">
+          </>
+        )}
+        description="Your privacy is important to us. This policy outlines how we collect, use, and protect your personal information."
+        meta={(
+          <p className="font-montserrat text-xs text-muted-foreground tracking-widest uppercase">
             Last Updated:
-            {' '}
             {lastUpdated}
           </p>
-        </motion.div>
+        )}
+      />
 
-        {/* Introduction */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6 md:p-8 mb-8"
-        >
-          <p className="font-inter text-muted-foreground text-base leading-relaxed">
-            At
-            {' '}
-            <span className="text-foreground font-medium">Preety Twist</span>
-            , we are committed to
-            protecting your privacy and ensuring the security of your personal information. This Privacy
-            Policy explains how we collect, use, disclose, and safeguard your data when you visit our
-            website, make a purchase, or interact with our services. By using our platform, you consent
-            to the practices described in this policy.
-          </p>
-        </motion.div>
+      <LegalIntroCard>
+        At
+        {' '}
+        <span className="text-foreground font-medium">Preety Twist</span>
+        , we are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your data when you visit our website, make a purchase, or interact with our services. By using our platform, you consent to the practices described in this policy.
+      </LegalIntroCard>
 
-        {/* Privacy Sections */}
-        <div className="space-y-6 mb-16">
-          {privacyData.map((section, index) => (
-            <PrivacySectionCard key={section.title} section={section} sectionIndex={index} />
-          ))}
-        </div>
-
-        {/* Policy Updates Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className="bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6 md:p-8 mb-8"
-        >
-          <div className="flex items-center gap-3 mb-4">
-            <span className="text-2xl">📢</span>
-            <h3 className="font-playfair text-xl md:text-2xl font-light text-foreground">
-              Policy Updates
-            </h3>
-          </div>
-          <p className="font-inter text-muted-foreground text-sm leading-relaxed">
-            We may update this Privacy Policy from time to time to reflect changes in our practices,
-            technology, legal requirements, or other factors. When we make significant changes, we will
-            notify you by posting the updated policy on our website and updating the "Last Updated" date.
-            We encourage you to review this policy periodically to stay informed about how we protect
-            your information.
-          </p>
-        </motion.div>
-
-        {/* Contact Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
-          className="text-center bg-card/50 backdrop-blur-sm border border-border rounded-xl p-8 md:p-12"
-        >
-          <div className="flex justify-center mb-5">
-            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-accent/10 text-accent">
-              <IconMail size={28} />
-            </div>
-          </div>
-          <h2 className="font-playfair text-2xl md:text-3xl font-light mb-4">
-            Questions About Privacy?
-          </h2>
-          <p className="font-inter text-muted-foreground text-base max-w-lg mx-auto mb-8">
-            If you have any questions about this Privacy Policy or how we handle your personal
-            information, please don't hesitate to reach out to us.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              asChild
-              className="group h-12 px-8 bg-accent hover:bg-accent/90 text-white rounded-full font-montserrat uppercase tracking-widest text-xs font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-accent/25"
-            >
-              <Link href="/contact">
-                <IconMail size={16} className="mr-2" />
-                Contact Us
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="h-12 px-8 border-border hover:border-accent rounded-full font-montserrat uppercase tracking-widest text-xs font-semibold transition-all duration-300"
-            >
-              <a href="mailto:hello@preetytwist.com">
-                Email Privacy Team
-              </a>
-            </Button>
-          </div>
-        </motion.div>
-
-        {/* Legal Links */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.8 }}
-          className="text-center mt-12"
-        >
-          <p className="font-inter text-muted-foreground text-sm">
-            Also see our
-            {' '}
-            <Link href="/terms" className="text-accent hover:underline underline-offset-4">
-              Terms of Service
-            </Link>
-            {' '}
-            and
-            {' '}
-            <Link href="/faq" className="text-accent hover:underline underline-offset-4">
-              FAQ
-            </Link>
-          </p>
-        </motion.div>
+      <div className="space-y-6 mb-16">
+        {privacyData.map((section, index) => (
+          <LegalSectionCard
+            key={section.title}
+            title={section.title}
+            headerIcon={<span className="text-2xl">{section.icon}</span>}
+            items={section.content}
+            itemIcon={<IconShieldCheck size={14} />}
+            sectionIndex={index}
+          />
+        ))}
       </div>
-    </div>
+
+      <LegalNoticeCard title="Policy Updates" icon={<span className="text-2xl">📢</span>}>
+        We may update this Privacy Policy from time to time to reflect changes in our practices, technology, legal requirements, or other factors. When we make significant changes, we will notify you by posting the updated policy on our website and updating the "Last Updated" date. We encourage you to review this policy periodically to stay informed about how we protect your information.
+      </LegalNoticeCard>
+
+      <LegalContactCard
+        icon={<IconMail size={28} />}
+        title="Questions About Privacy?"
+        description="If you have any questions about this Privacy Policy or how we handle your personal information, please don't hesitate to reach out to us."
+        emailHref="mailto:hello@preetytwist.com"
+        emailLabel="Email Privacy Team"
+      />
+
+      <LegalLinks primaryHref="/terms" primaryLabel="Terms of Service" />
+    </LegalPageShell>
   );
 }

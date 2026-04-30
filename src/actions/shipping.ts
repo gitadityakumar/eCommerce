@@ -1,11 +1,10 @@
 'use server';
 
 import { eq } from 'drizzle-orm';
-import { headers } from 'next/headers';
-import { requireUser } from '@/lib/auth/guards';
 import { db } from '@/lib/db';
 import { orders } from '@/lib/db/schema';
 import { checkRateLimit, rateLimitKey } from '@/lib/security/rate-limit';
+import { getRateLimitedUserContext } from '@/lib/security/request-context';
 
 const SHIPROCKET_API_URL = 'https://apiv2.shiprocket.in/v1/external';
 
@@ -35,11 +34,7 @@ async function getShiprocketToken() {
 
 export async function checkShippingServiceability(deliveryPincode: string, declaredValue: number) {
   try {
-    const user = await requireUser();
-    const requestHeaders = await headers();
-    const ip = requestHeaders.get('x-forwarded-for')?.split(',')[0]?.trim()
-      || requestHeaders.get('x-real-ip')
-      || user.id;
+    const { user, ip } = await getRateLimitedUserContext();
     const limit = checkRateLimit(rateLimitKey('shipping', `${user.id}:${ip}`), 30, 15 * 60 * 1000);
     if (!limit.ok) {
       return { success: false, error: 'Too many shipping requests' };

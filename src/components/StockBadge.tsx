@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import { useVariantStore } from '@/store/variant';
 
-export interface StockBadgeProps {
+interface StockBadgeProps {
   productId: string;
   variants: any[];
   galleryVariants: any[];

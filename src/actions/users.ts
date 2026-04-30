@@ -19,6 +19,46 @@ const updateCustomerVerificationSchema = z.object({
   emailVerified: z.boolean(),
 });
 
+async function updateCustomerRecord(
+  sessionUserId: string,
+  userId: string,
+  values: Partial<typeof users.$inferInsert>,
+  createAudit: (currentUser: typeof users.$inferSelect) => {
+    action: string;
+    oldValue: Record<string, unknown>;
+    newValue: Record<string, unknown>;
+  },
+) {
+  return db.transaction(async (tx) => {
+    const [currentUser] = await tx
+      .select()
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+
+    if (!currentUser)
+      throw new Error('User not found');
+
+    const [updatedUser] = await tx
+      .update(users)
+      .set({ ...values, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning();
+
+    const audit = createAudit(currentUser);
+    await tx.insert(auditLogs).values({
+      adminId: sessionUserId,
+      entityType: 'user',
+      entityId: userId,
+      action: audit.action,
+      oldValue: audit.oldValue,
+      newValue: audit.newValue,
+    });
+
+    return updatedUser;
+  });
+}
+
 export async function getCustomers(search?: string, role?: string, verified?: boolean) {
   try {
     await requireAdmin();
@@ -89,33 +129,11 @@ export async function updateCustomerRole(userId: string, role: z.infer<typeof up
 
     const validated = updateCustomerRoleSchema.parse({ userId, role });
 
-    const result = await db.transaction(async (tx) => {
-      const [currentUser] = await tx
-        .select()
-        .from(users)
-        .where(eq(users.id, validated.userId))
-        .limit(1);
-
-      if (!currentUser)
-        throw new Error('User not found');
-
-      const [updatedUser] = await tx
-        .update(users)
-        .set({ role: validated.role, updatedAt: new Date() })
-        .where(eq(users.id, validated.userId))
-        .returning();
-
-      await tx.insert(auditLogs).values({
-        adminId: session.user.id,
-        entityType: 'user',
-        entityId: validated.userId,
-        action: 'update_role',
-        oldValue: { role: currentUser.role },
-        newValue: { role: validated.role },
-      });
-
-      return updatedUser;
-    });
+    const result = await updateCustomerRecord(session.user.id, validated.userId, { role: validated.role }, currentUser => ({
+      action: 'update_role',
+      oldValue: { role: currentUser.role },
+      newValue: { role: validated.role },
+    }));
 
     revalidatePath(`/admin/customers/${userId}`);
     revalidatePath('/admin/customers');
@@ -142,33 +160,11 @@ export async function updateCustomerVerification(userId: string, emailVerified: 
 
     const validated = updateCustomerVerificationSchema.parse({ userId, emailVerified });
 
-    const result = await db.transaction(async (tx) => {
-      const [currentUser] = await tx
-        .select()
-        .from(users)
-        .where(eq(users.id, validated.userId))
-        .limit(1);
-
-      if (!currentUser)
-        throw new Error('User not found');
-
-      const [updatedUser] = await tx
-        .update(users)
-        .set({ emailVerified: validated.emailVerified, updatedAt: new Date() })
-        .where(eq(users.id, validated.userId))
-        .returning();
-
-      await tx.insert(auditLogs).values({
-        adminId: session.user.id,
-        entityType: 'user',
-        entityId: validated.userId,
-        action: 'update_verification',
-        oldValue: { emailVerified: currentUser.emailVerified },
-        newValue: { emailVerified: validated.emailVerified },
-      });
-
-      return updatedUser;
-    });
+    const result = await updateCustomerRecord(session.user.id, validated.userId, { emailVerified: validated.emailVerified }, currentUser => ({
+      action: 'update_verification',
+      oldValue: { emailVerified: currentUser.emailVerified },
+      newValue: { emailVerified: validated.emailVerified },
+    }));
 
     revalidatePath(`/admin/customers/${userId}`);
     revalidatePath('/admin/customers');

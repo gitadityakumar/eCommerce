@@ -1,13 +1,12 @@
 'use server';
 
 import { and, eq, gte } from 'drizzle-orm';
-import { headers } from 'next/headers';
 import { v4 as uuidv4 } from 'uuid';
 import { clearCartAction, getCartAction } from '@/lib/actions/storefront-cart';
-import { requireUser } from '@/lib/auth/guards';
 import { db } from '@/lib/db';
 import { addresses, coupons, inventoryLevels, orderItems, orders, payments, storeSettings } from '@/lib/db/schema';
 import { checkRateLimit, rateLimitKey } from '@/lib/security/rate-limit';
+import { getRateLimitedUserContext } from '@/lib/security/request-context';
 import { checkShippingServiceability } from './shipping';
 
 const PHONEPE_HOST_URL = (process.env.PHONEPE_BASE_SANDBOX_URL || process.env.PHONEPE_BASE_URL || 'https://api-preprod.phonepe.com/apis/pg-sandbox').replace(/\/$/, '').trim();
@@ -71,11 +70,7 @@ export async function initiatePayment(
   _couponDiscount: number = 0,
   couponCode?: string,
 ) {
-  const user = await requireUser();
-  const requestHeaders = await headers();
-  const ip = requestHeaders.get('x-forwarded-for')?.split(',')[0]?.trim()
-    || requestHeaders.get('x-real-ip')
-    || user.id;
+  const { user, ip } = await getRateLimitedUserContext();
   const limit = checkRateLimit(rateLimitKey('payment', `${user.id}:${ip}`), 10, 15 * 60 * 1000);
   if (!limit.ok) {
     return { success: false, error: 'Too many payment attempts' };

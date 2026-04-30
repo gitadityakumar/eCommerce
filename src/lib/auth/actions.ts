@@ -1,25 +1,56 @@
 'use server';
 
-import { randomUUID } from 'node:crypto';
-import { and, eq, lt } from 'drizzle-orm';
-import { cookies, headers } from 'next/headers';
+import { eq } from 'drizzle-orm';
+import { headers } from 'next/headers';
 import { z } from 'zod';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { guests, users } from '@/lib/db/schema/index';
+import { users } from '@/lib/db/schema/index';
 import { checkRateLimit, rateLimitKey } from '@/lib/security/rate-limit';
-
-const COOKIE_OPTIONS = {
-  httpOnly: true as const,
-  secure: true as const,
-  sameSite: 'strict' as const,
-  path: '/' as const,
-  maxAge: 60 * 60 * 24 * 7, // 7 days
-};
 
 const emailSchema = z.string().email();
 const passwordSchema = z.string().min(8).max(128);
 const nameSchema = z.string().min(1).max(100);
+
+interface AuthUserPayload {
+  id: string;
+  email: string;
+  name: string;
+  image?: string | null;
+}
+
+interface AuthSuccessResult {
+  ok: true;
+  user: AuthUserPayload;
+}
+
+interface AuthErrorResult {
+  ok: false;
+  error: string;
+  details?: Record<string, string[]>;
+}
+
+type AuthActionResult = AuthSuccessResult | AuthErrorResult;
+
+function buildAuthSuccessUser(user: AuthUserPayload): AuthActionResult {
+  return {
+    ok: true,
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      image: user.image,
+    },
+  };
+}
+
+function buildAuthValidationError(error: unknown): AuthActionResult | null {
+  if (error instanceof z.ZodError) {
+    return { ok: false, error: 'Invalid input data', details: error.flatten().fieldErrors };
+  }
+
+  return null;
+}
 
 async function getRequestIp() {
   const requestHeaders = await headers();
@@ -28,47 +59,13 @@ async function getRequestIp() {
     || 'unknown';
 }
 
-export async function createGuestSession() {
-  const cookieStore = await cookies();
-  const existing = (cookieStore).get('guest_session');
-  if (existing?.value) {
-    return { ok: true, sessionToken: existing.value };
-  }
-
-  const sessionToken = randomUUID();
-  const now = new Date();
-  const expiresAt = new Date(now.getTime() + COOKIE_OPTIONS.maxAge * 1000);
-
-  await db.insert(guests).values({
-    sessionToken,
-    expiresAt,
-  });
-
-  cookieStore.set('guest_session', sessionToken, COOKIE_OPTIONS);
-  return { ok: true, sessionToken };
-}
-
-export async function guestSession() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('guest_session')?.value;
-  if (!token) {
-    return { sessionToken: null };
-  }
-  const now = new Date();
-  await db
-    .delete(guests)
-    .where(and(eq(guests.sessionToken, token), lt(guests.expiresAt, now)));
-
-  return { sessionToken: token };
-}
-
 const signUpSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
   name: nameSchema,
 });
 
-export async function signUp(formData: FormData) {
+export async function signUp(formData: FormData): Promise<AuthActionResult> {
   try {
     const ip = await getRequestIp();
     const limit = checkRateLimit(rateLimitKey('sign-up', ip), 5, 15 * 60 * 1000);
@@ -92,20 +89,12 @@ export async function signUp(formData: FormData) {
       },
     });
 
-    return {
-      ok: true,
-      user: {
-        id: res.user.id,
-        email: res.user.email,
-        name: res.user.name,
-        image: res.user.image,
-      },
-    };
+    return buildAuthSuccessUser(res.user);
   }
   catch (error: any) {
-    if (error instanceof z.ZodError) {
-      return { ok: false, error: 'Invalid input data', details: error.flatten().fieldErrors };
-    }
+    const validationError = buildAuthValidationError(error);
+    if (validationError)
+      return validationError;
     console.error('Sign up error:', error);
     return { ok: false, error: error.message || 'Failed to sign up. Please try again.' };
   }
@@ -116,7 +105,7 @@ const signInSchema = z.object({
   password: passwordSchema,
 });
 
-export async function signIn(formData: FormData) {
+export async function signIn(formData: FormData): Promise<AuthActionResult> {
   try {
     const ip = await getRequestIp();
     const limit = checkRateLimit(rateLimitKey('sign-in', ip), 10, 15 * 60 * 1000);
@@ -137,20 +126,12 @@ export async function signIn(formData: FormData) {
       },
     });
 
-    return {
-      ok: true,
-      user: {
-        id: res.user.id,
-        email: res.user.email,
-        name: res.user.name,
-        image: res.user.image,
-      },
-    };
+    return buildAuthSuccessUser(res.user);
   }
   catch (error: any) {
-    if (error instanceof z.ZodError) {
-      return { ok: false, error: 'Invalid input data', details: error.flatten().fieldErrors };
-    }
+    const validationError = buildAuthValidationError(error);
+    if (validationError)
+      return validationError;
     console.error('Sign in error:', error);
     return { ok: false, error: error.message || 'Failed to sign in. Please try again.' };
   }
@@ -172,10 +153,6 @@ export async function getCurrentUser() {
 
 export async function signOut() {
   await auth.api.signOut({ headers: {} });
-  return { ok: true };
-}
-
-export async function mergeGuestCartWithUserCart() {
   return { ok: true };
 }
 
@@ -277,7 +254,7 @@ const updateProfileSchema = z.object({
   image: z.string().url().optional().nullable(),
 });
 
-export async function updateProfile(formData: FormData) {
+export async function updateProfile(formData: FormData): Promise<AuthActionResult> {
   try {
     const rawData = {
       name: formData.get('name') as string,
@@ -304,20 +281,12 @@ export async function updateProfile(formData: FormData) {
       return { ok: false, error: 'Failed to fetch updated user' };
     }
 
-    return {
-      ok: true,
-      user: {
-        id: updatedUser.id,
-        email: updatedUser.email,
-        name: updatedUser.name,
-        image: updatedUser.image,
-      },
-    };
+    return buildAuthSuccessUser(updatedUser);
   }
   catch (error: any) {
-    if (error instanceof z.ZodError) {
-      return { ok: false, error: 'Invalid input data', details: error.flatten().fieldErrors };
-    }
+    const validationError = buildAuthValidationError(error);
+    if (validationError)
+      return validationError;
     console.error('Update profile error:', error);
     return { ok: false, error: error.message || 'Failed to update profile. Please try again.' };
   }

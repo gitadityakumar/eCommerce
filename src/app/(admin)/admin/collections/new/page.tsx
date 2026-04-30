@@ -1,8 +1,6 @@
-import { ArrowLeft, Library } from 'lucide-react';
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getProducts } from '@/actions/products';
-import { Button } from '@/components/ui/button';
+import { CollectionPageHeader } from '@/components/admin/collection-page-header';
 import { getCurrentUser } from '@/lib/auth/actions';
 import { CollectionForm } from '../CollectionForm';
 
@@ -19,22 +17,11 @@ export default async function NewCollectionPage() {
 
   return (
     <div className="container mx-auto flex flex-col gap-6 p-4 md:p-6">
-      <div className="flex mt-6 items-center gap-4">
-        <Button variant="ghost" size="icon" asChild>
-          <Link href="/admin/collections">
-            <ArrowLeft className="h-4 w-4" />
-          </Link>
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Library className="text-primary h-6 w-6" />
-            Create New Collection
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Add a new collection and select products for it.
-          </p>
-        </div>
-      </div>
+      <CollectionPageHeader
+        title="Create New Collection"
+        description="Add a new collection and select products for it."
+        className="flex mt-6 items-center gap-4"
+      />
 
       <div className="bg-card border rounded-lg p-6 shadow-sm">
         <CollectionForm

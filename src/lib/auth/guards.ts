@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 
-export class AuthorizationError extends Error {
+class AuthorizationError extends Error {
   constructor(message = 'Unauthorized') {
     super(message);
     this.name = 'AuthorizationError';
@@ -28,14 +28,4 @@ export async function requireAdmin() {
   }
 
   return user;
-}
-
-export function isAuthorizationError(error: unknown) {
-  return error instanceof AuthorizationError;
-}
-
-export function assertOwner(resourceUserId: string | null | undefined, currentUserId: string) {
-  if (!resourceUserId || resourceUserId !== currentUserId) {
-    throw new AuthorizationError('Forbidden');
-  }
 }

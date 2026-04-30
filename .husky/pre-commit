@@ -1,2 +1,4 @@
 pnpm exec lint-staged
 pnpm run type:check
+pnpm run fallow:dupes
+pnpm run fallow:dead-code

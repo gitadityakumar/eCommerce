@@ -6,16 +6,14 @@ import { z } from 'zod';
 import { requireAdmin } from '@/lib/auth/guards';
 import { db } from '@/lib/db';
 import { colors, genders, inventoryLevels, productImages, products, productVariants, sizes } from '@/lib/db/schema';
+import { insertProductSchema } from '@/lib/db/schema/products';
 import { normalizeImageUrl } from '@/lib/images';
 
-const createProductSchema = z.object({
-  name: z.string().min(1),
-  slug: z.string().min(1),
-  description: z.string().min(1),
-  categoryId: z.string().uuid().nullable(),
-  brandId: z.string().uuid().nullable(),
-  genderId: z.string().uuid().nullable(),
-  status: z.enum(['draft', 'published', 'archived']).optional(),
+const createProductSchema = insertProductSchema.omit({
+  createdAt: true,
+  updatedAt: true,
+  defaultVariantId: true,
+}).extend({
   images: z.array(z.object({
     url: z.string().url(),
     isPrimary: z.boolean().default(false),
@@ -72,7 +70,7 @@ export async function getCategories() {
   }
 }
 
-export async function getBrands() {
+export async function getProductBrands() {
   try {
     return await db.query.brands.findMany();
   }
@@ -148,7 +146,7 @@ export async function createProduct(input: CreateProductInput) {
   }
 }
 
-export async function getGenders() {
+export async function getProductGenders() {
   try {
     return await db.select().from(genders);
   }
@@ -158,7 +156,7 @@ export async function getGenders() {
   }
 }
 
-export async function getColors() {
+export async function getProductColors() {
   try {
     return await db.select().from(colors);
   }
@@ -168,7 +166,7 @@ export async function getColors() {
   }
 }
 
-export async function getSizes() {
+export async function getProductSizes() {
   try {
     return await db.select().from(sizes);
   }

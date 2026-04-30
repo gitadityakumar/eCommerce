@@ -35,6 +35,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { createCoupon } from '@/lib/actions/coupons';
+import { applyFormFieldErrors } from '@/lib/forms';
 import { cn } from '@/lib/utils';
 
 const couponFormSchema = z.object({
@@ -58,6 +59,71 @@ const couponFormSchema = z.object({
 });
 
 type CouponFormValues = z.infer<typeof couponFormSchema>;
+
+interface CouponDateFieldProps {
+  label: string;
+  value: Date | null | undefined;
+  onChange: (value: Date | null | undefined) => void;
+  placeholder: string;
+  disabledDate: (date: Date) => boolean;
+  clearLabel?: string;
+}
+
+function CouponDateField({
+  label,
+  value,
+  onChange,
+  placeholder,
+  disabledDate,
+  clearLabel,
+}: CouponDateFieldProps) {
+  return (
+    <FormItem className="flex flex-col">
+      <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">{label}</FormLabel>
+      <Popover>
+        <PopoverTrigger asChild>
+          <FormControl>
+            <Button
+              variant="outline"
+              className={cn(
+                'w-full h-12 bg-background/50 border-border-subtle rounded-xl pl-4 text-left font-light text-sm hover:border-accent/40',
+                !value && 'text-text-secondary',
+              )}
+            >
+              {value
+                ? format(value, 'PPP')
+                : <span>{placeholder}</span>}
+              <CalendarIcon className="ml-auto h-4 w-4 text-accent opacity-50" />
+            </Button>
+          </FormControl>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0 bg-surface border-border-subtle rounded-2xl shadow-soft" align="start">
+          <Calendar
+            mode="single"
+            selected={value || undefined}
+            onSelect={onChange}
+            disabled={disabledDate}
+            initialFocus
+            className="p-4"
+          />
+          {clearLabel && (
+            <div className="p-4 border-t border-border-subtle">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full text-[10px] font-bold tracking-widest uppercase text-text-secondary hover:text-accent transition-colors"
+                onClick={() => onChange(null)}
+              >
+                {clearLabel}
+              </Button>
+            </div>
+          )}
+        </PopoverContent>
+      </Popover>
+      <FormMessage />
+    </FormItem>
+  );
+}
 
 export function CouponForm() {
   const router = useRouter();
@@ -99,14 +165,7 @@ export function CouponForm() {
         router.push('/admin/coupons');
       }
       else {
-        if (result.error && typeof result.error === 'object') {
-          Object.entries(result.error as Record<string, string[]>).forEach(([key, messages]) => {
-            if (messages && messages.length > 0) {
-              form.setError(key as keyof CouponFormValues, { message: messages[0] });
-            }
-          });
-        }
-        else {
+        if (!applyFormFieldErrors(form, result.error)) {
           toast.error((result.error as unknown as string) || 'Failed to create coupon');
         }
       }
@@ -224,43 +283,13 @@ export function CouponForm() {
               control={form.control}
               name="startsAt"
               render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Activation Epoch</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            'w-full h-12 bg-background/50 border-border-subtle rounded-xl pl-4 text-left font-light text-sm hover:border-accent/40',
-                            !field.value && 'text-text-secondary',
-                          )}
-                        >
-                          {field.value
-                            ? (
-                                format(field.value, 'PPP')
-                              )
-                            : (
-                                <span>Curate a date</span>
-                              )}
-                          <CalendarIcon className="ml-auto h-4 w-4 text-accent opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 bg-surface border-border-subtle rounded-2xl shadow-soft" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={date =>
-                          date < new Date('1900-01-01')}
-                        initialFocus
-                        className="p-4"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
+                <CouponDateField
+                  label="Activation Epoch"
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder="Curate a date"
+                  disabledDate={date => date < new Date('1900-01-01')}
+                />
               )}
             />
 
@@ -269,53 +298,14 @@ export function CouponForm() {
               control={form.control}
               name="expiresAt"
               render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel className="text-[10px] font-bold tracking-widest uppercase text-text-secondary">Sunset Period (Optional)</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            'w-full h-12 bg-background/50 border-border-subtle rounded-xl pl-4 text-left font-light text-sm hover:border-accent/40',
-                            !field.value && 'text-text-secondary',
-                          )}
-                        >
-                          {field.value
-                            ? (
-                                format(field.value, 'PPP')
-                              )
-                            : (
-                                <span>Perpetual Incentive</span>
-                              )}
-                          <CalendarIcon className="ml-auto h-4 w-4 text-accent opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 bg-surface border-border-subtle rounded-2xl shadow-soft" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value || undefined}
-                        onSelect={field.onChange}
-                        disabled={date =>
-                          date < (form.getValues('startsAt') || new Date())}
-                        initialFocus
-                        className="p-4"
-                      />
-                      <div className="p-4 border-t border-border-subtle">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="w-full text-[10px] font-bold tracking-widest uppercase text-text-secondary hover:text-accent transition-colors"
-                          onClick={() => field.onChange(null)}
-                        >
-                          Clear Archive Date
-                        </Button>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
+                <CouponDateField
+                  label="Sunset Period (Optional)"
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder="Perpetual Incentive"
+                  disabledDate={date => date < (form.getValues('startsAt') || new Date())}
+                  clearLabel="Clear Archive Date"
+                />
               )}
             />
           </div>

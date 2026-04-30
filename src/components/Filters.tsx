@@ -73,6 +73,34 @@ export default function Filters({ genders, sizes, colors }: FiltersProps) {
     router.push(url, { scroll: false });
   };
 
+  const renderSizeOptions = ({
+    gapClassName,
+    buttonClassName,
+    selectedClassName,
+    unselectedClassName,
+  }: {
+    gapClassName: string;
+    buttonClassName: string;
+    selectedClassName: string;
+    unselectedClassName: string;
+  }) => (
+    <ul className={`grid grid-cols-4 ${gapClassName}`}>
+      {sizes.map((size) => {
+        const checked = getArrayParam(search, 'size').includes(size.slug);
+        return (
+          <li key={size.id}>
+            <button
+              onClick={() => onToggle('size', size.slug)}
+              className={`${buttonClassName} ${checked ? selectedClassName : unselectedClassName}`}
+            >
+              {size.name}
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
+
   const Group = ({
     title,
     children,
@@ -144,25 +172,12 @@ export default function Filters({ genders, sizes, colors }: FiltersProps) {
         </Group>
 
         <Group title={`Size ${activeCounts.size ? `(${activeCounts.size})` : ''}`} k="size">
-          <ul className="grid grid-cols-4 gap-2">
-            {sizes.map((s) => {
-              const checked = getArrayParam(search, 'size').includes(s.slug);
-              return (
-                <li key={s.id}>
-                  <button
-                    onClick={() => onToggle('size', s.slug)}
-                    className={`w-full flex items-center justify-center rounded-lg border py-2 text-xs transition-all ${
-                      checked
-                        ? 'bg-accent border-accent text-white shadow-soft shadow-accent/20'
-                        : 'border-border-subtle text-text-secondary hover:border-accent/40 hover:text-text-primary'
-                    }`}
-                  >
-                    {s.name}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
+          {renderSizeOptions({
+            gapClassName: 'gap-2',
+            buttonClassName: 'w-full flex items-center justify-center rounded-lg border py-2 text-xs transition-all',
+            selectedClassName: 'bg-accent border-accent text-white shadow-soft shadow-accent/20',
+            unselectedClassName: 'border-border-subtle text-text-secondary hover:border-accent/40 hover:text-text-primary',
+          })}
         </Group>
 
         <Group title={`Color ${activeCounts.color ? `(${activeCounts.color})` : ''}`} k="color">
@@ -251,25 +266,12 @@ export default function Filters({ genders, sizes, colors }: FiltersProps) {
               </Group>
 
               <Group title="Size" k="size">
-                <ul className="grid grid-cols-4 gap-3">
-                  {sizes.map((s) => {
-                    const checked = getArrayParam(search, 'size').includes(s.slug);
-                    return (
-                      <li key={s.id}>
-                        <button
-                          onClick={() => onToggle('size', s.slug)}
-                          className={`w-full flex items-center justify-center rounded-lg border py-3 text-sm transition-all ${
-                            checked
-                              ? 'bg-accent border-accent text-white shadow-soft'
-                              : 'border-border-subtle text-text-secondary'
-                          }`}
-                        >
-                          {s.name}
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
+                {renderSizeOptions({
+                  gapClassName: 'gap-3',
+                  buttonClassName: 'w-full flex items-center justify-center rounded-lg border py-3 text-sm transition-all',
+                  selectedClassName: 'bg-accent border-accent text-white shadow-soft',
+                  unselectedClassName: 'border-border-subtle text-text-secondary',
+                })}
               </Group>
 
               <Group title="Color" k="color">

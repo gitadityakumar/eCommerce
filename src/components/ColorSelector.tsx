@@ -2,7 +2,7 @@
 
 import { useVariantStore } from '@/store/variant';
 
-export interface ColorSelectorProps {
+interface ColorSelectorProps {
   productId: string;
   variants: { color: string; hexCode: string | null; images: string[] }[];
   allVariants?: any[];

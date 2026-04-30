@@ -1,25 +1,15 @@
 'use client';
 
+// fallow-ignore-file code-duplication
+
 import type * as z from 'zod';
 import type { SelectGender } from '@/lib/db/schema/filters/genders';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { IconEdit, IconLoader2, IconPlus, IconSearch, IconSparkles, IconTrash } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { createGender, deleteGender, updateGender } from '@/actions/attributes';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -30,7 +20,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -46,6 +35,15 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { insertGenderSchema } from '@/lib/db/schema/filters/genders';
+import {
+  applyFieldErrors,
+  AttributeDeleteDialog,
+  AttributeDialogFooter,
+  AttributeRowActions,
+  AttributeSlugField,
+  AttributeToolbar,
+  slugifyValue,
+} from './_shared';
 
 type FormValues = z.infer<typeof insertGenderSchema>;
 
@@ -73,17 +71,8 @@ export function GenderTab({ initialData }: GenderTabProps) {
   const { dirtyFields } = form.formState;
 
   useEffect(() => {
-    if (editingGender)
-      return;
-
-    if (!dirtyFields.slug) {
-      const generatedSlug = (label || '')
-        .toLowerCase()
-        .trim()
-        .replace(/[^\w\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-{2,}/g, '-');
-      form.setValue('slug', generatedSlug, { shouldValidate: true });
+    if (!editingGender && !dirtyFields.slug) {
+      form.setValue('slug', slugifyValue(label || ''), { shouldValidate: true });
     }
   }, [label, form, editingGender, dirtyFields.slug]);
 
@@ -107,15 +96,8 @@ export function GenderTab({ initialData }: GenderTabProps) {
         router.refresh();
       }
       else {
-        if (result.error && typeof result.error === 'object') {
-          Object.entries(result.error as Record<string, string[]>).forEach(([key, messages]) => {
-            if (messages && messages.length > 0) {
-              form.setError(key as keyof FormValues, { message: messages[0] });
-            }
-          });
-        }
-        else {
-          toast.error(result.error);
+        if (!applyFieldErrors(form, result.error)) {
+          toast.error(typeof result.error === 'string' ? result.error : 'Something went wrong');
         }
       }
     }
@@ -160,39 +142,22 @@ export function GenderTab({ initialData }: GenderTabProps) {
     const label = form.getValues('label');
     if (!label)
       return;
-    const slug = label
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-{2,}/g, '-');
-    form.setValue('slug', slug, { shouldValidate: true });
+    form.setValue('slug', slugifyValue(label), { shouldValidate: true });
   };
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-6 bg-surface/30 p-6 rounded-2xl border border-border-subtle backdrop-blur-sm">
-        <div className="relative flex-1 max-w-sm group">
-          <IconSearch className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-text-secondary group-focus-within:text-accent transition-colors" />
-          <Input
-            placeholder="Search archetypes..."
-            className="pl-11 bg-background/50 border-border-subtle rounded-full h-11 focus:ring-accent/20 focus:border-accent/40 transition-all placeholder:text-text-secondary/50 placeholder:font-light"
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-          />
-        </div>
-        <Button
-          onClick={() => {
-            setEditingGender(null);
-            form.reset({ label: '', slug: '' });
-            setIsOpen(true);
-          }}
-          className="bg-accent text-white hover:bg-accent/90 rounded-full px-8 font-bold tracking-widest uppercase text-[10px] shadow-soft shadow-accent/20 h-11 transition-all hover:-translate-y-0.5"
-        >
-          <IconPlus className="mr-2 size-3.5" strokeWidth={3} />
-          Instate Archetype
-        </Button>
-      </div>
+      <AttributeToolbar
+        searchPlaceholder="Search archetypes..."
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+        onAdd={() => {
+          setEditingGender(null);
+          form.reset({ label: '', slug: '' });
+          setIsOpen(true);
+        }}
+        addLabel="Instate Archetype"
+      />
 
       <div className="rounded-2xl border border-border-subtle bg-surface/50 overflow-hidden shadow-soft">
         <Table>
@@ -218,19 +183,7 @@ export function GenderTab({ initialData }: GenderTabProps) {
                       <TableCell className="font-medium">{gender.label}</TableCell>
                       <TableCell className="font-mono text-xs">{gender.slug}</TableCell>
                       <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button variant="ghost" size="icon" onClick={() => handleEdit(gender)}>
-                            <IconEdit size={16} />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-destructive hover:bg-destructive/10"
-                            onClick={() => setGenderToDelete(gender.id)}
-                          >
-                            <IconTrash size={16} />
-                          </Button>
-                        </div>
+                        <AttributeRowActions onEdit={() => handleEdit(gender)} onDelete={() => setGenderToDelete(gender.id)} />
                       </TableCell>
                     </TableRow>
                   ))
@@ -266,70 +219,27 @@ export function GenderTab({ initialData }: GenderTabProps) {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="slug"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center justify-between">
-                        Slug
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          className="h-auto p-0 text-xs text-primary hover:bg-transparent"
-                          onClick={generateSlug}
-                        >
-                          <IconSparkles size={12} className="mr-1" />
-                          Generate
-                        </Button>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="unisex" {...field} />
-                      </FormControl>
-                      <FormDescription>Unique URL-friendly identifier.</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <AttributeSlugField control={form.control} placeholder="unisex" onGenerate={generateSlug} />
 
-                <div className="flex gap-2 pt-4">
-                  <Button type="submit" className="flex-1" disabled={form.formState.isSubmitting}>
-                    {form.formState.isSubmitting && <IconLoader2 className="mr-2 size-4 animate-spin" />}
-                    {editingGender ? 'Save Changes' : 'Create Gender'}
-                  </Button>
-                  <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
-                    Cancel
-                  </Button>
-                </div>
+                <AttributeDialogFooter
+                  isSubmitting={form.formState.isSubmitting}
+                  submitLabel={editingGender ? 'Save Changes' : 'Create Gender'}
+                  onCancel={() => setIsOpen(false)}
+                />
               </form>
             </Form>
           </div>
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={!!genderToDelete} onOpenChange={open => !open && setGenderToDelete(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This gender will be permanently deleted. Products using this gender might be affected.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={(e) => {
-                e.preventDefault();
-                handleDelete();
-              }}
-              disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {isDeleting ? 'Deleting...' : 'Delete Gender'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <AttributeDeleteDialog
+        open={!!genderToDelete}
+        onOpenChange={open => !open && setGenderToDelete(null)}
+        description="This gender will be permanently deleted. Products using this gender might be affected."
+        isDeleting={isDeleting}
+        confirmLabel="Delete Gender"
+        onConfirm={handleDelete}
+      />
     </div>
   );
 }

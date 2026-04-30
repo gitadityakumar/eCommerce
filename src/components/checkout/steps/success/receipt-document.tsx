@@ -10,6 +10,7 @@ import {
   View,
 } from '@react-pdf/renderer';
 import { numberToWords } from '@/lib/number-to-words';
+import { getOrderAmounts } from './order-amounts';
 
 // Register Roboto font for better character support (especially ₹ symbol)
 // Using local paths for better reliability and to avoid "Unknown font format" errors
@@ -203,9 +204,7 @@ function formatINR(amount: number) {
 }
 
 export function ReceiptDocument({ order, settings }: { order: OrderData; settings: StoreSettings }) {
-  const subtotal = order.items.reduce((acc, item) => acc + (Number(item.priceAtPurchase) * item.quantity), 0);
-  const total = Number(order.totalAmount);
-  const extra = total - subtotal;
+  const { extra, subtotal, total } = getOrderAmounts(order);
 
   // Tax calculation (flat 18% GST)
   const taxableValue = subtotal / 1.18;

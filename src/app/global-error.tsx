@@ -1,32 +1,8 @@
 'use client';
 
-import { Inter, Jost, Montserrat, Playfair_Display } from 'next/font/google';
 import { useEffect } from 'react';
+import { appFontClassName } from '@/app/fonts';
 import './globals.css';
-
-// Re-define fonts to ensure they are available in this isolated layout
-const jost = Jost({
-  variable: '--font-jost',
-  subsets: ['latin'],
-});
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  variable: '--font-playfair',
-  display: 'swap',
-});
-
-const montserrat = Montserrat({
-  subsets: ['latin'],
-  variable: '--font-montserrat',
-  display: 'swap',
-});
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-});
 
 export default function GlobalError({
   error,
@@ -41,7 +17,7 @@ export default function GlobalError({
 
   return (
     <html lang="en">
-      <body className={`${jost.className} ${playfair.variable} ${montserrat.variable} ${inter.variable} antialiased min-h-screen flex flex-col items-center justify-center p-4 bg-background text-foreground text-center`}>
+      <body className={`${appFontClassName} min-h-screen flex flex-col items-center justify-center p-4 bg-background text-foreground text-center`}>
         <div className="max-w-md w-full space-y-8">
           <div className="space-y-4">
             <h1 className="font-playfair text-4xl font-bold">

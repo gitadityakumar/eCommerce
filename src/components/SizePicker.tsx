@@ -2,7 +2,7 @@
 
 import { useVariantStore } from '@/store/variant';
 
-export interface SizePickerProps {
+interface SizePickerProps {
   productId: string;
   variants: any[]; // Full raw variants
   galleryVariants: any[]; // Grouped variants for correlating color index

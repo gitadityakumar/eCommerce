@@ -15,7 +15,7 @@ import {
   users,
 } from '@/lib/db/schema';
 
-export interface DashboardStats {
+interface DashboardStats {
   totalRevenue: number;
   totalOrders: number;
   totalCustomers: number;
@@ -172,15 +172,4 @@ export async function getDashboardData(dateRange?: { from: Date; to: Date }): Pr
     console.error('Error fetching dashboard data:', error);
     throw error;
   }
-}
-
-// Keep the old one for compatibility if needed, but point to new data structure or just keep as is
-export async function getDashboardStats() {
-  const data = await getDashboardData();
-  return {
-    totalRevenue: data.totalRevenue,
-    totalOrders: data.totalOrders,
-    totalCustomers: data.totalCustomers,
-    lowStockAlerts: data.lowStockItems.length,
-  };
 }

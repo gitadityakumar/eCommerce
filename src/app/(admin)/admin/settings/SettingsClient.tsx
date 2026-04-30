@@ -1,5 +1,6 @@
 'use client';
 
+import type { Control } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckCircle2, Landmark, Save, Settings as SettingsIcon, Store } from 'lucide-react';
 import { useTransition } from 'react';
@@ -40,6 +41,34 @@ const settingsSchema = z.object({
 });
 
 type SettingsFormValues = z.infer<typeof settingsSchema>;
+
+function StoreTextField({
+  control,
+  label,
+  name,
+}: {
+  control: Control<SettingsFormValues>;
+  label: string;
+  name: 'city' | 'country' | 'pincode' | 'state';
+}) {
+  return (
+    <div className="col-span-1">
+      <FormField
+        control={control}
+        name={name}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-[10px] uppercase tracking-widest font-bold text-text-secondary">{label}</FormLabel>
+            <FormControl>
+              <Input {...field} className="bg-background/50 border-border-subtle rounded-xl h-11" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </div>
+  );
+}
 
 interface SettingsClientProps {
   initialSettings: any;
@@ -180,66 +209,10 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                 />
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="col-span-1">
-                    <FormField
-                      control={form.control}
-                      name="city"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-[10px] uppercase tracking-widest font-bold text-text-secondary">City</FormLabel>
-                          <FormControl>
-                            <Input {...field} className="bg-background/50 border-border-subtle rounded-xl h-11" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="col-span-1">
-                    <FormField
-                      control={form.control}
-                      name="state"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-[10px] uppercase tracking-widest font-bold text-text-secondary">State</FormLabel>
-                          <FormControl>
-                            <Input {...field} className="bg-background/50 border-border-subtle rounded-xl h-11" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="col-span-1">
-                    <FormField
-                      control={form.control}
-                      name="pincode"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-[10px] uppercase tracking-widest font-bold text-text-secondary">Pincode</FormLabel>
-                          <FormControl>
-                            <Input {...field} className="bg-background/50 border-border-subtle rounded-xl h-11" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="col-span-1">
-                    <FormField
-                      control={form.control}
-                      name="country"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-[10px] uppercase tracking-widest font-bold text-text-secondary">Country</FormLabel>
-                          <FormControl>
-                            <Input {...field} className="bg-background/50 border-border-subtle rounded-xl h-11" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                  <StoreTextField control={form.control} name="city" label="City" />
+                  <StoreTextField control={form.control} name="state" label="State" />
+                  <StoreTextField control={form.control} name="pincode" label="Pincode" />
+                  <StoreTextField control={form.control} name="country" label="Country" />
                 </div>
               </CardContent>
             </Card>

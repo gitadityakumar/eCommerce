@@ -1,5 +1,7 @@
 'use client';
 
+// fallow-ignore-file code-duplication
+
 import type * as z from 'zod';
 import type { SelectCategory } from '@/lib/db/schema/categories';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,6 +30,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { insertCategorySchema } from '@/lib/db/schema/categories';
+import { applyFormFieldErrors } from '@/lib/forms';
 
 type FormValues = z.infer<typeof insertCategorySchema>;
 
@@ -96,16 +99,8 @@ export function CategoryForm({ categories, editingCategory, onSuccess, onCancel 
         }
       }
       else {
-        if (result.error && typeof result.error === 'object') {
-          // Handle Zod errors if any
-          Object.entries(result.error as Record<string, string[]>).forEach(([key, messages]) => {
-            if (messages && messages.length > 0) {
-              form.setError(key as keyof FormValues, { message: messages[0] });
-            }
-          });
-        }
-        else {
-          toast.error(result.error);
+        if (!applyFormFieldErrors(form, result.error)) {
+          toast.error(typeof result.error === 'string' ? result.error : 'Failed to save category');
         }
       }
     }

@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { normalizeImageUrl } from '@/lib/images';
 
-export interface CardProps {
+interface CardProps {
   title: string;
   description?: string;
   subtitle?: string;

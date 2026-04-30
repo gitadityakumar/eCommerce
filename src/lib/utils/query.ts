@@ -11,12 +11,12 @@ type QueryValue
     | boolean[];
 type QueryObject = Record<string, QueryValue>;
 
-export function parseQuery(search: string): QueryObject {
+function parseQuery(search: string): QueryObject {
   const parsed = qs.parse(search, { arrayFormat: 'bracket' });
   return parsed as QueryObject;
 }
 
-export function stringifyQuery(query: QueryObject): string {
+function stringifyQuery(query: QueryObject): string {
   return qs.stringify(query, {
     skipNull: true,
     skipEmptyString: true,
@@ -24,7 +24,7 @@ export function stringifyQuery(query: QueryObject): string {
   });
 }
 
-export function withUpdatedParams(
+function withUpdatedParams(
   pathname: string,
   currentSearch: string,
   updates: QueryObject,
@@ -120,8 +120,6 @@ export function getStringParam(
     return undefined;
   return Array.isArray(v) ? (v[0] ? String(v[0]) : undefined) : String(v);
 }
-/* New helpers for products */
-
 export interface NormalizedProductFilters {
   search?: string;
   genderSlugs: string[];
@@ -216,8 +214,4 @@ export function parseFilterParams(
     page,
     limit,
   };
-}
-
-export function buildProductQueryObject(filters: NormalizedProductFilters) {
-  return filters;
 }

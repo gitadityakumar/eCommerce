@@ -1,0 +1,75 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+  "boundaries": {
+    "zones": [
+      {
+        "name": "components",
+        "patterns": [
+          "src/components/**",
+          "src/app/(admin)/admin/audit-logs/_components/**",
+          "src/app/(admin)/admin/inventory/_components/**",
+          "src/app/(root)/profile/addresses/AddressForm.tsx"
+        ]
+      },
+      {
+        "name": "app",
+        "patterns": [
+          "src/app/**"
+        ]
+      },
+      {
+        "name": "actions",
+        "patterns": [
+          "src/actions/**"
+        ]
+      },
+      {
+        "name": "store",
+        "patterns": [
+          "src/store/**"
+        ]
+      },
+      {
+        "name": "lib",
+        "patterns": [
+          "src/lib/**"
+        ]
+      }
+    ],
+    "rules": [
+      {
+        "from": "app",
+        "allow": [
+          "components",
+          "actions",
+          "store",
+          "lib"
+        ]
+      },
+      {
+        "from": "components",
+        "allow": [
+          "actions",
+          "store",
+          "lib"
+        ]
+      },
+      {
+        "from": "actions",
+        "allow": [
+          "lib"
+        ]
+      },
+      {
+        "from": "store",
+        "allow": [
+          "lib"
+        ]
+      },
+      {
+        "from": "lib",
+        "allow": []
+      }
+    ]
+  }
+}

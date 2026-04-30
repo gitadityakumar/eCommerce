@@ -1,7 +1,8 @@
 'use server';
 
+// fallow-ignore-file code-duplication
+
 import type { SQL } from 'drizzle-orm';
-import type { SelectBrand, SelectCategory, SelectColor, SelectGender, SelectProduct, SelectProductImage, SelectSize, SelectVariant } from '@/lib/db/schema';
 import type { NormalizedProductFilters } from '@/lib/utils/query';
 import {
   and,
@@ -43,7 +44,7 @@ interface ProductListItem {
   subtitle?: string | null;
 }
 
-export interface GetAllProductsResult {
+interface GetAllProductsResult {
   products: ProductListItem[];
   totalCount: number;
 }
@@ -261,189 +262,6 @@ string | null
   return { products: productsOut, totalCount };
 }
 
-export interface FullProduct {
-  product: SelectProduct & {
-    brand?: SelectBrand | null;
-    category?: SelectCategory | null;
-    gender?: SelectGender | null;
-  };
-  variants: Array<
-    SelectVariant & {
-      color?: SelectColor | null;
-      size?: SelectSize | null;
-    }
-  >;
-  images: SelectProductImage[];
-}
-
-export async function getProduct(
-  productId: string,
-): Promise<FullProduct | null> {
-  const rows = await db
-    .select({
-      productId: products.id,
-      productName: products.name,
-      productSlug: products.slug,
-      productDescription: products.description,
-      productBrandId: products.brandId,
-      productCategoryId: products.categoryId,
-      productGenderId: products.genderId,
-      status: products.status,
-      defaultVariantId: products.defaultVariantId,
-      productCreatedAt: products.createdAt,
-      productUpdatedAt: products.updatedAt,
-
-      brandId: brands.id,
-      brandName: brands.name,
-      brandSlug: brands.slug,
-      brandLogoUrl: brands.logoUrl,
-
-      categoryId: categories.id,
-      categoryName: categories.name,
-      categorySlug: categories.slug,
-
-      genderId: genders.id,
-      genderLabel: genders.label,
-      genderSlug: genders.slug,
-
-      variantId: productVariants.id,
-      variantSku: productVariants.sku,
-      variantPrice: sql<number | null>`${productVariants.price}::numeric`,
-      variantSalePrice: sql<
-number | null
-      >`${productVariants.salePrice}::numeric`,
-      variantColorId: productVariants.colorId,
-      variantSizeId: productVariants.sizeId,
-      variantInStock: productVariants.inStock,
-
-      colorId: colors.id,
-      colorName: colors.name,
-      colorSlug: colors.slug,
-      colorHex: colors.hexCode,
-
-      sizeId: sizes.id,
-      sizeName: sizes.name,
-      sizeSlug: sizes.slug,
-      sizeSortOrder: sizes.sortOrder,
-
-      imageId: productImages.id,
-      imageUrl: productImages.url,
-      imageIsPrimary: productImages.isPrimary,
-      imageSortOrder: productImages.sortOrder,
-      imageVariantId: productImages.variantId,
-    })
-    .from(products)
-    .leftJoin(brands, eq(brands.id, products.brandId))
-    .leftJoin(categories, eq(categories.id, products.categoryId))
-    .leftJoin(genders, eq(genders.id, products.genderId))
-    .leftJoin(productVariants, eq(productVariants.productId, products.id))
-    .leftJoin(colors, eq(colors.id, productVariants.colorId))
-    .leftJoin(sizes, eq(sizes.id, productVariants.sizeId))
-    .leftJoin(productImages, eq(productImages.productId, products.id))
-    .where(eq(products.id, productId));
-
-  if (!rows.length)
-    return null;
-
-  const head = rows[0];
-
-  const product: SelectProduct & {
-    brand?: SelectBrand | null;
-    category?: SelectCategory | null;
-    gender?: SelectGender | null;
-    isPublished: boolean;
-  } = {
-    id: head.productId,
-    name: head.productName,
-    slug: head.productSlug,
-    description: head.productDescription,
-    brandId: head.productBrandId ?? null,
-    categoryId: head.productCategoryId ?? null,
-    genderId: head.productGenderId ?? null,
-    status: head.status,
-    isPublished: head.status === 'published',
-    defaultVariantId: head.defaultVariantId ?? null,
-    createdAt: head.productCreatedAt,
-    updatedAt: head.productUpdatedAt,
-    brand: head.brandId
-      ? {
-          id: head.brandId,
-          name: head.brandName!,
-          slug: head.brandSlug!,
-          logoUrl: head.brandLogoUrl ?? null,
-        }
-      : null,
-    category: head.categoryId
-      ? {
-          id: head.categoryId,
-          name: head.categoryName!,
-          slug: head.categorySlug!,
-          parentId: null,
-        }
-      : null,
-    gender: head.genderId
-      ? {
-          id: head.genderId,
-          label: head.genderLabel!,
-          slug: head.genderSlug!,
-        }
-      : null,
-  };
-
-  const variantsMap = new Map<string, FullProduct['variants'][number]>();
-  const imagesMap = new Map<string, SelectProductImage>();
-
-  for (const r of rows) {
-    if (r.variantId && !variantsMap.has(r.variantId)) {
-      variantsMap.set(r.variantId, {
-        id: r.variantId,
-        productId: head.productId,
-        sku: r.variantSku!,
-        price: r.variantPrice !== null ? String(r.variantPrice) : '0',
-        salePrice:
-r.variantSalePrice !== null ? String(r.variantSalePrice) : null,
-        colorId: r.variantColorId!,
-        sizeId: r.variantSizeId!,
-        inStock: r.variantInStock!,
-        weight: null,
-        dimensions: null,
-        createdAt: head.productCreatedAt,
-        color: r.colorId
-          ? {
-              id: r.colorId,
-              name: r.colorName!,
-              slug: r.colorSlug!,
-              hexCode: r.colorHex!,
-            }
-          : null,
-        size: r.sizeId
-          ? {
-              id: r.sizeId,
-              name: r.sizeName!,
-              slug: r.sizeSlug!,
-              sortOrder: r.sizeSortOrder!,
-            }
-          : null,
-      });
-    }
-    if (r.imageId && !imagesMap.has(r.imageId)) {
-      imagesMap.set(r.imageId, {
-        id: r.imageId,
-        productId: head.productId,
-        variantId: r.imageVariantId ?? null,
-        url: normalizeImageUrl(r.imageUrl)!,
-        sortOrder: r.imageSortOrder ?? 0,
-        isPrimary: r.imageIsPrimary ?? false,
-      });
-    }
-  }
-
-  return {
-    product,
-    variants: Array.from(variantsMap.values()),
-    images: Array.from(imagesMap.values()),
-  };
-}
 export interface Review {
   id: string;
   author: string;

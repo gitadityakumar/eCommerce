@@ -54,7 +54,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
     try {
       const result = await updateProfile(formData);
-      if (result.ok && result.user) {
+      if (result.ok) {
         toast.success('Profile updated successfully');
         setUser({ ...result.user, image: result.user.image ?? undefined });
         form.reset({

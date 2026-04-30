@@ -3,7 +3,7 @@
 import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 
-export interface CollapsibleSectionProps {
+interface CollapsibleSectionProps {
   title: string;
   children?: React.ReactNode;
   defaultOpen?: boolean;

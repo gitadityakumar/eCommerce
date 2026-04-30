@@ -17,9 +17,15 @@ import {
   IconUser,
   IconX,
 } from '@tabler/icons-react';
-import { motion } from 'framer-motion';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import {
+  LegalContactCard,
+  LegalHero,
+  LegalIntroCard,
+  LegalLinks,
+  LegalNoticeCard,
+  LegalPageShell,
+  LegalSectionCard,
+} from '@/components/legal-page';
 
 interface TermsSection {
   title: string;
@@ -158,214 +164,74 @@ const termsData: TermsSection[] = [
   },
 ];
 
-function TermsSectionCard({
-  section,
-  sectionIndex,
-}: {
-  section: TermsSection;
-  sectionIndex: number;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: sectionIndex * 0.08 }}
-      className="bg-card/50 backdrop-blur-sm border border-border rounded-xl overflow-hidden hover:border-accent/20 transition-colors duration-300"
-    >
-      {/* Section Header */}
-      <div className="px-6 py-5 border-b border-border bg-secondary/30">
-        <div className="flex items-center gap-3">
-          <span className="text-accent">{section.icon}</span>
-          <h3 className="font-playfair text-xl md:text-2xl font-light text-foreground">
-            {section.title}
-          </h3>
-        </div>
-      </div>
-
-      {/* Section Content */}
-      <div className="px-6 py-5">
-        <ul className="space-y-3">
-          {section.content.map((item, index) => (
-            <motion.li
-              key={index}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, delay: sectionIndex * 0.08 + index * 0.05 }}
-              className="flex items-start gap-3"
-            >
-              <span className="text-accent mt-1.5 shrink-0">
-                <IconScale size={14} />
-              </span>
-              <span className="font-inter text-muted-foreground text-sm leading-relaxed">
-                {item}
-              </span>
-            </motion.li>
-          ))}
-        </ul>
-      </div>
-    </motion.div>
-  );
-}
-
 export default function TermsPage() {
   const lastUpdated = 'January 2026';
   const effectiveDate = 'January 15, 2026';
 
   return (
-    <div className="min-h-[80vh] bg-background text-foreground relative overflow-hidden">
-      {/* Background Ambience */}
-      <div className="absolute inset-0 pointer-events-none opacity-20 dark:opacity-10">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/20 rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[100px]" />
-      </div>
-
-      <div className="relative z-10 max-w-5xl mx-auto px-6 md:px-12 py-24 md:py-32">
-        {/* Header Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16 md:mb-20"
-        >
-          <span className="text-muted-foreground text-xs tracking-[0.3em] uppercase block mb-6">
-            Legal
-          </span>
-          <h1 className="font-playfair text-4xl md:text-6xl lg:text-7xl font-light tracking-tight mb-6">
+    <LegalPageShell>
+      <LegalHero
+        title={(
+          <>
             Terms of
             <br />
             <span className="text-accent">Service</span>
-          </h1>
-          <p className="font-inter text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed">
+          </>
+        )}
+        description={(
+          <>
             Please read these terms carefully before using our services.
             By using our website, you agree to be bound by these terms.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4 mt-6">
+          </>
+        )}
+        meta={(
+          <div className="flex flex-wrap justify-center gap-4">
             <p className="font-montserrat text-xs text-muted-foreground tracking-widest uppercase">
               Last Updated:
-              {' '}
               {lastUpdated}
             </p>
             <span className="text-muted-foreground/50">•</span>
             <p className="font-montserrat text-xs text-muted-foreground tracking-widest uppercase">
               Effective:
-              {' '}
               {effectiveDate}
             </p>
           </div>
-        </motion.div>
+        )}
+      />
 
-        {/* Introduction */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6 md:p-8 mb-8"
-        >
-          <p className="font-inter text-muted-foreground text-base leading-relaxed">
-            Welcome to
-            {' '}
-            <span className="text-foreground font-medium">Preety Twist</span>
-            . These Terms of Service ("Terms")
-            govern your access to and use of our website, products, and services. By accessing our website,
-            placing an order, or using any of our services, you acknowledge that you have read, understood,
-            and agree to be bound by these Terms. If you do not agree to these Terms, please do not use our
-            website or services.
-          </p>
-        </motion.div>
+      <LegalIntroCard>
+        Welcome to
+        {' '}
+        <span className="text-foreground font-medium">Preety Twist</span>
+        . These Terms of Service ("Terms") govern your access to and use of our website, products, and services. By accessing our website, placing an order, or using any of our services, you acknowledge that you have read, understood, and agree to be bound by these Terms. If you do not agree to these Terms, please do not use our website or services.
+      </LegalIntroCard>
 
-        {/* Terms Sections */}
-        <div className="space-y-6 mb-16">
-          {termsData.map((section, index) => (
-            <TermsSectionCard key={section.title} section={section} sectionIndex={index} />
-          ))}
-        </div>
-
-        {/* Severability Notice */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className="bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6 md:p-8 mb-8"
-        >
-          <div className="flex items-center gap-3 mb-4">
-            <span className="text-accent">
-              <IconAlertCircle size={28} />
-            </span>
-            <h3 className="font-playfair text-xl md:text-2xl font-light text-foreground">
-              Important Notice
-            </h3>
-          </div>
-          <p className="font-inter text-muted-foreground text-sm leading-relaxed">
-            These Terms of Service, together with our Privacy Policy, constitute the entire agreement
-            between you and Preety Twist. If any provision of these Terms is found to be invalid or
-            unenforceable, the remaining provisions will remain in full force and effect. We recommend
-            printing or saving a copy of these Terms for your records.
-          </p>
-        </motion.div>
-
-        {/* Contact Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
-          className="text-center bg-card/50 backdrop-blur-sm border border-border rounded-xl p-8 md:p-12"
-        >
-          <div className="flex justify-center mb-5">
-            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-accent/10 text-accent">
-              <IconMail size={28} />
-            </div>
-          </div>
-          <h2 className="font-playfair text-2xl md:text-3xl font-light mb-4">
-            Questions About Our Terms?
-          </h2>
-          <p className="font-inter text-muted-foreground text-base max-w-lg mx-auto mb-8">
-            If you have any questions or concerns about these Terms of Service, please
-            don't hesitate to reach out to our legal team.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              asChild
-              className="group h-12 px-8 bg-accent hover:bg-accent/90 text-white rounded-full font-montserrat uppercase tracking-widest text-xs font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-accent/25"
-            >
-              <Link href="/contact">
-                <IconMail size={16} className="mr-2" />
-                Contact Us
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="h-12 px-8 border-border hover:border-accent rounded-full font-montserrat uppercase tracking-widest text-xs font-semibold transition-all duration-300"
-            >
-              <a href="mailto:legal@preetytwist.com">
-                Email Legal Team
-              </a>
-            </Button>
-          </div>
-        </motion.div>
-
-        {/* Legal Links */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.8 }}
-          className="text-center mt-12"
-        >
-          <p className="font-inter text-muted-foreground text-sm">
-            Also see our
-            {' '}
-            <Link href="/privacy" className="text-accent hover:underline underline-offset-4">
-              Privacy Policy
-            </Link>
-            {' '}
-            and
-            {' '}
-            <Link href="/faq" className="text-accent hover:underline underline-offset-4">
-              FAQ
-            </Link>
-          </p>
-        </motion.div>
+      <div className="space-y-6 mb-16">
+        {termsData.map((section, index) => (
+          <LegalSectionCard
+            key={section.title}
+            title={section.title}
+            headerIcon={<span className="text-accent">{section.icon}</span>}
+            items={section.content}
+            itemIcon={<IconScale size={14} />}
+            sectionIndex={index}
+          />
+        ))}
       </div>
-    </div>
+
+      <LegalNoticeCard title="Important Notice" icon={<span className="text-accent"><IconAlertCircle size={28} /></span>}>
+        These Terms of Service, together with our Privacy Policy, constitute the entire agreement between you and Preety Twist. If any provision of these Terms is found to be invalid or unenforceable, the remaining provisions will remain in full force and effect. We recommend printing or saving a copy of these Terms for your records.
+      </LegalNoticeCard>
+
+      <LegalContactCard
+        icon={<IconMail size={28} />}
+        title="Questions About Our Terms?"
+        description="If you have any questions or concerns about these Terms of Service, please don't hesitate to reach out to our legal team."
+        emailHref="mailto:legal@preetytwist.com"
+        emailLabel="Email Legal Team"
+      />
+
+      <LegalLinks primaryHref="/privacy" primaryLabel="Privacy Policy" />
+    </LegalPageShell>
   );
 }

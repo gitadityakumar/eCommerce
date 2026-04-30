@@ -25,6 +25,7 @@ import { formatINR } from '@/lib/currency';
 import { normalizeImageUrl } from '@/lib/images';
 import { cn } from '@/lib/utils';
 
+import { getOrderAmounts } from './order-amounts';
 import { ReceiptDocument } from './receipt-document';
 
 type OrderData = NonNullable<Awaited<ReturnType<typeof getOrderById>>>;
@@ -115,11 +116,9 @@ function OrderSuccessPage({
   };
 
   const statusBadge = getStatusBadge(order.status);
-  const subtotal = order.items.reduce((acc, item) => acc + (Number(item.priceAtPurchase) * item.quantity), 0);
-  const total = Number(order.totalAmount);
   // We don't have separate fields for shipping/tax/discount in the DB yet,
   // so we'll treat the difference as "Fees & Discounts" if not zero.
-  const extra = total - subtotal;
+  const { extra, subtotal, total } = getOrderAmounts(order);
 
   return (
     <main className={cn('mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 min-h-screen bg-background transition-colors duration-500', className)}>

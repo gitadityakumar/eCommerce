@@ -5,20 +5,19 @@ import type {
   SortingState,
 } from '@tanstack/react-table';
 import {
-  IconDotsVertical,
   IconTrash,
 } from '@tabler/icons-react';
 import {
-  flexRender,
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import { format } from 'date-fns';
-import Link from 'next/link';
 import * as React from 'react';
 import { toast } from 'sonner';
+import { AdminTableShell } from '@/components/admin/admin-table-shell';
+import { RowActionsMenu } from '@/components/admin/row-actions-menu';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,22 +29,6 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { deleteCoupon } from '@/lib/actions/coupons';
 
 interface Coupon {
@@ -167,29 +150,21 @@ export function CouponTable({ data }: { data: Coupon[] }) {
     {
       id: 'actions',
       cell: ({ row }) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="size-8 p-0">
-              <IconDotsVertical className="size-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem asChild>
-              <Link href={`/admin/coupons/${row.original.id}`}>Edit</Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="text-destructive"
-              onClick={() => {
+        <RowActionsMenu
+          items={[
+            { label: 'Edit', href: `/admin/coupons/${row.original.id}` },
+            {
+              label: 'Delete',
+              destructive: true,
+              separatorBefore: true,
+              onClick: () => {
                 setCouponToDelete(row.original.id);
                 setDeleteDialogOpen(true);
-              }}
-            >
-              <IconTrash className="mr-2 size-4" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              },
+              icon: <IconTrash className="mr-2 size-4" />,
+            },
+          ]}
+        />
       ),
     },
   ];
@@ -208,67 +183,12 @@ export function CouponTable({ data }: { data: Coupon[] }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-2xl border border-border-subtle bg-surface/50 overflow-hidden shadow-soft transition-all duration-500">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map(headerGroup => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length
-              ? (
-                  table.getRowModel().rows.map(row => (
-                    <TableRow key={row.id}>
-                      {row.getVisibleCells().map(cell => (
-                        <TableCell key={cell.id}>
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                )
-              : (
-                  <TableRow>
-                    <TableCell colSpan={columns.length} className="h-24 text-center">
-                      No coupons found.
-                    </TableCell>
-                  </TableRow>
-                )}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="flex items-center justify-end space-x-2 p-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-          className="rounded-full border-border-subtle text-text-secondary hover:text-accent hover:border-accent/40"
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-          className="rounded-full border-border-subtle text-text-secondary hover:text-accent hover:border-accent/40"
-        >
-          Next
-        </Button>
-      </div>
+      <AdminTableShell
+        table={table}
+        columnsLength={columns.length}
+        emptyMessage="No coupons found."
+        className="rounded-2xl border border-border-subtle bg-surface/50 overflow-hidden shadow-soft transition-all duration-500"
+      />
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>

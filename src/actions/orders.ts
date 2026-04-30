@@ -23,6 +23,29 @@ const fulfillmentSchema = z.object({
   status: z.string().default('pending'),
 });
 
+const orderDetailsWith = {
+  user: true,
+  shippingAddress: true,
+  billingAddress: true,
+  items: {
+    with: {
+      variant: {
+        with: {
+          product: {
+            with: {
+              images: true,
+            },
+          },
+          color: true,
+          size: true,
+        },
+      },
+    },
+  },
+  payments: true,
+  fulfillments: true,
+} as const;
+
 function normalizeOrderImages<T extends { items?: any[] } | null | undefined>(order: T): T {
   if (!order) {
     return order;
@@ -117,28 +140,7 @@ export async function getOrderById(id: string) {
     await requireAdmin();
     const order = await db.query.orders.findFirst({
       where: eq(orders.id, id),
-      with: {
-        user: true,
-        shippingAddress: true,
-        billingAddress: true,
-        items: {
-          with: {
-            variant: {
-              with: {
-                product: {
-                  with: {
-                    images: true,
-                  },
-                },
-                color: true,
-                size: true,
-              },
-            },
-          },
-        },
-        payments: true,
-        fulfillments: true,
-      },
+      with: orderDetailsWith,
     });
 
     return normalizeOrderImages(order);
@@ -154,28 +156,7 @@ export async function getUserOrderById(id: string) {
     const user = await requireUser();
     const order = await db.query.orders.findFirst({
       where: and(eq(orders.id, id), eq(orders.userId, user.id)),
-      with: {
-        user: true,
-        shippingAddress: true,
-        billingAddress: true,
-        items: {
-          with: {
-            variant: {
-              with: {
-                product: {
-                  with: {
-                    images: true,
-                  },
-                },
-                color: true,
-                size: true,
-              },
-            },
-          },
-        },
-        payments: true,
-        fulfillments: true,
-      },
+      with: orderDetailsWith,
     });
 
     return normalizeOrderImages(order);

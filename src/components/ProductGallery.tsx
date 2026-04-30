@@ -11,7 +11,7 @@ interface Variant {
   images: string[];
 }
 
-export interface ProductGalleryProps {
+interface ProductGalleryProps {
   productId: string;
   variants: Variant[];
   initialVariantIndex?: number;

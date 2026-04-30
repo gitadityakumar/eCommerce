@@ -1,25 +1,15 @@
 'use client';
 
+// fallow-ignore-file code-duplication
+
 import type * as z from 'zod';
 import type { SelectColor } from '@/lib/db/schema/filters/colors';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { IconEdit, IconLoader2, IconPlus, IconSearch, IconSparkles, IconTrash } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { createColor, deleteColor, updateColor } from '@/actions/attributes';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -46,6 +36,16 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { insertColorSchema } from '@/lib/db/schema/filters/colors';
+import {
+  applyFieldErrors,
+  AttributeDeleteDialog,
+  AttributeDialogFooter,
+  AttributeRowActions,
+  AttributeSlugField,
+  AttributeToolbar,
+  filterByNameAndSlug,
+  slugifyValue,
+} from './_shared';
 
 type FormValues = z.infer<typeof insertColorSchema>;
 
@@ -74,25 +74,12 @@ export function ColorTab({ initialData }: ColorTabProps) {
   const { dirtyFields } = form.formState;
 
   useEffect(() => {
-    if (editingColor)
-      return;
-
-    if (!dirtyFields.slug) {
-      const generatedSlug = (name || '')
-        .toLowerCase()
-        .trim()
-        .replace(/[^\w\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-{2,}/g, '-');
-      form.setValue('slug', generatedSlug, { shouldValidate: true });
+    if (!editingColor && !dirtyFields.slug) {
+      form.setValue('slug', slugifyValue(name || ''), { shouldValidate: true });
     }
   }, [name, form, editingColor, dirtyFields.slug]);
 
-  const filteredData = initialData.filter(
-    item =>
-      item.name.toLowerCase().includes(searchQuery.toLowerCase())
-      || item.slug.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const filteredData = filterByNameAndSlug(initialData, searchQuery);
 
   const onSubmit = async (values: FormValues) => {
     try {
@@ -108,15 +95,8 @@ export function ColorTab({ initialData }: ColorTabProps) {
         router.refresh();
       }
       else {
-        if (result.error && typeof result.error === 'object') {
-          Object.entries(result.error as Record<string, string[]>).forEach(([key, messages]) => {
-            if (messages && messages.length > 0) {
-              form.setError(key as keyof FormValues, { message: messages[0] });
-            }
-          });
-        }
-        else {
-          toast.error(result.error);
+        if (!applyFieldErrors(form, result.error)) {
+          toast.error(typeof result.error === 'string' ? result.error : 'Something went wrong');
         }
       }
     }
@@ -162,39 +142,23 @@ export function ColorTab({ initialData }: ColorTabProps) {
     const name = form.getValues('name');
     if (!name)
       return;
-    const slug = name
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-{2,}/g, '-');
-    form.setValue('slug', slug, { shouldValidate: true });
+    form.setValue('slug', slugifyValue(name), { shouldValidate: true });
   };
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-6 bg-surface/30 p-6 rounded-2xl border border-border-subtle backdrop-blur-sm">
-        <div className="relative flex-1 max-w-md group">
-          <IconSearch className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-text-secondary group-focus-within:text-accent transition-colors" />
-          <Input
-            placeholder="Filter chromatic spectrum..."
-            className="pl-11 bg-background/50 border-border-subtle rounded-full h-11 focus:ring-accent/20 focus:border-accent/40 transition-all placeholder:text-text-secondary/50 placeholder:font-light"
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-          />
-        </div>
-        <Button
-          onClick={() => {
-            setEditingColor(null);
-            form.reset({ name: '', slug: '', hexCode: '#000000' });
-            setIsOpen(true);
-          }}
-          className="bg-accent text-white hover:bg-accent/90 rounded-full px-8 font-bold tracking-widest uppercase text-[10px] shadow-soft shadow-accent/20 h-11 transition-all hover:-translate-y-0.5"
-        >
-          <IconPlus className="mr-2 size-3.5" strokeWidth={3} />
-          Introduce Hue
-        </Button>
-      </div>
+      <AttributeToolbar
+        searchPlaceholder="Filter chromatic spectrum..."
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+        onAdd={() => {
+          setEditingColor(null);
+          form.reset({ name: '', slug: '', hexCode: '#000000' });
+          setIsOpen(true);
+        }}
+        addLabel="Introduce Hue"
+        searchWidthClassName="max-w-md"
+      />
 
       <div className="rounded-2xl border border-border-subtle bg-surface/50 overflow-hidden shadow-soft">
         <Table>
@@ -229,19 +193,7 @@ export function ColorTab({ initialData }: ColorTabProps) {
                       <TableCell className="font-mono text-xs">{color.slug}</TableCell>
                       <TableCell className="font-mono text-xs uppercase">{color.hexCode}</TableCell>
                       <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button variant="ghost" size="icon" onClick={() => handleEdit(color)}>
-                            <IconEdit size={16} />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-destructive hover:bg-destructive/10"
-                            onClick={() => setColorToDelete(color.id)}
-                          >
-                            <IconTrash size={16} />
-                          </Button>
-                        </div>
+                        <AttributeRowActions onEdit={() => handleEdit(color)} onDelete={() => setColorToDelete(color.id)} />
                       </TableCell>
                     </TableRow>
                   ))
@@ -277,31 +229,7 @@ export function ColorTab({ initialData }: ColorTabProps) {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="slug"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center justify-between">
-                        Slug
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          className="h-auto p-0 text-xs text-primary hover:bg-transparent"
-                          onClick={generateSlug}
-                        >
-                          <IconSparkles size={12} className="mr-1" />
-                          Generate
-                        </Button>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="navy-blue" {...field} />
-                      </FormControl>
-                      <FormDescription>Unique URL-friendly identifier.</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <AttributeSlugField control={form.control} placeholder="navy-blue" onGenerate={generateSlug} />
 
                 <FormField
                   control={form.control}
@@ -332,44 +260,25 @@ export function ColorTab({ initialData }: ColorTabProps) {
                   )}
                 />
 
-                <div className="flex gap-2 pt-4">
-                  <Button type="submit" className="flex-1" disabled={form.formState.isSubmitting}>
-                    {form.formState.isSubmitting && <IconLoader2 className="mr-2 size-4 animate-spin" />}
-                    {editingColor ? 'Save Changes' : 'Create Color'}
-                  </Button>
-                  <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
-                    Cancel
-                  </Button>
-                </div>
+                <AttributeDialogFooter
+                  isSubmitting={form.formState.isSubmitting}
+                  submitLabel={editingColor ? 'Save Changes' : 'Create Color'}
+                  onCancel={() => setIsOpen(false)}
+                />
               </form>
             </Form>
           </div>
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={!!colorToDelete} onOpenChange={open => !open && setColorToDelete(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This color will be permanently deleted. Products using this color might be affected.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={(e) => {
-                e.preventDefault();
-                handleDelete();
-              }}
-              disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {isDeleting ? 'Deleting...' : 'Delete Color'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <AttributeDeleteDialog
+        open={!!colorToDelete}
+        onOpenChange={open => !open && setColorToDelete(null)}
+        description="This color will be permanently deleted. Products using this color might be affected."
+        isDeleting={isDeleting}
+        confirmLabel="Delete Color"
+        onConfirm={handleDelete}
+      />
     </div>
   );
 }

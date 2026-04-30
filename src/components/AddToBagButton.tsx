@@ -10,7 +10,7 @@ import { useCartStore } from '@/store/cart';
 import { useUserCartStore } from '@/store/user-cart';
 import { useVariantStore } from '@/store/variant';
 
-export interface AddToBagButtonProps {
+interface AddToBagButtonProps {
   productId: string;
   name: string;
   variants: any[];

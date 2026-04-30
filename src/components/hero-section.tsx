@@ -35,7 +35,7 @@ export default function HeroSection() {
     <section
       aria-label="Hero section"
       role="banner"
-      className="relative flex items-center justify-center  w-full h-screen min-h-[600px] max-h-[1080px] overflow-hidden"
+      className="relative flex items-center justify-center  w-full h-screen min-h-150 max-h-270 overflow-hidden"
     >
       {/* Background Layers */}
       <div className="absolute inset-0 z-0">
@@ -84,7 +84,7 @@ export default function HeroSection() {
           initial="initial"
           animate="animate"
           transition={{ ...scaleX.transition, delay: 0.8 }}
-          className="w-[60px] h-px bg-accent my-8 mx-auto opacity-80"
+          className="w-15 h-px bg-accent my-8 mx-auto opacity-80"
         />
 
         <motion.p
@@ -92,7 +92,7 @@ export default function HeroSection() {
           initial="initial"
           animate="animate"
           transition={{ ...fadeIn.transition, delay: 1 }}
-          className="max-w-[600px] mx-auto mb-12 px-4 font-(--font-inter) text-lg leading-relaxed tracking-wide text-neutral-200 drop-shadow-md"
+          className="max-w-150 mx-auto mb-12 px-4 font-(--font-inter) text-lg leading-relaxed tracking-wide text-neutral-200 drop-shadow-md"
         >
           Experience the pinnacle of haute couture craftsmanship in our curated
           collections.
@@ -144,7 +144,7 @@ export default function HeroSection() {
           <span className="font-(--font-montserrat) text-[0.625rem] uppercase tracking-[0.3em] text-white/80">
             EXPLORE
           </span>
-          <div className="w-px h-[80px] bg-linear-to-b from-accent via-white/50 to-transparent" />
+          <div className="w-px h-20 bg-linear-to-b from-accent via-white/50 to-transparent" />
         </motion.div>
       </motion.div>
     </section>

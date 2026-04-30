@@ -5,11 +5,9 @@ import type {
   SortingState,
 } from '@tanstack/react-table';
 import {
-  IconDotsVertical,
   IconPlus,
 } from '@tabler/icons-react';
 import {
-  flexRender,
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
@@ -18,23 +16,10 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import * as React from 'react';
+import { AdminTableShell } from '@/components/admin/admin-table-shell';
+import { RowActionsMenu } from '@/components/admin/row-actions-menu';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { normalizeImageUrl } from '@/lib/images';
 
 interface Product {
@@ -106,21 +91,13 @@ const columns: ColumnDef<Product>[] = [
   {
     id: 'actions',
     cell: ({ row }) => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="size-8 p-0">
-            <IconDotsVertical className="size-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem asChild>
-            <Link href={`/admin/products/${row.original.id}`}>Edit</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem>Make a copy</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <RowActionsMenu
+        items={[
+          { label: 'Edit', href: `/admin/products/${row.original.id}` },
+          { label: 'Make a copy' },
+          { label: 'Delete', destructive: true, separatorBefore: true },
+        ]}
+      />
     ),
   },
 ];
@@ -151,67 +128,7 @@ export function ProductTable({ data }: { data: Product[] }) {
           </Link>
         </Button>
       </div>
-      <div className="rounded-2xl border border-border-subtle bg-surface/50 overflow-hidden shadow-soft">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map(headerGroup => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length
-              ? (
-                  table.getRowModel().rows.map(row => (
-                    <TableRow key={row.id}>
-                      {row.getVisibleCells().map(cell => (
-                        <TableCell key={cell.id}>
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                )
-              : (
-                  <TableRow>
-                    <TableCell colSpan={columns.length} className="h-24 text-center">
-                      No products found.
-                    </TableCell>
-                  </TableRow>
-                )}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="flex items-center justify-end space-x-2 p-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-          className="rounded-full border-border-subtle text-text-secondary hover:text-accent hover:border-accent/40"
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-          className="rounded-full border-border-subtle text-text-secondary hover:text-accent hover:border-accent/40"
-        >
-          Next
-        </Button>
-      </div>
+      <AdminTableShell table={table} columnsLength={columns.length} emptyMessage="No products found." />
     </div>
   );
 }

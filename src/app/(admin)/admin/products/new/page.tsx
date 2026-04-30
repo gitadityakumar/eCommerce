@@ -1,13 +1,19 @@
-import { getBrands, getCategories, getColors, getGenders, getSizes } from '@/actions/products';
+import {
+  getCategories,
+  getProductBrands,
+  getProductColors,
+  getProductGenders,
+  getProductSizes,
+} from '@/actions/products';
 import { ProductForm } from '../ProductForm';
 
 export default async function NewProductPage() {
   const [categories, brands, genders, colors, sizes] = await Promise.all([
     getCategories(),
-    getBrands(),
-    getGenders(),
-    getColors(),
-    getSizes(),
+    getProductBrands(),
+    getProductGenders(),
+    getProductColors(),
+    getProductSizes(),
   ]);
 
   return (

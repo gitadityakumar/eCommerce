@@ -15,7 +15,26 @@ const collectionFormSchema = insertCollectionSchema.extend({
   productIds: z.array(z.string().uuid()).optional(),
 });
 
-export type CollectionFormInput = z.infer<typeof collectionFormSchema>;
+type CollectionFormInput = z.infer<typeof collectionFormSchema>;
+
+function isCollectionSlugConflict(error: unknown) {
+  return (error as { code?: string }).code === '23505';
+}
+
+async function getAdminCollectionPayload(data: CollectionFormInput) {
+  const user = await getCurrentUser();
+  if (!user || user.role !== 'admin') {
+    return { success: false as const, error: 'Unauthorized. Admin access required.' };
+  }
+
+  const validatedFields = collectionFormSchema.safeParse(data);
+  if (!validatedFields.success) {
+    return { success: false as const, error: validatedFields.error.flatten().fieldErrors };
+  }
+
+  const { productIds, ...collectionData } = validatedFields.data;
+  return { success: true as const, user, productIds, collectionData };
+}
 
 export async function getCollections() {
   noStore();
@@ -69,25 +88,17 @@ export async function getCollectionById(id: string) {
 }
 
 export async function createCollection(data: CollectionFormInput) {
-  const user = await getCurrentUser();
-  if (!user || user.role !== 'admin') {
-    return { success: false, error: 'Unauthorized. Admin access required.' };
-  }
+  const payload = await getAdminCollectionPayload(data);
+  if (!payload.success)
+    return payload;
 
-  const validatedFields = collectionFormSchema.safeParse(data);
-
-  if (!validatedFields.success) {
-    return { success: false, error: validatedFields.error.flatten().fieldErrors };
-  }
-
-  const { productIds, ...collectionData } = validatedFields.data;
+  const { collectionData, productIds, user } = payload;
 
   try {
     const result = await db.transaction(async (tx) => {
       // 1. Create Collection
       const [newCollection] = await tx.insert(collections).values(collectionData).returning();
 
-      // 2. Create Product Associations
       if (productIds && productIds.length > 0) {
         await tx.insert(productCollections).values(
           productIds.map(productId => ({
@@ -113,8 +124,7 @@ export async function createCollection(data: CollectionFormInput) {
     return { success: true, data: result };
   }
   catch (error: unknown) {
-    const dbError = error as { code?: string };
-    if (dbError.code === '23505') {
+    if (isCollectionSlugConflict(error)) {
       return { success: false, error: 'A collection with this slug already exists' };
     }
     console.error('Error creating collection:', error);
@@ -123,18 +133,11 @@ export async function createCollection(data: CollectionFormInput) {
 }
 
 export async function updateCollection(id: string, data: CollectionFormInput) {
-  const user = await getCurrentUser();
-  if (!user || user.role !== 'admin') {
-    return { success: false, error: 'Unauthorized. Admin access required.' };
-  }
+  const payload = await getAdminCollectionPayload(data);
+  if (!payload.success)
+    return payload;
 
-  const validatedFields = collectionFormSchema.safeParse(data);
-
-  if (!validatedFields.success) {
-    return { success: false, error: validatedFields.error.flatten().fieldErrors };
-  }
-
-  const { productIds, ...collectionData } = validatedFields.data;
+  const { collectionData, productIds, user } = payload;
 
   try {
     const oldCollection = await db.query.collections.findFirst({
@@ -156,11 +159,8 @@ export async function updateCollection(id: string, data: CollectionFormInput) {
         .where(eq(collections.id, id))
         .returning();
 
-      // 2. Sync Product Associations
-      // Delete old associations
       await tx.delete(productCollections).where(eq(productCollections.collectionId, id));
 
-      // Insert new associations
       if (productIds && productIds.length > 0) {
         await tx.insert(productCollections).values(
           productIds.map(productId => ({
@@ -187,8 +187,7 @@ export async function updateCollection(id: string, data: CollectionFormInput) {
     return { success: true, data: result };
   }
   catch (error: unknown) {
-    const dbError = error as { code?: string };
-    if (dbError.code === '23505') {
+    if (isCollectionSlugConflict(error)) {
       return { success: false, error: 'A collection with this slug already exists' };
     }
     console.error('Error updating collection:', error);

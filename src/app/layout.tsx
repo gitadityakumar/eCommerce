@@ -1,32 +1,9 @@
 import type { Metadata } from 'next';
-import { Inter, Jost, Montserrat, Playfair_Display } from 'next/font/google';
+import { appFontClassName } from '@/app/fonts';
 import { AuthProvider } from '@/components/AuthProvider';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
-
-const jost = Jost({
-  variable: '--font-jost',
-  subsets: ['latin'],
-});
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  variable: '--font-playfair',
-  display: 'swap',
-});
-
-const montserrat = Montserrat({
-  subsets: ['latin'],
-  variable: '--font-montserrat',
-  display: 'swap',
-});
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   title: 'Preety Twist',
@@ -40,7 +17,7 @@ export default function RootShell({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${jost.className} ${playfair.variable} ${montserrat.variable} ${inter.variable} antialiased`}>
+      <body className={appFontClassName}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
