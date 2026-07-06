@@ -257,6 +257,8 @@
 
   body {
     @apply bg-background text-foreground transition-colors duration-300 ease-in-out;
+    position: relative;
+    isolation: isolate;
     font-variant-numeric: tabular-nums;
     text-rendering: optimizeLegibility;
   }

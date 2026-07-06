@@ -79,13 +79,25 @@ export async function getOrders() {
     const allOrders = await db.query.orders.findMany({
       with: {
         user: true,
-        items: true,
+        items: {
+          with: {
+            variant: {
+              with: {
+                product: {
+                  with: {
+                    images: true,
+                  },
+                },
+              },
+            },
+          },
+        },
         payments: true,
         fulfillments: true,
       },
       orderBy: (orders, { desc }) => [desc(orders.createdAt)],
     });
-    return allOrders;
+    return allOrders.map(normalizeOrderImages);
   }
   catch (error) {
     console.error('Error fetching orders:', error);

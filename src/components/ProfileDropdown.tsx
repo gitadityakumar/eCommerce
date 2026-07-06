@@ -162,15 +162,16 @@ export function ProfileDropdown() {
           <Switch
             checked={resolvedTheme === 'dark'}
             onCheckedChange={checked => setTheme(checked ? 'dark' : 'light')}
-            className="data-[state=checked]:bg-accent shadow-soft"
+            className="data-checked:bg-accent shadow-soft"
           />
         </div>
 
         {isAuthenticated && (
           <div className="p-2 pt-0">
             <DropdownMenuItem
+              variant="destructive"
               onClick={handleLogout}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer text-destructive hover:text-accent/15 transition-colors group"
+              className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-colors group"
             >
               <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
               <span className="text-sm font-bold tracking-widest uppercase ">Logout</span>
