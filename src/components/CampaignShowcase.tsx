@@ -15,13 +15,13 @@ export default function CampaignShowcase() {
           viewport={{ once: true }}
           className="flex justify-between items-end mb-20 border-b border-border-subtle pb-6"
         >
-          <h3 className="text-3xl font-light text-text-primary tracking-tight">
-            Campaign
+          <h3 className="text-3xl font-light text-text-primary tracking-[-0.03em]">
+            Evening study
             {' '}
             <span className="font-serif italic text-text-secondary">No. 05</span>
           </h3>
           <Link href="/collections" className="text-text-secondary hover:text-accent text-sm tracking-widest uppercase transition-colors">
-            View Lookbook
+            View lookbook
           </Link>
         </motion.div>
 
@@ -34,7 +34,7 @@ export default function CampaignShowcase() {
             className="md:col-span-6 md:row-span-2 relative group cursor-pointer"
           >
             <Link href="/products">
-              <div className="w-full h-[80vh] overflow-hidden relative bg-surface shadow-soft">
+              <div className="relative min-h-[34rem] overflow-hidden bg-surface shadow-soft md:h-[78dvh] md:max-h-[48rem]">
                 <Image
                   src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/c543a9e1-f226-4ced-80b0-feb8445a75b9_1600w.jpg"
                   className="object-cover group-hover:scale-105 transition-all duration-700 opacity-90 group-hover:opacity-100 dark:opacity-80"
@@ -44,7 +44,7 @@ export default function CampaignShowcase() {
                   loading="eager"
                 />
                 <div className="absolute bottom-0 left-0 w-full p-8 bg-linear-to-t from-black/60 to-transparent">
-                  <p className="text-white text-3xl font-serif italic mb-2">The Grand Bow</p>
+                  <p className="text-white text-3xl font-serif italic mb-2">Grand velvet bow</p>
                   <p className="text-neutral-300 text-sm tracking-widest uppercase">₹18,000.00</p>
                 </div>
               </div>
@@ -72,7 +72,7 @@ export default function CampaignShowcase() {
                 <div className="absolute inset-0 bg-linear-to-b from-transparent to-black/60 z-10 flex items-end justify-center pb-8"></div>
                 <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500"></div>
                 <div className="absolute top-6 right-6">
-                  <span className="bg-surface text-text-primary text-[10px] font-bold px-3 py-1 uppercase tracking-widest shadow-soft">New In</span>
+                  <span className="bg-surface text-text-primary text-[10px] font-bold px-3 py-1 uppercase tracking-widest shadow-soft">New cut</span>
                 </div>
                 <div className="absolute bottom-6 left-6">
                   <h4 className="text-white text-xl font-light">Silver Thread</h4>

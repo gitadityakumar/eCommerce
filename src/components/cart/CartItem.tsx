@@ -28,7 +28,7 @@ export function CartItem({ item }: CartItemProps) {
       if (!result.success) {
         toast.error('Failed to update quantity');
       }
-      else if (result.count !== undefined) {
+      else if ('count' in result && result.count !== undefined) {
         setUserCount(result.count);
       }
     });
@@ -41,7 +41,7 @@ export function CartItem({ item }: CartItemProps) {
         toast.error('Failed to remove item');
       }
       else {
-        if (result.count !== undefined) {
+        if ('count' in result && result.count !== undefined) {
           setUserCount(result.count);
         }
         toast.success('Item removed from cart');

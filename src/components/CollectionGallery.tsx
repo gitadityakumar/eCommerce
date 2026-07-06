@@ -7,23 +7,23 @@ export default function CollectionGallery() {
   const items = [
     {
       image: 'https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/4734259a-bad7-422f-981e-ce01e79184f2_1600w.jpg',
-      title: 'Onyx Velvet',
-      collection: 'Noir Collection',
-      price: '₹120',
+      title: 'Onyx velvet bow',
+      collection: 'Noir collection',
+      price: '₹8,850',
       offset: 'md:mt-0',
     },
     {
       image: 'https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/c543a9e1-f226-4ced-80b0-feb8445a75b9_1600w.jpg',
-      title: 'Scarlet Silk',
-      collection: 'Rouge Series',
-      price: '₹145',
+      title: 'Scarlet silk ribbon',
+      collection: 'Rouge series',
+      price: '₹10,400',
       offset: 'md:mt-20',
     },
     {
       image: 'https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/917d6f93-fb36-439a-8c48-884b67b35381_1600w.jpg',
-      title: 'Ivory Satin',
-      collection: 'Bridal Edit',
-      price: '₹160',
+      title: 'Ivory satin knot',
+      collection: 'Bridal edit',
+      price: '₹12,750',
       offset: 'md:mt-0',
     },
   ];
@@ -37,8 +37,8 @@ export default function CollectionGallery() {
           viewport={{ once: true }}
           className="text-center mb-24"
         >
-          <span className="text-accent text-xs tracking-[0.3em] uppercase">Curated Series</span>
-          <h2 className="text-4xl text-text-primary mt-4 font-light tracking-tight">Winter Exhibition</h2>
+          <span className="text-accent text-xs tracking-[0.26em] uppercase">Curated series</span>
+          <h2 className="text-4xl text-text-primary mt-4 font-light tracking-[-0.04em]">Winter pieces</h2>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-24">
@@ -61,7 +61,7 @@ export default function CollectionGallery() {
                     whileHover={{ scale: 1.05, backgroundColor: 'rgb(255, 255, 255)', color: 'rgb(0, 0, 0)' }}
                     className="text-white border border-white/30 px-8 py-3 text-xs tracking-widest uppercase backdrop-blur-md transition-all rounded-full"
                   >
-                    Quick Add
+                    Quick add
                   </motion.button>
                 </motion.div>
                 <Image

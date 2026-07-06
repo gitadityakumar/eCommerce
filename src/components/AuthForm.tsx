@@ -98,7 +98,7 @@ export default function AuthForm({ mode, onSubmit }: Props) {
   };
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6 xl:space-y-8">
       <AuthIdentityHeader />
 
       <AuthHeading
@@ -111,7 +111,7 @@ export default function AuthForm({ mode, onSubmit }: Props) {
       <AuthErrorNotice error={error} />
 
       {/* Form */}
-      <form className="space-y-8" onSubmit={handleSubmit}>
+      <form className="space-y-5 xl:space-y-6" onSubmit={handleSubmit}>
         {mode === 'sign-up' && (
           <div className="space-y-2">
             <label htmlFor="name" className="text-[10px] text-text-secondary font-bold uppercase tracking-widest ml-4">
@@ -234,15 +234,15 @@ export default function AuthForm({ mode, onSubmit }: Props) {
         <p className="text-center text-[10px] text-text-secondary/40 font-light leading-relaxed px-8">
           By enlisting, you agree to our
           {' '}
-          <a href="#" className="text-text-secondary hover:text-accent underline transition-colors">
+          <Link href="/terms" className="text-text-secondary hover:text-accent underline transition-colors">
             Terms of Service
-          </a>
+          </Link>
           {' '}
           and
           {' '}
-          <a href="#" className="text-text-secondary hover:text-accent underline transition-colors">
+          <Link href="/privacy" className="text-text-secondary hover:text-accent underline transition-colors">
             Privacy Policy
-          </a>
+          </Link>
         </p>
       )}
     </div>

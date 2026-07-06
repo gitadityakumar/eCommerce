@@ -3,12 +3,11 @@
 import {
   IconSearch,
   IconShoppingCart,
-  IconUser,
 } from '@tabler/icons-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { Menu } from '@/components/ui/navbar-menu';
 import { cn } from '@/lib/utils';
@@ -32,6 +31,8 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { isAuthenticated } = useAuthStore();
   const guestItemCount = useCartStore(s => s.getItemCount());
   const userItemCount = useUserCartStore(s => s.count);
@@ -54,8 +55,25 @@ export default function Navbar() {
     }
   };
 
+  const isActiveNavLink = (href: string) => {
+    const [hrefPath, hrefQuery] = href.split('?');
+
+    if (pathname !== hrefPath) {
+      return false;
+    }
+
+    if (!hrefQuery) {
+      return pathname === hrefPath && !searchParams.has('gender');
+    }
+
+    const expectedParams = new URLSearchParams(hrefQuery);
+    return Array.from(expectedParams.entries()).every(
+      ([key, value]) => searchParams.get(key) === value,
+    );
+  };
+
   return (
-    <div className="sticky top-0 z-50 w-full h-15 border-b border-border-subtle bg-background/80 backdrop-blur-md transition-all duration-300 flex items-center justify-center">
+    <div className="sticky top-0 z-50 flex h-15 w-full items-center justify-center border-b border-border-subtle bg-background/82 backdrop-blur-md transition-all duration-300">
       <Menu setActive={setActive} className="border-none shadow-none bg-transparent dark:bg-transparent px-4 py-0 w-full justify-between z-50">
         {/* Logo - Always visible */}
         <Link href="/" aria-label="PreetyTwist Home" className="flex items-center shrink-0">
@@ -72,13 +90,23 @@ export default function Navbar() {
         {/* Primary Navigation Links - Desktop ONLY (≥1024px) */}
         <div className="hidden lg:flex items-center gap-6">
           {NAV_LINKS.map(l => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className="text-sm font-medium text-text-primary hover:text-accent transition-colors"
-            >
-              {l.label}
-            </Link>
+            (() => {
+              const active = isActiveNavLink(l.href);
+
+              return (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  aria-current={active ? 'page' : undefined}
+                  className={cn(
+                    'relative text-sm font-medium text-text-primary transition-colors after:absolute after:-bottom-2 after:left-0 after:h-px after:w-full after:origin-left after:bg-accent after:transition-transform after:duration-300 hover:text-accent',
+                    active ? 'text-accent after:scale-x-100' : 'after:scale-x-0',
+                  )}
+                >
+                  {l.label}
+                </Link>
+              );
+            })()
           ))}
         </div>
 
@@ -93,12 +121,12 @@ export default function Navbar() {
                   animate={{ width: mounted && window.innerWidth >= 1024 ? 260 : 180, opacity: 1 }}
                   exit={{ width: 0, opacity: 0 }}
                   transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-                  className="absolute right-0 flex items-center h-9 bg-background/80 backdrop-blur-sm border border-border-subtle rounded-full overflow-hidden"
+                  className="absolute right-0 flex h-9 items-center overflow-hidden rounded-full border border-border-subtle bg-background/88 backdrop-blur-sm shadow-soft"
                 >
                   <input
                     ref={searchInputRef}
                     type="search"
-                    placeholder="Search Atelier..."
+                    placeholder="Search bows, velvet, pearl..."
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     onKeyDown={(e) => {
@@ -126,8 +154,8 @@ export default function Navbar() {
                 }
               }}
               className={cn(
-                'hover:bg-accent/5 hover:text-accent transition-all duration-300 p-2 z-10 rounded-full h-10 w-10 flex items-center justify-center',
-                isSearchOpen ? 'absolute left-0 text-accent' : 'text-text-primary hover:bg-accent/5',
+                'z-10 flex h-10 w-10 items-center justify-center rounded-full p-2 transition-all duration-300 hover:bg-accent/8 hover:text-accent active:scale-95',
+                isSearchOpen ? 'absolute left-0 text-accent' : 'text-text-primary hover:bg-accent/8',
               )}
               aria-label="Search"
             >
@@ -138,7 +166,7 @@ export default function Navbar() {
           {/* Cart Icon */}
           <Link
             href="/cart"
-            className="text-text-primary hover:text-accent transition-all duration-300 h-10 w-10 flex items-center justify-center rounded-full hover:bg-accent/5 relative"
+            className="relative flex h-10 w-10 items-center justify-center rounded-full text-text-primary transition-all duration-300 hover:bg-accent/8 hover:text-accent active:scale-95"
             aria-label="Cart"
           >
             <IconShoppingCart size={20} />
@@ -149,21 +177,7 @@ export default function Navbar() {
             )}
           </Link>
 
-          {mounted && (
-            isAuthenticated
-              ? (
-                  <ProfileDropdown />
-                )
-              : (
-                  <Link
-                    href="/sign-in"
-                    className="h-10 w-10 flex items-center justify-center rounded-full bg-accent/10 hover:bg-accent text-accent hover:text-white transition-all duration-300"
-                    aria-label="Sign in"
-                  >
-                    <IconUser size={20} />
-                  </Link>
-                )
-          )}
+          {mounted && <ProfileDropdown />}
         </div>
       </Menu>
     </div>

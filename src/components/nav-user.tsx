@@ -1,11 +1,8 @@
 'use client';
 
 import {
-  IconCreditCard,
   IconDotsVertical,
   IconLogout,
-  IconNotification,
-  IconUserCircle,
 } from '@tabler/icons-react';
 
 import {
@@ -16,7 +13,6 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -83,22 +79,7 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem className="group cursor-pointer">
-                <IconUserCircle className="group-hover:text-accent transition-colors" />
-                <span className="group-hover:text-accent transition-colors">Account</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="group cursor-pointer">
-                <IconCreditCard className="group-hover:text-accent transition-colors" />
-                <span className="group-hover:text-accent transition-colors">Billing</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="group cursor-pointer">
-                <IconNotification className="group-hover:text-accent transition-colors" />
-                <span className="group-hover:text-accent transition-colors">Notifications</span>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="group cursor-pointer">
+            <DropdownMenuItem className="group cursor-pointer focus:bg-accent/10 focus:text-accent hover:bg-accent/10 hover:text-accent">
               <IconLogout className="group-hover:text-accent transition-colors" />
               <span className="group-hover:text-accent transition-colors">Log out</span>
             </DropdownMenuItem>

@@ -33,7 +33,26 @@ export function CartPageUI({ cart }: CartPageUIProps) {
   const itemCount = showingClient ? clientItemCount : serverItemCount;
 
   if (!mounted) {
-    return <div className="min-h-[50vh] flex items-center justify-center text-text-secondary font-light">Loading...</div>;
+    return (
+      <div className="mx-auto max-w-6xl px-4 py-16 md:px-6" aria-label="Loading cart">
+        <div className="mx-auto mb-14 h-10 w-48 rounded-full bg-surface-variant animate-pulse" />
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-12">
+          <div className="space-y-4 lg:col-span-2">
+            {[0, 1, 2].map(item => (
+              <div key={item} className="flex gap-5 rounded-2xl bg-surface p-5 shadow-soft">
+                <div className="size-24 rounded-xl bg-surface-variant animate-pulse" />
+                <div className="flex-1 space-y-4 py-2">
+                  <div className="h-4 w-2/3 rounded-full bg-surface-variant animate-pulse" />
+                  <div className="h-3 w-1/3 rounded-full bg-surface-variant animate-pulse" />
+                  <div className="h-8 w-28 rounded-full bg-surface-variant animate-pulse" />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="h-80 rounded-2xl bg-surface shadow-soft animate-pulse" />
+        </div>
+      </div>
+    );
   }
 
   if (itemCount === 0) {
@@ -51,9 +70,9 @@ export function CartPageUI({ cart }: CartPageUIProps) {
           />
         </div>
         <div className="text-center space-y-4 px-6 relative z-10">
-          <h1 className="text-4xl font-light text-text-primary tracking-tight font-playfair italic">Your Trove is Empty</h1>
+          <h1 className="text-4xl font-light text-text-primary tracking-tight font-playfair italic">Your bag is empty</h1>
           <p className="text-text-secondary max-w-sm mx-auto font-light leading-relaxed">
-            The collection awaits. Discover pieces that define your silhouette.
+            Start with a velvet bow, pearl piece, or something saved for a late invitation.
           </p>
         </div>
 
@@ -61,7 +80,7 @@ export function CartPageUI({ cart }: CartPageUIProps) {
           href="/products"
           className="bg-accent text-white px-12 py-4 rounded-full font-bold tracking-[0.2em] uppercase hover:bg-accent/90 transition-all shadow-soft active:scale-95"
         >
-          Discover Collection
+          Shop pieces
         </Link>
       </div>
     );

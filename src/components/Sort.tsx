@@ -2,6 +2,13 @@
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useMemo } from 'react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { setParam } from '@/lib/utils/query';
 
 const OPTIONS = [
@@ -25,20 +32,27 @@ export default function Sort() {
   };
 
   return (
-    <label className="inline-flex items-center gap-3">
+    <div className="inline-flex items-center gap-3">
       <span className="text-sm font-medium text-text-secondary">Sort by</span>
-      <select
-        className="rounded-lg border border-border-subtle bg-surface px-4 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all cursor-pointer shadow-soft hover:border-accent/40"
-        value={selected}
-        onChange={e => onChange(e.target.value)}
-        aria-label="Sort products"
-      >
-        {OPTIONS.map(o => (
-          <option key={o.value} value={o.value} className="bg-surface text-text-primary">
-            {o.label}
-          </option>
-        ))}
-      </select>
-    </label>
+      <Select value={selected} onValueChange={onChange}>
+        <SelectTrigger
+          aria-label="Sort products"
+          className="h-12 min-w-60 rounded-2xl border-border-subtle bg-surface px-5 text-base text-text-primary shadow-soft transition-all hover:border-accent/45 hover:bg-accent/5 focus-visible:border-accent focus-visible:ring-accent/25"
+        >
+          <SelectValue placeholder="Featured" />
+        </SelectTrigger>
+        <SelectContent className="rounded-2xl border-border-subtle bg-background/98 p-1 text-text-primary shadow-lifted backdrop-blur-md">
+          {OPTIONS.map(o => (
+            <SelectItem
+              key={o.value}
+              value={o.value}
+              className="rounded-xl px-4 py-3 text-sm text-text-primary transition-colors focus:bg-accent/10 focus:text-accent data-[highlighted]:bg-accent/10 data-[highlighted]:text-accent data-[state=checked]:bg-accent data-[state=checked]:text-white"
+            >
+              {o.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
   );
 }

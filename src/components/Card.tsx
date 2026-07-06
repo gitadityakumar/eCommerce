@@ -32,9 +32,9 @@ export default function Card({
   const normalizedImageSrc = normalizeImageUrl(imageSrc) ?? imageSrc;
   const content = (
     <article
-      className={`group rounded-xl bg-surface border border-border-subtle transition-all duration-300 hover:shadow-soft hover:border-accent/30 ${className}`}
+      className={`group overflow-hidden rounded-[1.75rem] bg-surface transition-all duration-300 hover:-translate-y-1 hover:shadow-lifted ${className}`}
     >
-      <div className="relative aspect-square overflow-hidden rounded-t-xl bg-bg-secondary">
+      <div className="relative aspect-[4/5] overflow-hidden rounded-[1.75rem] bg-bg-secondary">
         <Image
           src={normalizedImageSrc}
           alt={imageAlt}
@@ -43,15 +43,15 @@ export default function Card({
           className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-90 dark:opacity-80 group-hover:opacity-100"
         />
       </div>
-      <div className="p-5">
+      <div className="px-2 pt-5 pb-1">
         <div className="mb-2 flex items-baseline justify-between gap-3">
-          <h3 className="text-lg font-light tracking-wide text-text-primary">{title}</h3>
-          {displayPrice && <span className="text-base font-medium text-text-primary">{displayPrice}</span>}
+          <h3 className="text-lg font-light tracking-[-0.02em] text-text-primary transition-colors group-hover:text-accent">{title}</h3>
+          {displayPrice && <span className="font-montserrat text-sm font-semibold text-text-primary tabular-nums">{displayPrice}</span>}
         </div>
         {description && <p className="text-sm text-text-secondary line-clamp-2">{description}</p>}
         {subtitle && <p className="text-sm text-text-secondary mt-1">{subtitle}</p>}
         {meta && (
-          <p className="mt-2 text-xs tracking-wider uppercase text-text-secondary opacity-60">
+          <p className="mt-2 text-xs tracking-wider uppercase text-text-secondary opacity-70">
             {Array.isArray(meta) ? meta.join(' • ') : meta}
           </p>
         )}

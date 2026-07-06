@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Card } from '@/components';
 import Filters from '@/components/Filters';
 import Sort from '@/components/Sort';
@@ -39,7 +40,7 @@ export default async function ProductsPage({
   }
 
   return (
-    <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 min-h-screen bg-background transition-colors duration-500">
+    <main className="mx-auto min-h-[100dvh] max-w-7xl px-4 py-12 bg-background transition-colors duration-500 sm:px-6 lg:px-8">
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12 border-b border-border-subtle pb-8">
         <div>
           <h1 className="text-4xl md:text-5xl font-light text-text-primary tracking-tight">
@@ -77,7 +78,10 @@ export default async function ProductsPage({
           {products.length === 0
             ? (
                 <div className="rounded-2xl border border-dashed border-border-subtle p-20 text-center bg-surface/50">
-                  <p className="text-lg text-text-secondary font-light italic">The search yields no results. Try adjusting your filters.</p>
+                  <p className="text-lg text-text-secondary font-light italic">No pieces match those filters.</p>
+                  <Link href="/products" className="mt-6 inline-flex rounded-full bg-accent px-6 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-white transition-all hover:-translate-y-0.5 hover:bg-accent/90 active:scale-95">
+                    Clear filters
+                  </Link>
                 </div>
               )
             : (

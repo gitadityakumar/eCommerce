@@ -7,7 +7,8 @@ import Link from 'next/link';
 
 export default function PhilosophySection() {
   return (
-    <section className="overflow-hidden bg-background pt-32 pb-32 relative transition-colors duration-500">
+    <section className="relative overflow-hidden bg-background pt-28 pb-36 transition-colors duration-500 md:pt-36">
+      <div className="absolute left-0 top-20 h-72 w-72 rounded-full bg-accent/8 blur-[110px]" />
       <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-12 items-center">
           <motion.div
@@ -47,22 +48,22 @@ export default function PhilosophySection() {
             transition={{ duration: 0.8 }}
             className="lg:col-span-6"
           >
-            <span className="text-text-secondary text-xs tracking-[0.3em] uppercase block mb-6">The Philosophy</span>
-            <h2 className="text-4xl md:text-6xl font-light text-text-primary leading-none tracking-tight mb-8">
-              Sculpted from
+            <span className="text-text-secondary text-xs tracking-[0.22em] lowercase italic block mb-6">the philosophy</span>
+            <h2 className="text-4xl md:text-6xl font-light text-text-primary leading-[0.98] tracking-[-0.04em] mb-8">
+              Not an accessory.
               {' '}
               <br />
-              <span className="font-serif italic text-text-secondary opacity-70">shadow & light.</span>
+              <span className="font-serif italic text-text-secondary opacity-75">A point of view.</span>
             </h2>
             <p className="text-xl text-text-secondary font-light leading-relaxed mb-10 max-w-lg">
-              We believe an accessory is not an addition, but a completion. Our bows are architectural statements, crafted from vintage Japanese silks and French velvets, designed to define the silhouette of the modern muse.
+              Each bow is cut to hold shape, catch light, and frame the face without shouting. We work in small batches with velvet, organza, pearls, and trims that feel collected rather than manufactured.
             </p>
             <Link href="/collections">
               <motion.div
                 whileHover={{ x: 10 }}
                 className="inline-flex items-center gap-3 text-text-primary border-b border-border-subtle pb-2 hover:border-accent transition-all duration-500 uppercase text-xs tracking-widest cursor-pointer"
               >
-                Read the Journal
+                Read the studio notes
                 {' '}
                 <ArrowRight className="w-3 h-3 text-accent" />
               </motion.div>

@@ -1,26 +1,24 @@
-import { Inter, Jost, Montserrat, Playfair_Display } from 'next/font/google';
+import { Jost, Montserrat, Playfair_Display } from 'next/font/google';
 
 const jost = Jost({
   variable: '--font-jost',
   subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
 });
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
   variable: '--font-playfair',
+  weight: ['400', '500', '600', '700'],
   display: 'swap',
 });
 
 const montserrat = Montserrat({
   subsets: ['latin'],
   variable: '--font-montserrat',
+  weight: ['400', '500', '600', '700'],
   display: 'swap',
 });
 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-});
-
-export const appFontClassName = `${jost.className} ${playfair.variable} ${montserrat.variable} ${inter.variable} antialiased`;
+export const appFontClassName = `${jost.className} ${jost.variable} ${playfair.variable} ${montserrat.variable} antialiased`;

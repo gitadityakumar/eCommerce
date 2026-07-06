@@ -323,7 +323,7 @@ export default function OrderManagement() {
                           <PaginationContent className="bg-surface/30 backdrop-blur-[2px] border border-border-subtle/50 rounded-full p-2 shadow-soft">
                             <PaginationItem>
                               <PaginationPrevious
-                                href="#"
+                                href={`/my-orders?page=${Math.max(1, currentPage - 1)}`}
                                 onClick={(e) => {
                                   e.preventDefault();
                                   if (currentPage > 1) {
@@ -346,7 +346,7 @@ export default function OrderManagement() {
 
                             <PaginationItem>
                               <PaginationNext
-                                href="#"
+                                href={`/my-orders?page=${Math.min(totalPages, currentPage + 1)}`}
                                 onClick={(e) => {
                                   e.preventDefault();
                                   if (currentPage < totalPages) {

@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 export default function SpotlightSection() {
   return (
-    <section className="relative py-32 w-full overflow-hidden bg-background transition-colors duration-500">
+    <section className="relative w-full overflow-hidden bg-background py-32 transition-colors duration-500 md:py-40">
       <div className="absolute inset-0">
         <Image
           src="https://images.unsplash.com/photo-1611042553365-9b101441c135?q=80&w=2000&auto=format&fit=crop"
@@ -27,16 +27,16 @@ export default function SpotlightSection() {
           <div className="text-text-secondary text-xs tracking-[0.4em] uppercase mb-4 flex items-center gap-4">
             <span className="w-12 h-px bg-border-subtle"></span>
             {' '}
-            Spotlight
+            Studio focus
           </div>
-          <h2 className="md:text-7xl text-5xl font-light text-text-primary tracking-tighter mb-8">
-            The Pearl
+          <h2 className="md:text-7xl text-5xl font-light text-text-primary tracking-[-0.055em] mb-8 leading-[0.96]">
+            Pearls with
             {' '}
             <br />
-            <span className="font-serif italic text-text-secondary">Essence</span>
+            <span className="font-serif italic text-text-secondary">weight</span>
           </h2>
           <p className="text-lg text-text-secondary font-light leading-relaxed mb-10 max-w-md border-l border-accent/20 pl-6">
-            Thousands of freshwater pearls hand-sewn onto structural organza. A shimmering halo that catches the light with every movement.
+            Freshwater pearls are set into structural organza so the piece keeps its silhouette while moving softly under warm light.
           </p>
           <div className="flex items-center gap-8">
             <Link href="/products">
@@ -45,7 +45,7 @@ export default function SpotlightSection() {
                 whileTap={{ scale: 0.95 }}
                 className="bg-accent text-white px-10 py-4 text-xs font-bold tracking-[0.2em] uppercase hover:bg-accent/90 transition-colors shadow-soft rounded-full"
               >
-                Purchase
+                Add to bag
               </motion.button>
             </Link>
             <span className="text-text-primary font-light text-xl">₹35,000.00</span>

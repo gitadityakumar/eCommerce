@@ -20,19 +20,19 @@ const contactInfo = [
     icon: IconMail,
     label: 'Email',
     value: 'hello@preetytwist.com',
-    href: '#',
+    href: 'mailto:hello@preetytwist.com',
   },
   {
     icon: IconPhone,
     label: 'Phone',
-    value: '+91 9876543210',
-    href: '#',
+    value: '+91 98765 43210',
+    href: 'tel:+919876543210',
   },
   {
     icon: IconMapPin,
     label: 'Address',
     value: 'Mumbai, Maharashtra, India',
-    href: '#',
+    href: 'https://www.google.com/maps/search/?api=1&query=Mumbai%2C%20Maharashtra%2C%20India',
   },
 ];
 
@@ -40,12 +40,12 @@ const socialLinks = [
   {
     icon: IconBrandInstagram,
     label: 'Instagram',
-    href: '#',
+    href: 'https://instagram.com/preetytwist',
   },
   {
     icon: IconBrandWhatsapp,
     label: 'WhatsApp',
-    href: '#',
+    href: 'https://wa.me/919876543210',
   },
 ];
 
@@ -61,10 +61,20 @@ export default function ContactPage() {
     subject: '',
     message: '',
   });
+  const [status, setStatus] = useState<'idle' | 'sent'>('idle');
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
+    setStatus('idle');
+    setError(null);
+
+    if (!/^[\w.%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i.test(formData.email)) {
+      setError('Enter a valid email address.');
+      return;
+    }
+
+    setStatus('sent');
   };
 
   const handleChange = (
@@ -83,9 +93,8 @@ export default function ContactPage() {
         title="Contact Us"
         description={(
           <>
-            We'd love to hear from you. Whether you have a question about our
-            collections, orders, or anything else - our team is ready to answer all
-            your questions.
+            Ask about a piece, a custom color, or an order already in motion.
+            We usually reply within one working day.
           </>
         )}
       />
@@ -101,7 +110,7 @@ export default function ContactPage() {
         >
           <div>
             <h2 className="font-playfair text-2xl md:text-3xl font-light mb-8">
-              Reach Out
+              Reach out
             </h2>
 
             <div className="space-y-6">
@@ -146,7 +155,7 @@ export default function ContactPage() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center w-12 h-12 rounded-full border border-border bg-card/50 hover:border-accent hover:bg-accent hover:text-white text-foreground transition-all duration-300"
+                  className="flex items-center justify-center w-12 h-12 rounded-full border border-border bg-card/50 hover:border-accent hover:bg-accent hover:text-white text-foreground transition-all duration-300 active:scale-95"
                   aria-label={social.label}
                 >
                   <social.icon size={20} />
@@ -165,10 +174,20 @@ export default function ContactPage() {
         >
           <div className="bg-card/50 backdrop-blur-sm border border-border rounded-xl p-8 md:p-10">
             <h2 className="font-playfair text-2xl md:text-3xl font-light mb-8">
-              Send a Message
+              Send a note
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+              {status === 'sent' && (
+                <div className="rounded-2xl border border-accent/25 bg-accent/8 px-5 py-4 text-sm text-text-primary">
+                  Your message is ready. Email us directly at hello@preetytwist.com and include your preferred piece or order number.
+                </div>
+              )}
+              {error && (
+                <div className="rounded-2xl border border-destructive/25 bg-destructive/8 px-5 py-4 text-sm text-destructive">
+                  {error}
+                </div>
+              )}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="name" className="block text-xs uppercase tracking-widest text-muted-foreground mb-2">
@@ -180,7 +199,7 @@ export default function ContactPage() {
                     type="text"
                     value={formData.name}
                     onChange={handleChange}
-                    placeholder="Your name"
+                    placeholder="Anika Rao"
                     required
                     className="bg-background/50 border-border focus:border-accent focus:ring-accent/20"
                   />
@@ -195,7 +214,8 @@ export default function ContactPage() {
                     type="email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="your@email.com"
+                    placeholder="anika@example.com"
+                    aria-invalid={Boolean(error)}
                     required
                     className="bg-background/50 border-border focus:border-accent focus:ring-accent/20"
                   />
@@ -212,7 +232,7 @@ export default function ContactPage() {
                   type="text"
                   value={formData.subject}
                   onChange={handleChange}
-                  placeholder="How can we help?"
+                  placeholder="Custom pearl bow for 12 August"
                   required
                   className="bg-background/50 border-border focus:border-accent focus:ring-accent/20"
                 />
@@ -227,7 +247,7 @@ export default function ContactPage() {
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
-                  placeholder="Tell us more..."
+                  placeholder="Tell us which piece, date, color, or order number we should look at."
                   required
                   rows={5}
                   className="bg-background/50 border-border focus:border-accent focus:ring-accent/20 resize-none"
@@ -239,7 +259,7 @@ export default function ContactPage() {
                 className="group w-full h-14 bg-accent hover:bg-accent/90 text-white rounded-full font-montserrat uppercase tracking-[0.15em] text-sm font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-accent/25"
               >
                 <span className="flex items-center justify-center gap-3">
-                  Send Message
+                  Send note
                   <IconSend size={18} className="group-hover:translate-x-1 transition-transform" />
                 </span>
               </Button>

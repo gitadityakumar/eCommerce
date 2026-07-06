@@ -6,8 +6,32 @@ import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Preety Twist',
-  description: 'An e-commerce platform for Hair Bows',
+  metadataBase: new URL('https://preetytwist.com'),
+  title: {
+    default: 'Preety Twist | Editorial hair accessories',
+    template: '%s | Preety Twist',
+  },
+  description: 'Small-batch hair bows and occasion accessories made with velvet, silk, pearls, and archival trims.',
+  openGraph: {
+    title: 'Preety Twist | Editorial hair accessories',
+    description: 'Small-batch hair bows and occasion accessories made with velvet, silk, pearls, and archival trims.',
+    siteName: 'Preety Twist',
+    type: 'website',
+    images: [
+      {
+        url: '/readme/banner.png',
+        width: 1200,
+        height: 630,
+        alt: 'Preety Twist editorial accessories campaign',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Preety Twist | Editorial hair accessories',
+    description: 'Small-batch hair bows and occasion accessories made with velvet, silk, pearls, and archival trims.',
+    images: ['/readme/banner.png'],
+  },
 };
 
 export default function RootShell({
@@ -18,6 +42,7 @@ export default function RootShell({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={appFontClassName}>
+        <a href="#main-content" className="skip-link">Skip to content</a>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -25,7 +50,9 @@ export default function RootShell({
           disableTransitionOnChange
         >
           <AuthProvider>
-            {children}
+            <div id="main-content">
+              {children}
+            </div>
           </AuthProvider>
           <Toaster richColors closeButton />
         </ThemeProvider>

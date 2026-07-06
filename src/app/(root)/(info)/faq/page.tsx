@@ -302,7 +302,7 @@ export default function FAQPage() {
               className="h-12 px-8 border-border hover:border-accent rounded-full font-montserrat uppercase tracking-widest text-xs font-semibold transition-all duration-300"
             >
               <a
-                href="#"
+                href="mailto:hello@preetytwist.com"
                 target="_blank"
                 rel="noopener noreferrer"
               >

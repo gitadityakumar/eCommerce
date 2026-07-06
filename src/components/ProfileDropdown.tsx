@@ -79,7 +79,9 @@ export function ProfileDropdown() {
       <DropdownMenuContent className="w-72 mt-2 p-0 rounded-2xl border-border-subtle bg-background/95 backdrop-blur-md shadow-soft animate-in fade-in-0 zoom-in-95 slide-in-from-top-2" align="end" forceMount>
         {/* Header Section */}
         <div className="p-6 pb-4">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-4">Welcome back</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-4">
+            {isAuthenticated ? 'Welcome back' : 'Guest settings'}
+          </p>
           <div className="flex items-center gap-4">
             <Avatar className="h-12 w-12 border border-border-subtle">
               <AvatarImage src={user?.image ?? undefined} alt={user?.name ?? 'Avatar'} />
@@ -92,7 +94,7 @@ export function ProfileDropdown() {
                 {isAuthenticated ? (user?.name ?? 'Valued Customer') : 'Guest User'}
               </p>
               <p className="text-[11px] text-text-secondary font-light truncate">
-                {isAuthenticated ? (user?.email ?? '') : 'Access exclusive collections'}
+                {isAuthenticated ? (user?.email ?? '') : 'Choose your theme or sign in'}
               </p>
             </div>
           </div>
@@ -109,35 +111,39 @@ export function ProfileDropdown() {
           </>
         )}
 
-        <DropdownMenuSeparator className="bg-border-subtle opacity-50" />
+        {isAuthenticated && (
+          <>
+            <DropdownMenuSeparator className="bg-border-subtle opacity-50" />
 
-        {/* Menu Actions */}
-        <DropdownMenuGroup className="p-2">
-          <Link href="/profile">
-            <DropdownMenuItem className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer hover:bg-accent/5 focus:bg-accent/5 transition-colors group">
-              <User size={18} className="text-text-secondary group-hover:text-accent transition-colors" />
-              <span className="text-sm font-light text-text-primary tracking-wide group-hover:text-accent transition-colors">My Profile</span>
-            </DropdownMenuItem>
-          </Link>
-          <Link href="/my-orders">
-            <DropdownMenuItem className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer hover:bg-accent/5 focus:bg-accent/5 transition-colors group">
-              <Package size={18} className="text-text-secondary group-hover:text-accent transition-colors" />
-              <span className="text-sm font-light text-text-primary tracking-wide group-hover:text-accent transition-colors">My Orders</span>
-            </DropdownMenuItem>
-          </Link>
-          <Link href="/wishlist">
-            <DropdownMenuItem className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer hover:bg-accent/5 focus:bg-accent/5 transition-colors group">
-              <Heart size={18} className="text-text-secondary group-hover:text-accent transition-colors" />
-              <span className="text-sm font-light text-text-primary tracking-wide group-hover:text-accent transition-colors">Wishlist</span>
-            </DropdownMenuItem>
-          </Link>
-          <Link href="/profile/addresses">
-            <DropdownMenuItem className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer hover:bg-accent/5 focus:bg-accent/5 transition-colors group">
-              <MapPin size={18} className="text-text-secondary group-hover:text-accent transition-colors" />
-              <span className="text-sm font-light text-text-primary tracking-wide group-hover:text-accent transition-colors">Addresses</span>
-            </DropdownMenuItem>
-          </Link>
-        </DropdownMenuGroup>
+            {/* Menu Actions */}
+            <DropdownMenuGroup className="p-2">
+              <Link href="/profile">
+                <DropdownMenuItem className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer hover:bg-accent/5 focus:bg-accent/5 transition-colors group">
+                  <User size={18} className="text-text-secondary group-hover:text-accent transition-colors" />
+                  <span className="text-sm font-light text-text-primary tracking-wide group-hover:text-accent transition-colors">My Profile</span>
+                </DropdownMenuItem>
+              </Link>
+              <Link href="/my-orders">
+                <DropdownMenuItem className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer hover:bg-accent/5 focus:bg-accent/5 transition-colors group">
+                  <Package size={18} className="text-text-secondary group-hover:text-accent transition-colors" />
+                  <span className="text-sm font-light text-text-primary tracking-wide group-hover:text-accent transition-colors">My Orders</span>
+                </DropdownMenuItem>
+              </Link>
+              <Link href="/wishlist">
+                <DropdownMenuItem className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer hover:bg-accent/5 focus:bg-accent/5 transition-colors group">
+                  <Heart size={18} className="text-text-secondary group-hover:text-accent transition-colors" />
+                  <span className="text-sm font-light text-text-primary tracking-wide group-hover:text-accent transition-colors">Wishlist</span>
+                </DropdownMenuItem>
+              </Link>
+              <Link href="/profile/addresses">
+                <DropdownMenuItem className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer hover:bg-accent/5 focus:bg-accent/5 transition-colors group">
+                  <MapPin size={18} className="text-text-secondary group-hover:text-accent transition-colors" />
+                  <span className="text-sm font-light text-text-primary tracking-wide group-hover:text-accent transition-colors">Addresses</span>
+                </DropdownMenuItem>
+              </Link>
+            </DropdownMenuGroup>
+          </>
+        )}
 
         <DropdownMenuSeparator className="bg-border-subtle opacity-50" />
 

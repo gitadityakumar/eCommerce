@@ -22,7 +22,7 @@ interface PasswordToggleButtonProps {
 
 export function AuthIdentityHeader() {
   return (
-    <div className="flex items-center justify-between border-b border-border-subtle pb-6">
+    <div className="flex items-center justify-between border-b border-border-subtle pb-4 xl:pb-5">
       <div className="flex items-center gap-4">
         <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center border border-accent/20">
           <MessageSquare className="w-5 h-5 text-accent" />
@@ -40,7 +40,7 @@ export function AuthIdentityHeader() {
 export function AuthHeading({ title, description }: AuthHeadingProps) {
   return (
     <div className="space-y-3">
-      <h1 className="text-4xl font-light text-text-primary font-playfair tracking-tight leading-none italic">
+      <h1 className="text-3xl font-light text-text-primary font-playfair tracking-tight leading-none italic xl:text-4xl">
         {title}
       </h1>
       <p className="text-text-secondary font-light text-sm tracking-wide">{description}</p>

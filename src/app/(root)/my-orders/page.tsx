@@ -21,11 +21,16 @@ export default function Page() {
   return (
     <Suspense
       fallback={(
-        <div className="container max-w-6xl mx-auto py-20 md:py-32 px-4 flex flex-col items-center justify-center min-h-[60vh] gap-4">
-          <div className="w-12 h-12 border-4 border-accent/20 border-t-accent rounded-full animate-spin" />
-          <p className="font-montserrat text-[10px] font-bold tracking-[0.2em] uppercase text-text-secondary animate-pulse">
-            Authenticating your session…
-          </p>
+        <div className="container max-w-6xl mx-auto py-20 md:py-32 px-4 min-h-[60vh]">
+          <div className="mb-10 h-10 w-56 rounded-full bg-surface-variant animate-pulse" />
+          <div className="space-y-5">
+            {[0, 1, 2].map(item => (
+              <div key={item} className="rounded-3xl bg-surface p-6 shadow-soft">
+                <div className="mb-5 h-5 w-1/3 rounded-full bg-surface-variant animate-pulse" />
+                <div className="h-4 w-2/3 rounded-full bg-surface-variant animate-pulse" />
+              </div>
+            ))}
+          </div>
         </div>
       )}
     >

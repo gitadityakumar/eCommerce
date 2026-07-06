@@ -4,8 +4,8 @@ import { IconSparkles } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { getCollections } from '@/actions/collections';
 import { MarketingHero, MarketingPageShell } from '@/components/marketing-page-shell';
+import { getStorefrontCollections } from '@/lib/actions/storefront';
 
 interface Collection {
   id: string;
@@ -26,7 +26,7 @@ export default function CollectionsPage() {
 
   useEffect(() => {
     async function fetchCollections() {
-      const result = await getCollections();
+      const result = await getStorefrontCollections();
       if (result.success && result.data) {
         setCollections(result.data);
       }
@@ -51,13 +51,12 @@ export default function CollectionsPage() {
       {/* Collections Grid */}
       {loading
         ? (
-            <div className="flex items-center justify-center py-20">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-              >
-                <IconSparkles size={32} className="text-accent" />
-              </motion.div>
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3" aria-label="Loading collections">
+              {[0, 1, 2].map(item => (
+                <div key={item} className="h-80 overflow-hidden rounded-[1.75rem] bg-surface shadow-soft">
+                  <div className="h-full animate-pulse bg-linear-to-br from-surface-variant via-background to-surface-variant" />
+                </div>
+              ))}
             </div>
           )
         : collections.length === 0
@@ -89,7 +88,7 @@ export default function CollectionsPage() {
                       href={`/products?collection=${collection.slug}`}
                       className="group block"
                     >
-                      <div className="relative h-80 rounded-xl overflow-hidden bg-card/50 backdrop-blur-sm border border-border hover:border-accent/30 transition-all duration-500">
+                      <div className="relative h-80 overflow-hidden rounded-[1.75rem] bg-surface shadow-soft transition-all duration-500 hover:-translate-y-1 hover:shadow-lifted">
                         {/* Gradient Background */}
                         <div className="absolute inset-0 bg-linear-to-br from-accent/5 via-transparent to-primary/5 group-hover:from-accent/10 group-hover:to-primary/10 transition-all duration-500" />
 
@@ -146,7 +145,7 @@ export default function CollectionsPage() {
           href="/products"
           className="inline-flex items-center gap-3 px-8 py-4 bg-accent hover:bg-accent/90 text-white rounded-full font-montserrat uppercase tracking-[0.15em] text-sm font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-accent/25"
         >
-          View All Products
+          View all pieces
           <IconSparkles size={18} />
         </Link>
       </motion.div>

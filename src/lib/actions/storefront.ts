@@ -1,13 +1,16 @@
 'use server';
 
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
+import { unstable_noStore as noStore } from 'next/cache';
 import { db } from '@/lib/db';
 import {
   brands,
   categories,
+  collections,
   colors,
   genders,
   inventoryLevels,
+  productCollections,
   productImages,
   products,
   productVariants,
@@ -15,6 +18,30 @@ import {
   sizes,
 } from '@/lib/db/schema';
 import { normalizeImageUrl } from '@/lib/images';
+
+export async function getStorefrontCollections() {
+  noStore();
+
+  try {
+    const data = await db.select({
+      id: collections.id,
+      name: collections.name,
+      slug: collections.slug,
+      createdAt: collections.createdAt,
+      productCount: sql<number>`count(${productCollections.id})::int`,
+    })
+      .from(collections)
+      .leftJoin(productCollections, eq(collections.id, productCollections.collectionId))
+      .groupBy(collections.id)
+      .orderBy(collections.createdAt);
+
+    return { success: true, data };
+  }
+  catch (error) {
+    console.error('[getStorefrontCollections] Error fetching collections:', error);
+    return { success: false, error: 'Failed to fetch collections' };
+  }
+}
 
 export async function getStorefrontProduct(productId: string) {
   try {
