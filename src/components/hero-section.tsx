@@ -45,7 +45,7 @@ export default function HeroSection() {
         <div
           className="absolute inset-0 bg-cover transition-all duration-700 md:hidden"
           style={{
-            backgroundImage: `url('https://ik.imagekit.io/nq9atqhjb/hero-mobile.png?tr=w-1080,f-webp')`,
+            backgroundImage: `url('https://cdn.100xadi.com/assets/ecom-hero-mobile-bg.webp')`,
             backgroundPosition: '30% 30%',
           }}
         />
@@ -53,7 +53,7 @@ export default function HeroSection() {
         <div
           className="absolute inset-0 bg-center bg-cover transition-all duration-700 hidden md:block"
           style={{
-            backgroundImage: `url('https://ik.imagekit.io/nq9atqhjb/Generated%20Image%20November%2019,%202025%20-%2011_56AM.png?tr=w-2912,h-1632,f-webp')`,
+            backgroundImage: `url('https://cdn.100xadi.com/assets/ecom-hero-bg-desktop.webp')`,
           }}
         />
         {/* 2. Responsive Overlays */}

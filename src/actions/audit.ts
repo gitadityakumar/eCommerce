@@ -1,3 +1,4 @@
+'use server';
 import { and, desc, eq } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth/guards';
 import { db } from '@/lib/db';

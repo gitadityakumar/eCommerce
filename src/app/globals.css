@@ -153,7 +153,6 @@
 }
 
 @theme {
-  --bg-hero: url(https://ik.imagekit.io/nq9atqhjb/upscaled-bg.jpg?updatedAt=1761907462485);
 }
 :root {
   --radius: 0.625rem;
@@ -244,7 +243,6 @@
   content: '';
   position: absolute;
   inset: 0;
-  background-image: var(--bg-hero);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
