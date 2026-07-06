@@ -16,7 +16,7 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body className={`${appFontClassName} min-h-screen flex flex-col items-center justify-center p-4 bg-background text-foreground text-center`}>
         <div className="max-w-md w-full space-y-8">
           <div className="space-y-4">

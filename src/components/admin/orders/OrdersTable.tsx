@@ -2,7 +2,8 @@
 
 import type { getOrders } from '@/actions/orders';
 import { format } from 'date-fns';
-import { ChevronDown, Search } from 'lucide-react';
+import { ChevronDown, Package, Search } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
+import { formatINR } from '@/lib/currency';
+import { normalizeImageUrl } from '@/lib/images';
 import { cn } from '@/lib/utils';
 
 interface OrdersTableProps {
@@ -166,9 +169,10 @@ export function OrdersTable({ orders }: OrdersTableProps) {
           <TableHeader>
             <TableRow className="bg-surface/50 border-b border-border-subtle hover:bg-surface/50">
               <TableHead className="w-14">
-                <Checkbox className="rounded-md border-border-subtle data-[state=checked]:bg-accent data-[state=checked]:border-accent" />
+                <Checkbox className="rounded-md border-border-subtle data-checked:bg-accent data-checked:border-accent" />
               </TableHead>
               <TableHead className="text-[10px] font-bold tracking-widest uppercase text-text-secondary py-5">Order Reference</TableHead>
+              <TableHead className="text-[10px] font-bold tracking-widest uppercase text-text-secondary py-5">Items</TableHead>
               <TableHead className="text-[10px] font-bold tracking-widest uppercase text-text-secondary py-5">Date</TableHead>
               <TableHead className="text-[10px] font-bold tracking-widest uppercase text-text-secondary py-5">Client</TableHead>
               <TableHead className="text-[10px] font-bold tracking-widest uppercase text-text-secondary py-5">Shipment</TableHead>
@@ -192,6 +196,9 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                         #
                         {10000 + orders.length - index}
                       </TableCell>
+                      <TableCell>
+                        <OrderItemThumbnails items={order.items} priorityFirst={index === 0} />
+                      </TableCell>
                       <TableCell className="text-xs font-light text-text-secondary">
                         {format(new Date(order.createdAt), 'MMM d, yyyy')}
                       </TableCell>
@@ -209,16 +216,14 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                         </span>
                       </TableCell>
                       <TableCell className="text-right font-medium text-text-primary font-playfair italic">
-                        $
-                        {' '}
-                        {Number(order.totalAmount).toFixed(2)}
+                        {formatINR(Number(order.totalAmount))}
                       </TableCell>
                     </TableRow>
                   ))
                 )
               : (
                   <TableRow>
-                    <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
+                    <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">
                       No orders found.
                     </TableCell>
                   </TableRow>
@@ -248,6 +253,70 @@ export function OrdersTable({ orders }: OrdersTableProps) {
           </span>
         </div>
       </div>
+    </div>
+  );
+}
+
+interface OrderItemLike {
+  variant?: {
+    product?: {
+      name?: string | null;
+      images?: { url?: string | null }[];
+    } | null;
+  } | null;
+}
+
+function OrderItemThumbnails({ items, priorityFirst = false }: { items?: OrderItemLike[]; priorityFirst?: boolean }) {
+  const list = items ?? [];
+  const visible = list.slice(0, 3);
+  const overflow = Math.max(0, list.length - visible.length);
+
+  if (list.length === 0) {
+    return (
+      <div className="inline-flex items-center gap-2 text-text-secondary/60">
+        <Package className="size-3.5" />
+        <span className="text-[10px] font-bold uppercase tracking-widest">No items</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center -space-x-2">
+      {visible.map((item, idx) => {
+        const rawUrl = item.variant?.product?.images?.[0]?.url;
+        const url = normalizeImageUrl(rawUrl);
+        const alt = item.variant?.product?.name || 'Product';
+        return (
+          <div
+            key={idx}
+            className="relative size-9 rounded-lg overflow-hidden border border-border-subtle bg-surface ring-2 ring-background shadow-sm"
+            title={alt}
+          >
+            {url
+              ? (
+                  <Image
+                    src={url}
+                    alt={alt}
+                    fill
+                    sizes="36px"
+                    priority={priorityFirst && idx === 0}
+                    className="object-cover"
+                  />
+                )
+              : (
+                  <div className="flex size-full items-center justify-center bg-muted/30 text-text-secondary/50">
+                    <Package className="size-3.5" />
+                  </div>
+                )}
+          </div>
+        );
+      })}
+      {overflow > 0 && (
+        <div className="relative z-10 flex size-9 items-center justify-center rounded-lg border border-border-subtle bg-surface text-[10px] font-bold tracking-widest text-text-secondary ring-2 ring-background shadow-sm">
+          +
+          {overflow}
+        </div>
+      )}
     </div>
   );
 }
