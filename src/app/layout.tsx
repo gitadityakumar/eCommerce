@@ -42,7 +42,9 @@ export default function RootShell({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={appFontClassName}>
-        <a href="#main-content" className="skip-link">Skip to content</a>
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[1000] focus:rounded-full focus:bg-foreground focus:px-4 focus:py-2 focus:text-xs focus:font-semibold focus:uppercase focus:tracking-[0.12em] focus:text-background">
+          Skip to content
+        </a>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
