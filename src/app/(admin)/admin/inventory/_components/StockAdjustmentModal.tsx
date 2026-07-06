@@ -198,7 +198,11 @@ export function StockAdjustmentModal({
               </div>
             )}
             <DialogFooter>
-              <Button type="submit" disabled={loading} className="w-full">
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-accent text-white hover:bg-accent/90 rounded-full font-bold tracking-widest uppercase text-[10px] shadow-soft shadow-accent/20 h-11 transition-all hover:-translate-y-0.5 active:scale-95"
+              >
                 {loading ? 'Adjusting...' : 'Confirm Adjustment'}
               </Button>
             </DialogFooter>

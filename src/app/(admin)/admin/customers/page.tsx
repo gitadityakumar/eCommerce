@@ -77,7 +77,12 @@ export default async function CustomersPage({
                 <SelectItem value="false">Unverified</SelectItem>
               </SelectContent>
             </Select>
-            <Button type="submit">Filter</Button>
+            <Button
+              type="submit"
+              className="bg-accent text-white hover:bg-accent/90 font-bold tracking-widest uppercase text-[10px] shadow-soft shadow-accent/20 transition-all hover:-translate-y-0.5 active:scale-95"
+            >
+              Filter
+            </Button>
             <Button variant="ghost" asChild>
               <Link href="/admin/customers">Reset</Link>
             </Button>

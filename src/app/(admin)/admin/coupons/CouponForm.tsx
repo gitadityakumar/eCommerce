@@ -339,7 +339,7 @@ export function CouponForm() {
               variant="outline"
               onClick={() => router.back()}
               disabled={isPending}
-              className="h-12 px-8 rounded-full border-border-subtle text-text-secondary hover:text-accent font-bold tracking-widest uppercase text-[10px] transition-all"
+              className="h-12 px-8 rounded-full border-border-subtle text-text-secondary hover:bg-accent hover:text-accent-foreground hover:border-accent font-bold tracking-widest uppercase text-[10px] transition-all"
             >
               Cancel
             </Button>
