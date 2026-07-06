@@ -15,6 +15,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               src="https://cdn.100xadi.com/assets/authpage.webp"
               alt="Authentication"
               fill
+              sizes="(min-width: 1024px) 50vw, 0vw"
               className="object-cover object-[50%_18%] transition-transform duration-10000 hover:scale-[1.02]"
               priority
             />

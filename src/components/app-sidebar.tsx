@@ -141,7 +141,7 @@ export function AppSidebar({
   const navUser = {
     name: user.name || user.email,
     email: user.email,
-    avatar: user.image || '/avatars/admin.jpg',
+    avatar: user.image || '',
   };
 
   return (

@@ -86,7 +86,7 @@ export default async function ProductsPage({
               )
             : (
                 <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-                  {products.map((p) => {
+                  {products.map((p, index) => {
                     const price
                       = p.minPrice !== null && p.maxPrice !== null && p.minPrice !== p.maxPrice
                         ? `₹${p.minPrice.toFixed(0)} - ₹${p.maxPrice.toFixed(0)}`
@@ -101,6 +101,7 @@ export default async function ProductsPage({
                         imageSrc={p.imageUrl ?? '/shoes/shoe-1.jpg'}
                         price={price}
                         href={`/products/${p.id}`}
+                        priority={index === 0}
                       />
                     );
                   })}

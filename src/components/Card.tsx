@@ -11,6 +11,7 @@ interface CardProps {
   imageAlt?: string;
   price?: string | number;
   href?: string;
+  priority?: boolean;
 
   className?: string;
 }
@@ -24,6 +25,7 @@ export default function Card({
   imageAlt = title,
   price,
   href,
+  priority = false,
 
   className = '',
 }: CardProps) {
@@ -40,6 +42,7 @@ export default function Card({
           alt={imageAlt}
           fill
           sizes="(min-width: 1280px) 360px, (min-width: 1024px) 300px, (min-width: 640px) 45vw, 90vw"
+          priority={priority}
           className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-90 dark:opacity-80 group-hover:opacity-100"
         />
       </div>
