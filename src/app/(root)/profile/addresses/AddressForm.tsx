@@ -279,7 +279,7 @@ export function AddressForm({ onSuccess }: AddressFormProps) {
                 <Switch
                   checked={field.value}
                   onCheckedChange={field.onChange}
-                  className="data-[state=checked]:bg-accent shadow-soft"
+                  className="data-checked:bg-accent shadow-soft"
                 />
               </FormControl>
             </FormItem>

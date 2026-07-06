@@ -24,8 +24,8 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Slot } from '@radix-ui/react-slot';
 import * as React from 'react';
+import { Slot } from '@/components/ui/slot';
 import { cn } from '@/lib/utils';
 
 // Sortable Item Context
@@ -217,7 +217,7 @@ function SortableItemHandle({ asChild, className, children, cursor = true }: Sor
       data-dragging={isDragging}
       data-disabled={disabled}
       {...listeners}
-      className={cn(cursor && (isDragging ? '!cursor-grabbing' : '!cursor-grab'), className)}
+      className={cn(cursor && (isDragging ? 'cursor-grabbing!' : 'cursor-grab!'), className)}
     >
       {children}
     </Comp>

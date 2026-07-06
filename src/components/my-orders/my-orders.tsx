@@ -273,10 +273,10 @@ export default function OrderManagement() {
             className="w-full lg:w-auto"
           >
             <TabsList className="bg-surface/30 border border-border-subtle p-1.5 rounded-full h-12 inline-flex items-center">
-              <TabsTrigger value="all" className="rounded-full h-9 px-6 font-montserrat text-[10px] font-bold tracking-widest uppercase transition-all duration-300 data-[state=active]:bg-white dark:data-[state=active]:bg-accent/20 dark:data-[state=active]:text-accent data-[state=active]:shadow-sm">All Orders</TabsTrigger>
-              <TabsTrigger value="active" className="rounded-full h-9 px-6 font-montserrat text-[10px] font-bold tracking-widest uppercase transition-all duration-300 data-[state=active]:bg-white dark:data-[state=active]:bg-accent/20 dark:data-[state=active]:text-accent data-[state=active]:shadow-sm">In Progress</TabsTrigger>
-              <TabsTrigger value="delivered" className="rounded-full h-9 px-6 font-montserrat text-[10px] font-bold tracking-widest uppercase transition-all duration-300 data-[state=active]:bg-white dark:data-[state=active]:bg-accent/20 dark:data-[state=active]:text-accent data-[state=active]:shadow-sm">Delivered</TabsTrigger>
-              <TabsTrigger value="returns" className="rounded-full h-9 px-6 font-montserrat text-[10px] font-bold tracking-widest uppercase transition-all duration-300 data-[state=active]:bg-white dark:data-[state=active]:bg-accent/20 dark:data-[state=active]:text-accent data-[state=active]:shadow-sm">Returns</TabsTrigger>
+              <TabsTrigger value="all" className="rounded-full h-9 px-6 font-montserrat text-[10px] font-bold tracking-widest uppercase transition-all duration-300 data-active:bg-white dark:data-active:bg-accent/20 dark:data-active:text-accent data-active:shadow-sm">All Orders</TabsTrigger>
+              <TabsTrigger value="active" className="rounded-full h-9 px-6 font-montserrat text-[10px] font-bold tracking-widest uppercase transition-all duration-300 data-active:bg-white dark:data-active:bg-accent/20 dark:data-active:text-accent data-active:shadow-sm">In Progress</TabsTrigger>
+              <TabsTrigger value="delivered" className="rounded-full h-9 px-6 font-montserrat text-[10px] font-bold tracking-widest uppercase transition-all duration-300 data-active:bg-white dark:data-active:bg-accent/20 dark:data-active:text-accent data-active:shadow-sm">Delivered</TabsTrigger>
+              <TabsTrigger value="returns" className="rounded-full h-9 px-6 font-montserrat text-[10px] font-bold tracking-widest uppercase transition-all duration-300 data-active:bg-white dark:data-active:bg-accent/20 dark:data-active:text-accent data-active:shadow-sm">Returns</TabsTrigger>
             </TabsList>
           </Tabs>
 

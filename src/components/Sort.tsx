@@ -46,7 +46,7 @@ export default function Sort() {
             <SelectItem
               key={o.value}
               value={o.value}
-              className="rounded-xl px-4 py-3 text-sm text-text-primary transition-colors focus:bg-accent/10 focus:text-accent data-[highlighted]:bg-accent/10 data-[highlighted]:text-accent data-[state=checked]:bg-accent data-[state=checked]:text-white"
+              className="rounded-xl px-4 py-3 text-sm text-text-primary transition-colors focus:bg-accent/10 focus:text-accent data-[highlighted]:bg-accent/10 data-[highlighted]:text-accent data-checked:bg-accent data-checked:text-white"
             >
               {o.label}
             </SelectItem>

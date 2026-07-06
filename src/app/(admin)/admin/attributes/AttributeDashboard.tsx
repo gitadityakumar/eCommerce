@@ -38,23 +38,23 @@ export function AttributeDashboard({
 
       <Tabs defaultValue="colors" className="space-y-8">
         <TabsList className="flex h-14 items-center justify-start gap-1 bg-surface/50 border border-border-subtle p-1 rounded-2xl w-fit overflow-hidden">
-          <TabsTrigger value="colors" className="flex items-center gap-2 px-6 h-full rounded-xl data-[state=active]:bg-surface data-[state=active]:text-accent data-[state=active]:shadow-soft font-bold tracking-widest uppercase text-[10px] transition-all">
+          <TabsTrigger value="colors" className="flex items-center gap-2 px-6 h-full rounded-xl data-active:bg-surface data-active:text-accent data-active:shadow-soft font-bold tracking-widest uppercase text-[10px] transition-all">
             <IconPalette size={14} strokeWidth={2.5} />
             Spectrum
           </TabsTrigger>
-          <TabsTrigger value="sizes" className="flex items-center gap-2 px-6 h-full rounded-xl data-[state=active]:bg-surface data-[state=active]:text-accent data-[state=active]:shadow-soft font-bold tracking-widest uppercase text-[10px] transition-all">
+          <TabsTrigger value="sizes" className="flex items-center gap-2 px-6 h-full rounded-xl data-active:bg-surface data-active:text-accent data-active:shadow-soft font-bold tracking-widest uppercase text-[10px] transition-all">
             <IconRuler size={14} strokeWidth={2.5} />
             Scale
           </TabsTrigger>
-          <TabsTrigger value="genders" className="flex items-center gap-2 px-6 h-full rounded-xl data-[state=active]:bg-surface data-[state=active]:text-accent data-[state=active]:shadow-soft font-bold tracking-widest uppercase text-[10px] transition-all">
+          <TabsTrigger value="genders" className="flex items-center gap-2 px-6 h-full rounded-xl data-active:bg-surface data-active:text-accent data-active:shadow-soft font-bold tracking-widest uppercase text-[10px] transition-all">
             <IconGenderIntergender size={14} strokeWidth={2.5} />
             Archetype
           </TabsTrigger>
-          <TabsTrigger value="brands" className="flex items-center gap-2 px-6 h-full rounded-xl data-[state=active]:bg-surface data-[state=active]:text-accent data-[state=active]:shadow-soft font-bold tracking-widest uppercase text-[10px] transition-all">
+          <TabsTrigger value="brands" className="flex items-center gap-2 px-6 h-full rounded-xl data-active:bg-surface data-active:text-accent data-active:shadow-soft font-bold tracking-widest uppercase text-[10px] transition-all">
             <IconBuildingStore size={14} strokeWidth={2.5} />
             Houses
           </TabsTrigger>
-          <TabsTrigger value="options" className="flex items-center gap-2 px-6 h-full rounded-xl data-[state=active]:bg-surface data-[state=active]:text-accent data-[state=active]:shadow-soft font-bold tracking-widest uppercase text-[10px] transition-all">
+          <TabsTrigger value="options" className="flex items-center gap-2 px-6 h-full rounded-xl data-active:bg-surface data-active:text-accent data-active:shadow-soft font-bold tracking-widest uppercase text-[10px] transition-all">
             <IconSettings size={14} strokeWidth={2.5} />
             Refinements
           </TabsTrigger>

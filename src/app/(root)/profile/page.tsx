@@ -43,13 +43,13 @@ export default async function ProfilePage() {
         <TabsList className="bg-transparent border-b border-border-subtle w-full justify-start rounded-none h-auto p-0 mb-12 flex-nowrap overflow-x-auto scrollbar-hide">
           <TabsTrigger
             value="general"
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent data-[state=active]:text-accent px-8 py-4 text-[11px] uppercase tracking-[0.25em] font-bold transition-all duration-300"
+            className="rounded-none border-b-2 border-transparent data-active:border-accent data-active:bg-transparent data-active:text-accent px-8 py-4 text-[11px] uppercase tracking-[0.25em] font-bold transition-all duration-300"
           >
             General
           </TabsTrigger>
           <TabsTrigger
             value="security"
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent data-[state=active]:text-accent px-8 py-4 text-[11px] uppercase tracking-[0.25em] font-bold transition-all duration-300"
+            className="rounded-none border-b-2 border-transparent data-active:border-accent data-active:bg-transparent data-active:text-accent px-8 py-4 text-[11px] uppercase tracking-[0.25em] font-bold transition-all duration-300"
           >
             Security
           </TabsTrigger>

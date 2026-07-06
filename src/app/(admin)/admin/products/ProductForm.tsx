@@ -254,9 +254,9 @@ export function ProductForm({ categories, brands, genders, colors, sizes }: Prod
         <form onSubmit={form.handleSubmit(onSubmit, onFormError)} className="space-y-8">
           <Tabs defaultValue="general" className="w-full">
             <TabsList className="grid w-full grid-cols-3 mb-10 h-14 p-1 bg-surface/50 border border-border-subtle rounded-2xl">
-              <TabsTrigger value="general" className="rounded-xl data-[state=active]:bg-surface data-[state=active]:text-accent data-[state=active]:shadow-soft font-bold tracking-widest uppercase text-[10px]">General Info</TabsTrigger>
-              <TabsTrigger value="inventory" className="rounded-xl data-[state=active]:bg-surface data-[state=active]:text-accent data-[state=active]:shadow-soft font-bold tracking-widest uppercase text-[10px]">Inventory & Pricing</TabsTrigger>
-              <TabsTrigger value="media" className="rounded-xl data-[state=active]:bg-surface data-[state=active]:text-accent data-[state=active]:shadow-soft font-bold tracking-widest uppercase text-[10px]">Media</TabsTrigger>
+              <TabsTrigger value="general" className="rounded-xl data-active:bg-surface data-active:text-accent data-active:shadow-soft font-bold tracking-widest uppercase text-[10px]">General Info</TabsTrigger>
+              <TabsTrigger value="inventory" className="rounded-xl data-active:bg-surface data-active:text-accent data-active:shadow-soft font-bold tracking-widest uppercase text-[10px]">Inventory & Pricing</TabsTrigger>
+              <TabsTrigger value="media" className="rounded-xl data-active:bg-surface data-active:text-accent data-active:shadow-soft font-bold tracking-widest uppercase text-[10px]">Media</TabsTrigger>
             </TabsList>
 
             <TabsContent value="general" className="space-y-6">
