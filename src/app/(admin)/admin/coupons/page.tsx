@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function CouponsPage() {
   const user = await getCurrentUser();
-  if (!user || user.role !== 'admin') {
+  if (!user || (user.role !== 'admin' && user.role !== 'staff')) {
     redirect('/');
   }
 
@@ -17,6 +17,7 @@ export default async function CouponsPage() {
     <div className="p-6 max-w-7xl mx-auto">
       <CouponClient
         initialCoupons={coupons || []}
+        canManage={user.role === 'admin'}
       />
       {error && (
         <div className="rounded-md bg-destructive/15 p-4 text-destructive text-sm mt-4">

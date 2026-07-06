@@ -7,6 +7,7 @@ import { CustomerAddressCard } from '@/components/admin/customers/CustomerAddres
 import { CustomerManagementControls } from '@/components/admin/customers/CustomerManagementControls';
 import { CustomerProfileHeader } from '@/components/admin/customers/CustomerProfileHeader';
 import { Button } from '@/components/ui/button';
+import { getCurrentUser } from '@/lib/auth/actions';
 
 interface CustomerDetailsPageProps {
   params: Promise<{
@@ -16,6 +17,7 @@ interface CustomerDetailsPageProps {
 
 export default async function CustomerDetailsPage({ params }: CustomerDetailsPageProps) {
   const { id } = await params;
+  const user = await getCurrentUser();
   const customer = await getCustomerById(id);
 
   if (!customer) {
@@ -56,11 +58,13 @@ export default async function CustomerDetailsPage({ params }: CustomerDetailsPag
           />
         </div>
         <div className="space-y-8">
-          <CustomerManagementControls
-            userId={customer.id}
-            initialRole={customer.role}
-            initialVerified={customer.emailVerified}
-          />
+          {user?.role === 'admin' && (
+            <CustomerManagementControls
+              userId={customer.id}
+              initialRole={customer.role}
+              initialVerified={customer.emailVerified}
+            />
+          )}
           <CustomerAddressCard addresses={customer.addresses} />
         </div>
       </div>

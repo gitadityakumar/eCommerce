@@ -16,7 +16,7 @@ export default async function AdminLayout({
 }) {
   const user = await getCurrentUser();
 
-  if (!user || user.role !== 'admin') {
+  if (!user || (user.role !== 'admin' && user.role !== 'staff')) {
     redirect('/sign-in');
   }
 
@@ -29,7 +29,7 @@ export default async function AdminLayout({
         } as React.CSSProperties
       }
     >
-      <AppSidebar variant="inset" />
+      <AppSidebar user={user} variant="inset" />
       <SidebarInset className="bg-background transition-colors duration-500">
         <SiteHeader />
         <div className="flex flex-1 flex-col">

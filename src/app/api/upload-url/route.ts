@@ -1,6 +1,6 @@
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { requireAdmin, requireUser } from '@/lib/auth/guards';
+import { AuthorizationError, requireAdmin, requireUser } from '@/lib/auth/guards';
 import { r2 } from '@/lib/cfstorage/r2';
 import { checkRateLimit, rateLimitKey } from '@/lib/security/rate-limit';
 
@@ -60,6 +60,10 @@ export async function POST(req: Request) {
     });
   }
   catch (error) {
+    if (error instanceof AuthorizationError) {
+      return Response.json({ error: error.message }, { status: 403 });
+    }
+
     console.error('Error generating upload URL:', error);
     return Response.json({ error: 'Internal Server Error' }, { status: 500 });
   }

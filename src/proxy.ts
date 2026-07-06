@@ -12,8 +12,8 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL('/sign-in', request.url));
     }
 
-    if (session.user.role !== 'admin') {
-      // If user is logged in but not an admin, we redirect them back to home or a forbidden page
+    if (session.user.role !== 'admin' && session.user.role !== 'staff') {
+      // If user is logged in but not an admin/staff member, redirect them back home.
       // For now, redirecting to sign-in works as it will likely show they are already signed in or we can redirect to /
       return NextResponse.redirect(new URL('/', request.url));
     }

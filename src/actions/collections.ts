@@ -3,7 +3,7 @@
 import { eq, sql } from 'drizzle-orm';
 import { unstable_noStore as noStore, revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { getCurrentUser } from '@/lib/auth/actions';
+import { requireAdmin, requireStaff } from '@/lib/auth/guards';
 import { db } from '@/lib/db';
 import { auditLogs, collections, productCollections } from '@/lib/db/schema';
 import { insertCollectionSchema } from '@/lib/db/schema/collections';
@@ -22,10 +22,7 @@ function isCollectionSlugConflict(error: unknown) {
 }
 
 async function getAdminCollectionPayload(data: CollectionFormInput) {
-  const user = await getCurrentUser();
-  if (!user || user.role !== 'admin') {
-    return { success: false as const, error: 'Unauthorized. Admin access required.' };
-  }
+  const user = await requireAdmin();
 
   const validatedFields = collectionFormSchema.safeParse(data);
   if (!validatedFields.success) {
@@ -38,6 +35,7 @@ async function getAdminCollectionPayload(data: CollectionFormInput) {
 
 export async function getCollections() {
   noStore();
+  await requireStaff();
   try {
     const data = await db.select({
       id: collections.id,
@@ -61,6 +59,7 @@ export async function getCollections() {
 
 export async function getCollectionById(id: string) {
   noStore();
+  await requireStaff();
   try {
     const collection = await db.query.collections.findFirst({
       where: eq(collections.id, id),
@@ -196,10 +195,7 @@ export async function updateCollection(id: string, data: CollectionFormInput) {
 }
 
 export async function deleteCollection(id: string) {
-  const user = await getCurrentUser();
-  if (!user || user.role !== 'admin') {
-    return { success: false, error: 'Unauthorized. Admin access required.' };
-  }
+  const user = await requireAdmin();
 
   try {
     const oldCollection = await db.query.collections.findFirst({

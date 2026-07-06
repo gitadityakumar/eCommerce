@@ -4,15 +4,12 @@ import type { InsertCoupon } from '@/lib/db/schema/coupons';
 import { desc, eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { getCurrentUser } from '@/lib/auth/actions';
+import { requireAdmin, requireStaff } from '@/lib/auth/guards';
 import { db } from '@/lib/db';
 import { coupons, insertCouponSchema } from '@/lib/db/schema/coupons';
 
 export async function createCoupon(data: InsertCoupon) {
-  const user = await getCurrentUser();
-  if (!user || user.role !== 'admin') {
-    return { error: 'Unauthorized. Admin access required.' };
-  }
+  await requireAdmin();
 
   try {
     // Validate the data
@@ -51,10 +48,7 @@ export async function createCoupon(data: InsertCoupon) {
 }
 
 export async function getCoupons() {
-  const user = await getCurrentUser();
-  if (!user || user.role !== 'admin') {
-    return { error: 'Unauthorized', data: [] };
-  }
+  await requireStaff();
 
   try {
     const data = await db.query.coupons.findMany({
@@ -69,10 +63,7 @@ export async function getCoupons() {
 }
 
 export async function deleteCoupon(id: string) {
-  const user = await getCurrentUser();
-  if (!user || user.role !== 'admin') {
-    return { error: 'Unauthorized' };
-  }
+  await requireAdmin();
 
   try {
     await db.delete(coupons).where(eq(coupons.id, id));

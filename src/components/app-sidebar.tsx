@@ -1,5 +1,6 @@
 'use client';
 
+import type { Icon } from '@tabler/icons-react';
 import {
   IconActivity,
   IconArchive,
@@ -25,12 +26,27 @@ import {
   SidebarFooter,
 } from '@/components/ui/sidebar';
 
+type AdminRole = 'admin' | 'staff';
+
+interface AdminSidebarUser {
+  name?: string | null;
+  email: string;
+  image?: string | null;
+  role: string;
+}
+
+interface NavItem {
+  title: string;
+  url: string;
+  icon?: Icon;
+  roles?: AdminRole[];
+}
+
+function filterByRole(items: NavItem[], role: string) {
+  return items.filter(item => !item.roles || item.roles.includes(role as AdminRole));
+}
+
 const data = {
-  user: {
-    name: 'Admin User',
-    email: 'admin@preetytwist.com',
-    avatar: '/avatars/admin.jpg',
-  },
   quickLinks: [
     {
       title: 'Dashboard',
@@ -41,11 +57,13 @@ const data = {
       title: 'New Product',
       url: '/admin/products/new',
       icon: IconPlus,
+      roles: ['admin'],
     },
     {
       title: 'New Coupon',
       url: '/admin/coupons/new',
       icon: IconGift,
+      roles: ['admin'],
     },
   ],
   catalog: [
@@ -111,11 +129,21 @@ const data = {
       title: 'Setting',
       url: '/admin/settings',
       icon: IconSettings,
+      roles: ['admin'],
     },
   ],
-};
+} satisfies Record<string, NavItem[]>;
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({
+  user,
+  ...props
+}: React.ComponentProps<typeof Sidebar> & { user: AdminSidebarUser }) {
+  const navUser = {
+    name: user.name || user.email,
+    email: user.email,
+    avatar: user.image || '/avatars/admin.jpg',
+  };
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       {/* <SidebarHeader className="border-b border-sidebar-border/50 px-4 py-4">
@@ -139,15 +167,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader> */}
       <SidebarContent className="gap-0 py-2">
-        <NavMain label="Quick Links" items={data.quickLinks} />
-        <NavMain label="Catalog" items={data.catalog} />
-        <NavMain label="Sale" items={data.sale} />
-        <NavMain label="Customer" items={data.customer} />
-        <NavMain label="System" items={data.system} />
-        <NavMain label="Setting" items={data.setting} />
+        <NavMain label="Quick Links" items={filterByRole(data.quickLinks, user.role)} />
+        <NavMain label="Catalog" items={filterByRole(data.catalog, user.role)} />
+        <NavMain label="Sale" items={filterByRole(data.sale, user.role)} />
+        <NavMain label="Customer" items={filterByRole(data.customer, user.role)} />
+        <NavMain label="System" items={filterByRole(data.system, user.role)} />
+        <NavMain label="Setting" items={filterByRole(data.setting, user.role)} />
       </SidebarContent>
       <SidebarFooter className="border-t border-sidebar-border/50">
-        <NavUser user={data.user} />
+        <NavUser user={navUser} />
       </SidebarFooter>
     </Sidebar>
   );

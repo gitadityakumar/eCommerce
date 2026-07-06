@@ -32,7 +32,7 @@ interface Product {
   images?: { url: string; isPrimary: boolean }[];
 }
 
-const columns: ColumnDef<Product>[] = [
+const baseColumns: ColumnDef<Product>[] = [
   {
     accessorKey: 'name',
     header: 'Product',
@@ -88,22 +88,27 @@ const columns: ColumnDef<Product>[] = [
       </Badge>
     ),
   },
-  {
-    id: 'actions',
-    cell: ({ row }) => (
-      <RowActionsMenu
-        items={[
-          { label: 'Edit', href: `/admin/products/${row.original.id}` },
-          { label: 'Make a copy' },
-          { label: 'Delete', destructive: true, separatorBefore: true },
-        ]}
-      />
-    ),
-  },
 ];
 
-export function ProductTable({ data }: { data: Product[] }) {
+export function ProductTable({ canManage = false, data }: { canManage?: boolean; data: Product[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const columns = canManage
+    ? [
+        ...baseColumns,
+        {
+          id: 'actions',
+          cell: ({ row }) => (
+            <RowActionsMenu
+              items={[
+                { label: 'Edit', href: `/admin/products/${row.original.id}` },
+                { label: 'Make a copy' },
+                { label: 'Delete', destructive: true, separatorBefore: true },
+              ]}
+            />
+          ),
+        } satisfies ColumnDef<Product>,
+      ]
+    : baseColumns;
 
   const table = useReactTable({
     data,
@@ -121,12 +126,14 @@ export function ProductTable({ data }: { data: Product[] }) {
     <div className="flex flex-col gap-4 px-4 lg:px-6">
       <div className="flex items-center justify-between p-4">
         <h1 className="text-4xl font-light tracking-tighter text-text-primary font-playfair italic">Products</h1>
-        <Button asChild size="sm" className="bg-accent text-white hover:bg-accent/90 rounded-full px-6 font-bold tracking-widest uppercase text-[10px] shadow-soft shadow-accent/20 transition-all hover:-translate-y-0.5 active:scale-95">
-          <Link href="/admin/products/new" className="flex items-center gap-2">
-            <IconPlus className="size-3.5" />
-            Add Product
-          </Link>
-        </Button>
+        {canManage && (
+          <Button asChild size="sm" className="bg-accent text-white hover:bg-accent/90 rounded-full px-6 font-bold tracking-widest uppercase text-[10px] shadow-soft shadow-accent/20 transition-all hover:-translate-y-0.5 active:scale-95">
+            <Link href="/admin/products/new" className="flex items-center gap-2">
+              <IconPlus className="size-3.5" />
+              Add Product
+            </Link>
+          </Button>
+        )}
       </div>
       <AdminTableShell table={table} columnsLength={columns.length} emptyMessage="No products found." />
     </div>

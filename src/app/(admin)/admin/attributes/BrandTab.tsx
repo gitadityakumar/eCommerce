@@ -52,9 +52,10 @@ type FormValues = z.infer<typeof insertBrandSchema>;
 
 interface BrandTabProps {
   initialData: SelectBrand[];
+  canManage?: boolean;
 }
 
-export function BrandTab({ initialData }: BrandTabProps) {
+export function BrandTab({ canManage = false, initialData }: BrandTabProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -152,12 +153,14 @@ export function BrandTab({ initialData }: BrandTabProps) {
         searchPlaceholder="Search archival houses..."
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
-        onAdd={() => {
-          setEditingBrand(null);
-          form.reset({ name: '', slug: '', logoUrl: '' });
-          setIsOpen(true);
-        }}
-        addLabel="Instate House"
+        onAdd={canManage
+          ? () => {
+              setEditingBrand(null);
+              form.reset({ name: '', slug: '', logoUrl: '' });
+              setIsOpen(true);
+            }
+          : undefined}
+        addLabel={canManage ? 'Instate House' : undefined}
       />
 
       <div className="rounded-2xl border border-border-subtle bg-surface/50 overflow-hidden shadow-soft">
@@ -167,14 +170,14 @@ export function BrandTab({ initialData }: BrandTabProps) {
               <TableHead>Name</TableHead>
               <TableHead>Slug</TableHead>
               <TableHead>Logo</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              {canManage && <TableHead className="text-right">Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredData.length === 0
               ? (
                   <TableRow>
-                    <TableCell colSpan={4} className="h-24 text-center">
+                    <TableCell colSpan={canManage ? 4 : 3} className="h-24 text-center">
                       No brands found.
                     </TableCell>
                   </TableRow>
@@ -218,9 +221,11 @@ export function BrandTab({ initialData }: BrandTabProps) {
                               '—'
                             )}
                       </TableCell>
-                      <TableCell className="text-right">
-                        <AttributeRowActions onEdit={() => handleEdit(brand)} onDelete={() => setBrandToDelete(brand.id)} />
-                      </TableCell>
+                      {canManage && (
+                        <TableCell className="text-right">
+                          <AttributeRowActions onEdit={() => handleEdit(brand)} onDelete={() => setBrandToDelete(brand.id)} />
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))
                 )}

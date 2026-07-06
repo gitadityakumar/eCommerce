@@ -49,9 +49,10 @@ type FormValues = z.infer<typeof insertGenderSchema>;
 
 interface GenderTabProps {
   initialData: SelectGender[];
+  canManage?: boolean;
 }
 
-export function GenderTab({ initialData }: GenderTabProps) {
+export function GenderTab({ canManage = false, initialData }: GenderTabProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -151,12 +152,14 @@ export function GenderTab({ initialData }: GenderTabProps) {
         searchPlaceholder="Search archetypes..."
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
-        onAdd={() => {
-          setEditingGender(null);
-          form.reset({ label: '', slug: '' });
-          setIsOpen(true);
-        }}
-        addLabel="Instate Archetype"
+        onAdd={canManage
+          ? () => {
+              setEditingGender(null);
+              form.reset({ label: '', slug: '' });
+              setIsOpen(true);
+            }
+          : undefined}
+        addLabel={canManage ? 'Instate Archetype' : undefined}
       />
 
       <div className="rounded-2xl border border-border-subtle bg-surface/50 overflow-hidden shadow-soft">
@@ -165,14 +168,14 @@ export function GenderTab({ initialData }: GenderTabProps) {
             <TableRow>
               <TableHead>Label</TableHead>
               <TableHead>Slug</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              {canManage && <TableHead className="text-right">Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredData.length === 0
               ? (
                   <TableRow>
-                    <TableCell colSpan={3} className="h-24 text-center">
+                    <TableCell colSpan={canManage ? 3 : 2} className="h-24 text-center">
                       No genders found.
                     </TableCell>
                   </TableRow>
@@ -182,9 +185,11 @@ export function GenderTab({ initialData }: GenderTabProps) {
                     <TableRow key={gender.id}>
                       <TableCell className="font-medium">{gender.label}</TableCell>
                       <TableCell className="font-mono text-xs">{gender.slug}</TableCell>
-                      <TableCell className="text-right">
-                        <AttributeRowActions onEdit={() => handleEdit(gender)} onDelete={() => setGenderToDelete(gender.id)} />
-                      </TableCell>
+                      {canManage && (
+                        <TableCell className="text-right">
+                          <AttributeRowActions onEdit={() => handleEdit(gender)} onDelete={() => setGenderToDelete(gender.id)} />
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))
                 )}

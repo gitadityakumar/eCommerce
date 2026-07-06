@@ -3,7 +3,7 @@
 import { desc } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { requireAdmin } from '@/lib/auth/guards';
+import { requireAdmin, requireStaff } from '@/lib/auth/guards';
 import { db } from '@/lib/db';
 import { colors, genders, inventoryLevels, productImages, products, productVariants, sizes } from '@/lib/db/schema';
 import { insertProductSchema } from '@/lib/db/schema/products';
@@ -38,6 +38,7 @@ export type CreateProductInput = z.infer<typeof createProductSchema>;
 
 export async function getProducts() {
   try {
+    await requireStaff();
     const allProducts = await db.query.products.findMany({
       with: {
         category: true,
@@ -62,6 +63,7 @@ export async function getProducts() {
 
 export async function getCategories() {
   try {
+    await requireStaff();
     return await db.query.categories.findMany();
   }
   catch (error) {
@@ -72,6 +74,7 @@ export async function getCategories() {
 
 export async function getProductBrands() {
   try {
+    await requireStaff();
     return await db.query.brands.findMany();
   }
   catch (error) {
@@ -148,6 +151,7 @@ export async function createProduct(input: CreateProductInput) {
 
 export async function getProductGenders() {
   try {
+    await requireStaff();
     return await db.select().from(genders);
   }
   catch (error) {
@@ -158,6 +162,7 @@ export async function getProductGenders() {
 
 export async function getProductColors() {
   try {
+    await requireStaff();
     return await db.select().from(colors);
   }
   catch (error) {
@@ -168,6 +173,7 @@ export async function getProductColors() {
 
 export async function getProductSizes() {
   try {
+    await requireStaff();
     return await db.select().from(sizes);
   }
   catch (error) {

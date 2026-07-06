@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function CollectionsPage() {
   const user = await getCurrentUser();
-  if (!user || user.role !== 'admin') {
+  if (!user || (user.role !== 'admin' && user.role !== 'staff')) {
     redirect('/');
   }
 
@@ -22,6 +22,7 @@ export default async function CollectionsPage() {
       <CollectionClient
         initialCollections={collectionsRes.success ? collectionsRes.data || [] : []}
         products={products.map(p => ({ id: p.id, name: p.name }))}
+        canManage={user.role === 'admin'}
       />
     </div>
   );

@@ -19,9 +19,10 @@ interface Coupon {
 
 interface CouponClientProps {
   initialCoupons: Coupon[];
+  canManage?: boolean;
 }
 
-export function CouponClient({ initialCoupons }: CouponClientProps) {
+export function CouponClient({ canManage = false, initialCoupons }: CouponClientProps) {
   const [isPending] = useTransition();
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -38,13 +39,13 @@ export function CouponClient({ initialCoupons }: CouponClientProps) {
         searchPlaceholder="Filter archives..."
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
-        addHref="/admin/coupons/new"
-        addLabel="Add Incentive"
-        addIcon={<Plus className="size-3.5" strokeWidth={3} />}
+        addHref={canManage ? '/admin/coupons/new' : undefined}
+        addLabel={canManage ? 'Add Incentive' : undefined}
+        addIcon={canManage ? <Plus className="size-3.5" strokeWidth={3} /> : undefined}
       />
 
       <div className={isPending ? 'opacity-50 pointer-events-none' : ''}>
-        <CouponTable data={filteredCoupons} />
+        <CouponTable canManage={canManage} data={filteredCoupons} />
       </div>
     </div>
   );

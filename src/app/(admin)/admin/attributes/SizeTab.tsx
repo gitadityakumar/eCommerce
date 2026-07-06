@@ -51,9 +51,10 @@ type FormValues = z.infer<typeof insertSizeSchema>;
 
 interface SizeTabProps {
   initialData: SelectSize[];
+  canManage?: boolean;
 }
 
-export function SizeTab({ initialData }: SizeTabProps) {
+export function SizeTab({ canManage = false, initialData }: SizeTabProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -151,12 +152,14 @@ export function SizeTab({ initialData }: SizeTabProps) {
         searchPlaceholder="Search dimensional scales..."
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
-        onAdd={() => {
-          setEditingSize(null);
-          form.reset({ name: '', slug: '', sortOrder: 0 });
-          setIsOpen(true);
-        }}
-        addLabel="Instate Scale"
+        onAdd={canManage
+          ? () => {
+              setEditingSize(null);
+              form.reset({ name: '', slug: '', sortOrder: 0 });
+              setIsOpen(true);
+            }
+          : undefined}
+        addLabel={canManage ? 'Instate Scale' : undefined}
       />
 
       <div className="rounded-2xl border border-border-subtle bg-surface/50 overflow-hidden shadow-soft">
@@ -166,14 +169,14 @@ export function SizeTab({ initialData }: SizeTabProps) {
               <TableHead>Order</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Slug</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              {canManage && <TableHead className="text-right">Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredData.length === 0
               ? (
                   <TableRow>
-                    <TableCell colSpan={4} className="h-24 text-center">
+                    <TableCell colSpan={canManage ? 4 : 3} className="h-24 text-center">
                       No sizes found.
                     </TableCell>
                   </TableRow>
@@ -184,9 +187,11 @@ export function SizeTab({ initialData }: SizeTabProps) {
                       <TableCell className="font-mono">{size.sortOrder}</TableCell>
                       <TableCell className="font-medium">{size.name}</TableCell>
                       <TableCell className="font-mono text-xs">{size.slug}</TableCell>
-                      <TableCell className="text-right">
-                        <AttributeRowActions onEdit={() => handleEdit(size)} onDelete={() => setSizeToDelete(size.id)} />
-                      </TableCell>
+                      {canManage && (
+                        <TableCell className="text-right">
+                          <AttributeRowActions onEdit={() => handleEdit(size)} onDelete={() => setSizeToDelete(size.id)} />
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))
                 )}

@@ -17,6 +17,7 @@ interface AttributeDashboardProps {
   initialSizes: SelectSize[];
   initialGenders: SelectGender[];
   initialBrands: SelectBrand[];
+  canManage?: boolean;
 }
 
 export function AttributeDashboard({
@@ -24,6 +25,7 @@ export function AttributeDashboard({
   initialSizes,
   initialGenders,
   initialBrands,
+  canManage = false,
 }: AttributeDashboardProps) {
   return (
     <div className="space-y-6">
@@ -58,19 +60,19 @@ export function AttributeDashboard({
           </TabsTrigger>
         </TabsList>
         <TabsContent value="colors" className="space-y-4">
-          <ColorTab initialData={initialColors} />
+          <ColorTab canManage={canManage} initialData={initialColors} />
         </TabsContent>
         <TabsContent value="sizes" className="space-y-4">
-          <SizeTab initialData={initialSizes} />
+          <SizeTab canManage={canManage} initialData={initialSizes} />
         </TabsContent>
         <TabsContent value="genders" className="space-y-4">
-          <GenderTab initialData={initialGenders} />
+          <GenderTab canManage={canManage} initialData={initialGenders} />
         </TabsContent>
         <TabsContent value="brands" className="space-y-4">
-          <BrandTab initialData={initialBrands} />
+          <BrandTab canManage={canManage} initialData={initialBrands} />
         </TabsContent>
         <TabsContent value="options" className="space-y-4">
-          <ProductOptionsTab />
+          <ProductOptionsTab canManage={canManage} />
         </TabsContent>
       </Tabs>
     </div>

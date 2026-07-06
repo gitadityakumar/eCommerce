@@ -2,10 +2,8 @@
 
 import { and, desc, eq, ilike, or } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
-import { headers } from 'next/headers';
 import { z } from 'zod';
-import { auth } from '@/lib/auth';
-import { requireAdmin } from '@/lib/auth/guards';
+import { requireAdmin, requireStaff } from '@/lib/auth/guards';
 import { db } from '@/lib/db';
 import { auditLogs, orders, userRoleEnum, users } from '@/lib/db/schema';
 
@@ -61,7 +59,7 @@ async function updateCustomerRecord(
 
 export async function getCustomers(search?: string, role?: string, verified?: boolean) {
   try {
-    await requireAdmin();
+    await requireStaff();
     const filters = [];
     if (search) {
       filters.push(or(ilike(users.name, `%${search}%`), ilike(users.email, `%${search}%`)));
@@ -88,7 +86,7 @@ export async function getCustomers(search?: string, role?: string, verified?: bo
 
 export async function getCustomerById(id: string) {
   try {
-    await requireAdmin();
+    await requireStaff();
     const customer = await db.query.users.findFirst({
       where: eq(users.id, id),
       with: {
@@ -119,17 +117,11 @@ export async function getCustomerById(id: string) {
 
 export async function updateCustomerRole(userId: string, role: z.infer<typeof updateCustomerRoleSchema>['role']) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session || session.user.role !== 'admin') {
-      return { success: false, error: 'Unauthorized' };
-    }
+    const user = await requireAdmin();
 
     const validated = updateCustomerRoleSchema.parse({ userId, role });
 
-    const result = await updateCustomerRecord(session.user.id, validated.userId, { role: validated.role }, currentUser => ({
+    const result = await updateCustomerRecord(user.id, validated.userId, { role: validated.role }, currentUser => ({
       action: 'update_role',
       oldValue: { role: currentUser.role },
       newValue: { role: validated.role },
@@ -150,17 +142,11 @@ export async function updateCustomerRole(userId: string, role: z.infer<typeof up
 
 export async function updateCustomerVerification(userId: string, emailVerified: boolean) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session || session.user.role !== 'admin') {
-      return { success: false, error: 'Unauthorized' };
-    }
+    const user = await requireAdmin();
 
     const validated = updateCustomerVerificationSchema.parse({ userId, emailVerified });
 
-    const result = await updateCustomerRecord(session.user.id, validated.userId, { emailVerified: validated.emailVerified }, currentUser => ({
+    const result = await updateCustomerRecord(user.id, validated.userId, { emailVerified: validated.emailVerified }, currentUser => ({
       action: 'update_verification',
       oldValue: { emailVerified: currentUser.emailVerified },
       newValue: { emailVerified: validated.emailVerified },

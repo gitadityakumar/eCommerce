@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation';
 import {
   getCategories,
   getProductBrands,
@@ -5,9 +6,15 @@ import {
   getProductGenders,
   getProductSizes,
 } from '@/actions/products';
+import { getCurrentUser } from '@/lib/auth/actions';
 import { ProductForm } from '../ProductForm';
 
 export default async function NewProductPage() {
+  const user = await getCurrentUser();
+  if (!user || user.role !== 'admin') {
+    redirect('/');
+  }
+
   const [categories, brands, genders, colors, sizes] = await Promise.all([
     getCategories(),
     getProductBrands(),
