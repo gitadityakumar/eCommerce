@@ -22,9 +22,10 @@ import { CategoryList } from './CategoryList';
 
 interface CategoryClientProps {
   initialCategories: SelectCategory[];
+  canManage?: boolean;
 }
 
-export function CategoryClient({ initialCategories }: CategoryClientProps) {
+export function CategoryClient({ canManage = false, initialCategories }: CategoryClientProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [searchQuery, setSearchQuery] = useState('');
@@ -96,24 +97,27 @@ export function CategoryClient({ initialCategories }: CategoryClientProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-6 items-start">
+      <div className={canManage ? 'grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-6 items-start' : 'grid grid-cols-1 gap-6 items-start'}>
         <div className={`space-y-4 ${isPending ? 'opacity-50 transition-opacity' : 'transition-opacity'}`}>
           <CategoryList
             categories={initialCategories}
             onEdit={handleEdit}
             onDelete={setCategoryToDelete}
             searchQuery={searchQuery}
+            canManage={canManage}
           />
         </div>
 
-        <div className="lg:block">
-          <CategoryForm
-            categories={initialCategories}
-            editingCategory={editingCategory}
-            onSuccess={handleSuccess}
-            onCancel={handleCancelEdit}
-          />
-        </div>
+        {canManage && (
+          <div className="lg:block">
+            <CategoryForm
+              categories={initialCategories}
+              editingCategory={editingCategory}
+              onSuccess={handleSuccess}
+              onCancel={handleCancelEdit}
+            />
+          </div>
+        )}
       </div>
 
       <AlertDialog open={!!categoryToDelete} onOpenChange={open => !open && setCategoryToDelete(null)}>

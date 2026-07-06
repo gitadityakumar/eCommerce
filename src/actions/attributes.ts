@@ -6,7 +6,7 @@ import type { InsertGender } from '@/lib/db/schema/filters/genders';
 import type { InsertSize } from '@/lib/db/schema/filters/sizes';
 import { eq } from 'drizzle-orm';
 import { unstable_noStore as noStore, revalidatePath } from 'next/cache';
-import { requireAdmin } from '@/lib/auth/guards';
+import { requireAdmin, requireStaff } from '@/lib/auth/guards';
 import { db } from '@/lib/db';
 import {
   auditLogs,
@@ -26,6 +26,7 @@ import { insertSizeSchema } from '@/lib/db/schema/filters/sizes';
 
 export async function getColors() {
   noStore();
+  await requireStaff();
   try {
     const data = await db.query.colors.findMany({
       orderBy: (colors, { asc }) => [asc(colors.name)],
@@ -140,6 +141,7 @@ export async function deleteColor(id: string) {
 
 export async function getBrands() {
   noStore();
+  await requireStaff();
   try {
     const data = await db.query.brands.findMany({
       orderBy: (brands, { asc }) => [asc(brands.name)],
@@ -254,6 +256,7 @@ export async function deleteBrand(id: string) {
 
 export async function getSizes() {
   noStore();
+  await requireStaff();
   try {
     const data = await db.query.sizes.findMany({
       orderBy: (sizes, { asc }) => [asc(sizes.sortOrder)],
@@ -368,6 +371,7 @@ export async function deleteSize(id: string) {
 
 export async function getGenders() {
   noStore();
+  await requireStaff();
   try {
     const data = await db.query.genders.findMany({
       orderBy: (genders, { asc }) => [asc(genders.label)],
@@ -482,6 +486,7 @@ export async function deleteGender(id: string) {
 
 export async function getProductOptions(productId: string) {
   noStore();
+  await requireStaff();
   try {
     const data = await db.query.productOptions.findMany({
       where: eq(productOptions.productId, productId),

@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 import { z } from 'zod';
 import { auth } from '@/lib/auth';
-import { requireAdmin, requireUser } from '@/lib/auth/guards';
+import { requireOrderManager, requireStaff, requireUser } from '@/lib/auth/guards';
 import { db } from '@/lib/db';
 import { auditLogs, fulfillments, orders, orderStatusEnum } from '@/lib/db/schema';
 import { normalizeImageUrl } from '@/lib/images';
@@ -75,7 +75,7 @@ function normalizeOrderImages<T extends { items?: any[] } | null | undefined>(or
 
 export async function getOrders() {
   try {
-    await requireAdmin();
+    await requireStaff();
     const allOrders = await db.query.orders.findMany({
       with: {
         user: true,
@@ -137,7 +137,7 @@ export async function getUserOrders() {
 
 export async function getOrderById(id: string) {
   try {
-    await requireAdmin();
+    await requireStaff();
     const order = await db.query.orders.findFirst({
       where: eq(orders.id, id),
       with: orderDetailsWith,
@@ -169,13 +169,7 @@ export async function getUserOrderById(id: string) {
 
 export async function updateOrderStatus(orderId: string, status: (typeof orderStatusEnum.enumValues)[number]) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session || session.user.role !== 'admin') {
-      return { success: false, error: 'Unauthorized' };
-    }
+    const user = await requireOrderManager();
 
     const validated = updateStatusSchema.parse({ orderId, status });
 
@@ -203,7 +197,7 @@ export async function updateOrderStatus(orderId: string, status: (typeof orderSt
 
       // 3. Create audit log
       await tx.insert(auditLogs).values({
-        adminId: session.user.id,
+        adminId: user.id,
         entityType: 'order',
         entityId: validated.orderId,
         action: 'update_status',
@@ -229,13 +223,7 @@ export async function updateOrderStatus(orderId: string, status: (typeof orderSt
 
 export async function upsertFulfillment(input: z.infer<typeof fulfillmentSchema>) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session || session.user.role !== 'admin') {
-      return { success: false, error: 'Unauthorized' };
-    }
+    await requireOrderManager();
 
     const validated = fulfillmentSchema.parse(input);
 

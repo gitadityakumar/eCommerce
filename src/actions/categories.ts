@@ -3,13 +3,14 @@
 import type { InsertCategory } from '@/lib/db/schema/categories';
 import { eq } from 'drizzle-orm';
 import { unstable_noStore as noStore, revalidatePath } from 'next/cache';
-import { requireAdmin } from '@/lib/auth/guards';
+import { requireAdmin, requireStaff } from '@/lib/auth/guards';
 import { db } from '@/lib/db';
 import { auditLogs, categories } from '@/lib/db/schema';
 import { insertCategorySchema } from '@/lib/db/schema/categories';
 
 export async function getCategories() {
   noStore();
+  await requireStaff();
   try {
     const allCategories = await db.query.categories.findMany();
     return { success: true, data: allCategories };

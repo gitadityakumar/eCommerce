@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 
-export function ProductOptionsTab() {
+export function ProductOptionsTab({ canManage = false }: { canManage?: boolean }) {
   const [products, setProducts] = useState<{ id: string; name: string }[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<string>('');
   const [options, setOptions] = useState<{ id: string; name: string; values: { id: string; value: string }[] }[]>([]);
@@ -249,23 +249,25 @@ export function ProductOptionsTab() {
                     <span className="font-medium text-foreground">{options.length}</span>
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Input
-                    placeholder="Option name (e.g. Material)"
-                    className="w-full sm:w-64"
-                    value={newOptionName}
-                    onChange={e => setNewOptionName(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleAddOption()}
-                  />
-                  <Button
-                    onClick={handleAddOption}
-                    disabled={isAddingOption}
-                    variant={!newOptionName.trim() ? 'secondary' : 'default'}
-                  >
-                    {isAddingOption ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4 mr-2" />}
-                    Add Option
-                  </Button>
-                </div>
+                {canManage && (
+                  <div className="flex items-center gap-2">
+                    <Input
+                      placeholder="Option name (e.g. Material)"
+                      className="w-full sm:w-64"
+                      value={newOptionName}
+                      onChange={e => setNewOptionName(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && handleAddOption()}
+                    />
+                    <Button
+                      onClick={handleAddOption}
+                      disabled={isAddingOption}
+                      variant={!newOptionName.trim() ? 'secondary' : 'default'}
+                    >
+                      {isAddingOption ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4 mr-2" />}
+                      Add Option
+                    </Button>
+                  </div>
+                )}
               </div>
 
               {isLoadingOptions
@@ -298,14 +300,16 @@ export function ProductOptionsTab() {
                                     ...
                                   </CardDescription>
                                 </div>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="text-destructive hover:bg-destructive/10"
-                                  onClick={() => handleDeleteOption(option.id)}
-                                >
-                                  <Trash2 className="size-4" />
-                                </Button>
+                                {canManage && (
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="text-destructive hover:bg-destructive/10"
+                                    onClick={() => handleDeleteOption(option.id)}
+                                  >
+                                    <Trash2 className="size-4" />
+                                  </Button>
+                                )}
                               </div>
                             </CardHeader>
                             <CardContent className="pt-6 space-y-4">
@@ -317,12 +321,14 @@ export function ProductOptionsTab() {
                                     className="px-3 py-1 group flex items-center gap-2"
                                   >
                                     {val.value}
-                                    <button
-                                      onClick={() => handleDeleteValue(val.id)}
-                                      className="hover:text-destructive transition-colors"
-                                    >
-                                      <Trash2 className="size-3" />
-                                    </button>
+                                    {canManage && (
+                                      <button
+                                        onClick={() => handleDeleteValue(val.id)}
+                                        className="hover:text-destructive transition-colors"
+                                      >
+                                        <Trash2 className="size-3" />
+                                      </button>
+                                    )}
                                   </Badge>
                                 ))}
                                 {option.values.length === 0 && (
@@ -330,24 +336,28 @@ export function ProductOptionsTab() {
                                 )}
                               </div>
 
-                              <Separator />
+                              {canManage && (
+                                <>
+                                  <Separator />
 
-                              <div className="flex items-center gap-2">
-                                <Input
-                                  placeholder="Add value (e.g. Cotton)"
-                                  value={newOptionValues[option.id] || ''}
-                                  onChange={e => setNewOptionValues(prev => ({ ...prev, [option.id]: e.target.value }))}
-                                  onKeyDown={e => e.key === 'Enter' && handleAddValue(option.id)}
-                                />
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleAddValue(option.id)}
-                                  disabled={!newOptionValues[option.id]?.trim()}
-                                >
-                                  <PlusCircle className="size-4" />
-                                </Button>
-                              </div>
+                                  <div className="flex items-center gap-2">
+                                    <Input
+                                      placeholder="Add value (e.g. Cotton)"
+                                      value={newOptionValues[option.id] || ''}
+                                      onChange={e => setNewOptionValues(prev => ({ ...prev, [option.id]: e.target.value }))}
+                                      onKeyDown={e => e.key === 'Enter' && handleAddValue(option.id)}
+                                    />
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => handleAddValue(option.id)}
+                                      disabled={!newOptionValues[option.id]?.trim()}
+                                    >
+                                      <PlusCircle className="size-4" />
+                                    </Button>
+                                  </div>
+                                </>
+                              )}
                             </CardContent>
                           </Card>
                         ))}

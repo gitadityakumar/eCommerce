@@ -43,7 +43,7 @@ interface Coupon {
   usedCount: number;
 }
 
-export function CouponTable({ data }: { data: Coupon[] }) {
+export function CouponTable({ canManage = false, data }: { canManage?: boolean; data: Coupon[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [isDeleting, setIsDeleting] = React.useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
@@ -147,7 +147,10 @@ export function CouponTable({ data }: { data: Coupon[] }) {
         );
       },
     },
-    {
+  ];
+
+  if (canManage) {
+    columns.push({
       id: 'actions',
       cell: ({ row }) => (
         <RowActionsMenu
@@ -166,8 +169,8 @@ export function CouponTable({ data }: { data: Coupon[] }) {
           ]}
         />
       ),
-    },
-  ];
+    });
+  }
 
   const table = useReactTable({
     data,

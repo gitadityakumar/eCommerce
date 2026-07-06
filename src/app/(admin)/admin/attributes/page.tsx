@@ -1,9 +1,11 @@
 import { getBrands, getColors, getGenders, getSizes } from '@/actions/attributes';
+import { getCurrentUser } from '@/lib/auth/actions';
 import { AttributeDashboard } from './AttributeDashboard';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AttributesPage() {
+  const user = await getCurrentUser();
   const [colorsRes, sizesRes, gendersRes, brandsRes] = await Promise.all([
     getColors(),
     getSizes(),
@@ -23,6 +25,7 @@ export default async function AttributesPage() {
         initialSizes={sizes}
         initialGenders={genders}
         initialBrands={brands}
+        canManage={user?.role === 'admin'}
       />
     </div>
   );

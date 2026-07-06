@@ -36,8 +36,8 @@ interface AttributeToolbarProps {
   searchPlaceholder: string;
   searchValue: string;
   onSearchChange: (value: string) => void;
-  onAdd: () => void;
-  addLabel: string;
+  onAdd?: () => void;
+  addLabel?: string;
   searchWidthClassName?: string;
 }
 
@@ -60,13 +60,15 @@ export function AttributeToolbar({
           onChange={e => onSearchChange(e.target.value)}
         />
       </div>
-      <Button
-        onClick={onAdd}
-        className="bg-accent text-white hover:bg-accent/90 rounded-full px-8 font-bold tracking-widest uppercase text-[10px] shadow-soft shadow-accent/20 h-11 transition-all hover:-translate-y-0.5"
-      >
-        <IconPlus className="mr-2 size-3.5" strokeWidth={3} />
-        {addLabel}
-      </Button>
+      {onAdd && addLabel && (
+        <Button
+          onClick={onAdd}
+          className="bg-accent text-white hover:bg-accent/90 rounded-full px-8 font-bold tracking-widest uppercase text-[10px] shadow-soft shadow-accent/20 h-11 transition-all hover:-translate-y-0.5"
+        >
+          <IconPlus className="mr-2 size-3.5" strokeWidth={3} />
+          {addLabel}
+        </Button>
+      )}
     </div>
   );
 }

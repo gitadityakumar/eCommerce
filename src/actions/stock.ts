@@ -2,10 +2,8 @@
 
 import { eq, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
-import { headers } from 'next/headers';
 import { z } from 'zod';
-import { auth } from '@/lib/auth';
-import { requireAdmin } from '@/lib/auth/guards';
+import { requireAdmin, requireStaff } from '@/lib/auth/guards';
 import { db } from '@/lib/db';
 import { auditLogs, inventoryLevels, stockLedger } from '@/lib/db/schema';
 import { normalizeImageUrl } from '@/lib/images';
@@ -20,13 +18,7 @@ const adjustStockSchema = z.object({
 
 export async function adjustStock(input: z.infer<typeof adjustStockSchema>) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session || session.user.role !== 'admin') {
-      return { success: false, error: 'Unauthorized' };
-    }
+    const user = await requireAdmin();
 
     const validated = adjustStockSchema.parse(input);
 
@@ -75,7 +67,7 @@ export async function adjustStock(input: z.infer<typeof adjustStockSchema>) {
 
       // 4. Log in Audit Logs
       await tx.insert(auditLogs).values({
-        adminId: session.user.id,
+        adminId: user.id,
         entityType: 'inventory',
         entityId: validated.variantId,
         action: 'adjust_stock',
@@ -101,7 +93,7 @@ export async function adjustStock(input: z.infer<typeof adjustStockSchema>) {
 
 export async function getInventory() {
   try {
-    await requireAdmin();
+    await requireStaff();
     const variants = await db.query.productVariants.findMany({
       with: {
         product: {

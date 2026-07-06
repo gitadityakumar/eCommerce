@@ -43,9 +43,10 @@ interface Collection {
 
 interface CollectionListProps {
   data: Collection[];
+  canManage?: boolean;
 }
 
-export function CollectionList({ data }: CollectionListProps) {
+export function CollectionList({ canManage = false, data }: CollectionListProps) {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -82,7 +83,7 @@ export function CollectionList({ data }: CollectionListProps) {
               <TableHead>Slug</TableHead>
               <TableHead>Product Count</TableHead>
               <TableHead>Created At</TableHead>
-              <TableHead className="w-[70px]"></TableHead>
+              {canManage && <TableHead className="w-[70px]"></TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -111,30 +112,32 @@ export function CollectionList({ data }: CollectionListProps) {
                         </Badge>
                       </TableCell>
                       <TableCell>{format(new Date(item.createdAt), 'MMM d, yyyy')}</TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem asChild>
-                              <Link href={`/admin/collections/${item.id}`}>
-                                <Edit2 className="mr-2 h-4 w-4" />
-                                Edit
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              onClick={() => setDeleteId(item.id)}
-                            >
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
+                      {canManage && (
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0">
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem asChild>
+                                <Link href={`/admin/collections/${item.id}`}>
+                                  <Edit2 className="mr-2 h-4 w-4" />
+                                  Edit
+                                </Link>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => setDeleteId(item.id)}
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))
                 )}

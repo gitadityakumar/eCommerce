@@ -1,12 +1,12 @@
 'use server';
 import { and, desc, eq } from 'drizzle-orm';
-import { requireAdmin } from '@/lib/auth/guards';
+import { requireStaff } from '@/lib/auth/guards';
 import { db } from '@/lib/db';
 import { auditLogs, users } from '@/lib/db/schema';
 
 export async function getAuditLogs(params?: { entityType?: string; action?: string; limit?: number }) {
   try {
-    await requireAdmin();
+    await requireStaff();
     const filters = [];
     if (params?.entityType && params?.entityType !== 'all') {
       filters.push(eq(auditLogs.entityType, params.entityType));
@@ -43,7 +43,7 @@ export async function getAuditLogs(params?: { entityType?: string; action?: stri
 
 export async function getEntityHistory(entityType: string, entityId: string) {
   try {
-    await requireAdmin();
+    await requireStaff();
     const history = await db
       .select({
         id: auditLogs.id,

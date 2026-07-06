@@ -51,9 +51,10 @@ type FormValues = z.infer<typeof insertColorSchema>;
 
 interface ColorTabProps {
   initialData: SelectColor[];
+  canManage?: boolean;
 }
 
-export function ColorTab({ initialData }: ColorTabProps) {
+export function ColorTab({ canManage = false, initialData }: ColorTabProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -151,12 +152,14 @@ export function ColorTab({ initialData }: ColorTabProps) {
         searchPlaceholder="Filter chromatic spectrum..."
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
-        onAdd={() => {
-          setEditingColor(null);
-          form.reset({ name: '', slug: '', hexCode: '#000000' });
-          setIsOpen(true);
-        }}
-        addLabel="Introduce Hue"
+        onAdd={canManage
+          ? () => {
+              setEditingColor(null);
+              form.reset({ name: '', slug: '', hexCode: '#000000' });
+              setIsOpen(true);
+            }
+          : undefined}
+        addLabel={canManage ? 'Introduce Hue' : undefined}
         searchWidthClassName="max-w-md"
       />
 
@@ -168,14 +171,14 @@ export function ColorTab({ initialData }: ColorTabProps) {
               <TableHead>Name</TableHead>
               <TableHead>Slug</TableHead>
               <TableHead>Hex Code</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              {canManage && <TableHead className="text-right">Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredData.length === 0
               ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center">
+                    <TableCell colSpan={canManage ? 5 : 4} className="h-24 text-center">
                       No colors found.
                     </TableCell>
                   </TableRow>
@@ -192,9 +195,11 @@ export function ColorTab({ initialData }: ColorTabProps) {
                       <TableCell className="font-medium">{color.name}</TableCell>
                       <TableCell className="font-mono text-xs">{color.slug}</TableCell>
                       <TableCell className="font-mono text-xs uppercase">{color.hexCode}</TableCell>
-                      <TableCell className="text-right">
-                        <AttributeRowActions onEdit={() => handleEdit(color)} onDelete={() => setColorToDelete(color.id)} />
-                      </TableCell>
+                      {canManage && (
+                        <TableCell className="text-right">
+                          <AttributeRowActions onEdit={() => handleEdit(color)} onDelete={() => setColorToDelete(color.id)} />
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))
                 )}

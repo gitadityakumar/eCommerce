@@ -16,9 +16,10 @@ interface Collection {
 interface CollectionClientProps {
   initialCollections: Collection[];
   products: { id: string; name: string }[];
+  canManage?: boolean;
 }
 
-export function CollectionClient({ initialCollections }: CollectionClientProps) {
+export function CollectionClient({ canManage = false, initialCollections }: CollectionClientProps) {
   const [isPending] = useTransition();
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -35,14 +36,15 @@ export function CollectionClient({ initialCollections }: CollectionClientProps) 
         searchPlaceholder="Filter archives..."
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
-        addHref="/admin/collections/new"
-        addLabel="Add Story"
-        addIcon={<Plus className="size-3.5" strokeWidth={3} />}
+        addHref={canManage ? '/admin/collections/new' : undefined}
+        addLabel={canManage ? 'Add Story' : undefined}
+        addIcon={canManage ? <Plus className="size-3.5" strokeWidth={3} /> : undefined}
       />
 
       <div className={isPending ? 'opacity-50 pointer-events-none' : ''}>
         <CollectionList
           data={filteredCollections}
+          canManage={canManage}
         />
       </div>
     </div>

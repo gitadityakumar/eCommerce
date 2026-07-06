@@ -11,10 +11,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { getCurrentUser } from '@/lib/auth/actions';
 import { normalizeImageUrl } from '@/lib/images';
 import { StockAdjustmentModal } from './_components/StockAdjustmentModal';
 
 export default async function InventoryPage() {
+  const user = await getCurrentUser();
+  const canManage = user?.role === 'admin';
   const inventory = await getInventory();
 
   return (
@@ -48,7 +51,7 @@ export default async function InventoryPage() {
               <TableHead className="text-right">Reserved</TableHead>
               <TableHead className="text-right">Total</TableHead>
               <TableHead className="text-right">Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              {canManage && <TableHead className="text-right">Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -122,20 +125,22 @@ export default async function InventoryPage() {
                             <Badge variant="outline" className="text-text-secondary/70 border-border-subtle bg-surface font-bold text-[9px] tracking-widest uppercase py-1">In Stock</Badge>
                           )}
                   </TableCell>
-                  <TableCell className="text-right">
-                    <StockAdjustmentModal
-                      variantId={item.variantId}
-                      sku={item.variant.sku}
-                      productName={item.variant.product.name}
-                      currentAvailable={item.available}
-                    />
-                  </TableCell>
+                  {canManage && (
+                    <TableCell className="text-right">
+                      <StockAdjustmentModal
+                        variantId={item.variantId}
+                        sku={item.variant.sku}
+                        productName={item.variant.product.name}
+                        currentAvailable={item.available}
+                      />
+                    </TableCell>
+                  )}
                 </TableRow>
               );
             })}
             {inventory.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="h-24 text-center">
+                <TableCell colSpan={canManage ? 7 : 6} className="h-24 text-center">
                   <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
                     <Package className="h-8 w-8 opacity-20" />
                     <p>No inventory records found.</p>

@@ -13,9 +13,9 @@ interface AdminSearchHeaderProps {
   searchPlaceholder: string;
   searchValue: string;
   onSearchChange: (value: string) => void;
-  addHref: string;
-  addLabel: string;
-  addIcon: ReactNode;
+  addHref?: string;
+  addLabel?: string;
+  addIcon?: ReactNode;
 }
 
 export function AdminSearchHeader({
@@ -51,12 +51,14 @@ export function AdminSearchHeader({
             onChange={e => onSearchChange(e.target.value)}
           />
         </div>
-        <Button asChild className="bg-accent text-white hover:bg-accent/90 rounded-full px-6 font-bold tracking-widest uppercase text-[10px] shadow-soft shadow-accent/20 h-11 transition-all hover:-translate-y-0.5 active:scale-95">
-          <Link href={addHref} className="flex items-center gap-2">
-            {addIcon}
-            {addLabel}
-          </Link>
-        </Button>
+        {addHref && addLabel && (
+          <Button asChild className="bg-accent text-white hover:bg-accent/90 rounded-full px-6 font-bold tracking-widest uppercase text-[10px] shadow-soft shadow-accent/20 h-11 transition-all hover:-translate-y-0.5 active:scale-95">
+            <Link href={addHref} className="flex items-center gap-2">
+              {addIcon}
+              {addLabel}
+            </Link>
+          </Button>
+        )}
       </div>
     </div>
   );

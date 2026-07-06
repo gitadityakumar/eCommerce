@@ -21,9 +21,10 @@ interface CategoryListProps {
   onEdit: (category: SelectCategory) => void;
   onDelete: (id: string) => void;
   searchQuery: string;
+  canManage?: boolean;
 }
 
-export function CategoryList({ categories, onEdit, onDelete, searchQuery }: CategoryListProps) {
+export function CategoryList({ canManage = false, categories, onEdit, onDelete, searchQuery }: CategoryListProps) {
   // Build a tree from the flat list
   const buildTree = (list: SelectCategory[], parentId: string | null = null): CategoryWithChildren[] => {
     return list
@@ -72,10 +73,10 @@ export function CategoryList({ categories, onEdit, onDelete, searchQuery }: Cate
 
   return (
     <div className="divide-y divide-border-subtle border border-border-subtle rounded-2xl overflow-hidden bg-surface shadow-soft transition-all duration-500">
-      <div className="grid grid-cols-[1fr_200px_120px] gap-4 p-5 font-bold uppercase tracking-[0.2em] bg-accent/5 text-[9px] text-accent">
+      <div className={canManage ? 'grid grid-cols-[1fr_200px_120px] gap-4 p-5 font-bold uppercase tracking-[0.2em] bg-accent/5 text-[9px] text-accent' : 'grid grid-cols-[1fr_200px] gap-4 p-5 font-bold uppercase tracking-[0.2em] bg-accent/5 text-[9px] text-accent'}>
         <div>Category Identity</div>
         <div>Slug</div>
-        <div className="text-right">Manage</div>
+        {canManage && <div className="text-right">Manage</div>}
       </div>
       <div className="divide-y">
         {filteredTree.map(node => (
@@ -86,6 +87,7 @@ export function CategoryList({ categories, onEdit, onDelete, searchQuery }: Cate
             onEdit={onEdit}
             onDelete={onDelete}
             isSearching={!!searchQuery}
+            canManage={canManage}
           />
         ))}
       </div>
@@ -99,15 +101,16 @@ interface CategoryItemProps {
   onEdit: (category: SelectCategory) => void;
   onDelete: (id: string) => void;
   isSearching: boolean;
+  canManage: boolean;
 }
 
-function CategoryItem({ node, level, onEdit, onDelete, isSearching }: CategoryItemProps) {
+function CategoryItem({ canManage, node, level, onEdit, onDelete, isSearching }: CategoryItemProps) {
   const [isExpanded, setIsExpanded] = useState(isSearching);
   const hasChildren = node.children && node.children.length > 0;
 
   return (
     <div className="bg-surface hover:bg-accent/5 transition-all duration-300">
-      <div className="grid grid-cols-[1fr_200px_120px] gap-4 p-4 text-sm items-center">
+      <div className={canManage ? 'grid grid-cols-[1fr_200px_120px] gap-4 p-4 text-sm items-center' : 'grid grid-cols-[1fr_200px] gap-4 p-4 text-sm items-center'}>
         <div className="flex items-center gap-2" style={{ paddingLeft: `${level * 24}px` }}>
           {hasChildren
             ? (
@@ -131,24 +134,26 @@ function CategoryItem({ node, level, onEdit, onDelete, isSearching }: CategoryIt
           <span className="font-medium">{node.name}</span>
         </div>
         <div className="text-muted-foreground font-mono text-xs">{node.slug}</div>
-        <div className="flex justify-end gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-8"
-            onClick={() => onEdit(node)}
-          >
-            <IconEdit size={16} />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-            onClick={() => onDelete(node.id)}
-          >
-            <IconTrash size={16} />
-          </Button>
-        </div>
+        {canManage && (
+          <div className="flex justify-end gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-8"
+              onClick={() => onEdit(node)}
+            >
+              <IconEdit size={16} />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+              onClick={() => onDelete(node.id)}
+            >
+              <IconTrash size={16} />
+            </Button>
+          </div>
+        )}
       </div>
       {hasChildren && isExpanded && (
         <div className="divide-y border-t bg-muted/5">
@@ -160,6 +165,7 @@ function CategoryItem({ node, level, onEdit, onDelete, isSearching }: CategoryIt
               onEdit={onEdit}
               onDelete={onDelete}
               isSearching={isSearching}
+              canManage={canManage}
             />
           ))}
         </div>
