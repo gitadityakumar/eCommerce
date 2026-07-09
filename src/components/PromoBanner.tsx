@@ -20,7 +20,6 @@ export default function PromoBanner() {
           alt="Seasonal Promo"
           fill
           sizes="100vw"
-          loading="eager"
         />
       </motion.div>
 

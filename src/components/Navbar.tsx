@@ -4,7 +4,6 @@ import {
   IconSearch,
   IconShoppingCart,
 } from '@tabler/icons-react';
-import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -46,6 +45,12 @@ export default function Navbar() {
       fetchUserCount();
     }
   }, [isAuthenticated, fetchUserCount]);
+
+  useEffect(() => {
+    if (isSearchOpen) {
+      searchInputRef.current?.focus();
+    }
+  }, [isSearchOpen]);
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
@@ -114,36 +119,32 @@ export default function Navbar() {
         <div className="flex items-center gap-2 md:gap-4">
           {/* Search - Expandable on all breakpoints */}
           <div className="relative flex items-center h-10 min-w-[40px] justify-end">
-            <AnimatePresence>
-              {isSearchOpen && (
-                <motion.div
-                  initial={{ width: 0, opacity: 0 }}
-                  animate={{ width: mounted && window.innerWidth >= 1024 ? 260 : 180, opacity: 1 }}
-                  exit={{ width: 0, opacity: 0 }}
-                  transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-                  className="absolute right-0 flex h-9 items-center overflow-hidden rounded-full border border-border-subtle bg-background/88 backdrop-blur-sm shadow-soft"
-                >
-                  <input
-                    ref={searchInputRef}
-                    type="search"
-                    placeholder="Search bows, velvet, pearl..."
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        handleSearch();
-                      }
-                    }}
-                    onBlur={() => {
-                      if (!searchQuery)
-                        setIsSearchOpen(false);
-                    }}
-                    className="bg-transparent border-none! outline-none! ring-0! ring-offset-0! text-xs text-text-primary placeholder:text-text-secondary/60 ml-10 w-full pr-4 appearance-none"
-                    autoFocus
-                  />
-                </motion.div>
+            <div
+              className={cn(
+                'absolute right-0 flex h-9 w-[180px] origin-right items-center overflow-hidden rounded-full border border-border-subtle bg-background/88 shadow-soft transition-[opacity,transform] duration-200 ease-out lg:w-[260px]',
+                isSearchOpen ? 'scale-x-100 opacity-100' : 'pointer-events-none scale-x-0 opacity-0',
               )}
-            </AnimatePresence>
+            >
+              {isSearchOpen && (
+                <input
+                  ref={searchInputRef}
+                  type="search"
+                  placeholder="Search bows, velvet, pearl..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSearch();
+                    }
+                  }}
+                  onBlur={() => {
+                    if (!searchQuery)
+                      setIsSearchOpen(false);
+                  }}
+                  className="ml-10 w-full appearance-none border-none! bg-transparent pr-4 text-xs text-text-primary outline-none! ring-0! ring-offset-0! placeholder:text-text-secondary/60"
+                />
+              )}
+            </div>
             <button
               onClick={() => {
                 if (isSearchOpen) {

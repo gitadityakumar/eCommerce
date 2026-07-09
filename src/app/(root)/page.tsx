@@ -1,5 +1,9 @@
-'use client';
-import { CampaignShowcase, CollectionGallery, HeroSection, PhilosophySection, PromoBanner, SpotlightSection } from '@/components';
+import CampaignShowcase from '@/components/CampaignShowcase';
+import CollectionGallery from '@/components/CollectionGallery';
+import HeroSection from '@/components/hero-section';
+import PhilosophySection from '@/components/PhilosophySection';
+import PromoBanner from '@/components/PromoBanner';
+import SpotlightSection from '@/components/SpotlightSection';
 
 function Home() {
   return (

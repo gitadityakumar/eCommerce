@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
           'script-src \'self\' \'unsafe-inline\' \'unsafe-eval\'',
           'style-src \'self\' \'unsafe-inline\' https://fonts.googleapis.com',
           'img-src \'self\' data: blob: https://cdn.100xadi.com https://cdn.perpetuity.dev https://hoirqrkdgbmvpwutwuwj.supabase.co https://images.unsplash.com https://ik.imagekit.io',
+          'media-src \'self\' data: blob: https://ik.imagekit.io',
           'font-src \'self\' data: https://fonts.gstatic.com',
           'connect-src \'self\' https://api-preprod.phonepe.com https://api.phonepe.com https://apiv2.shiprocket.in https://*.r2.cloudflarestorage.com https://cdn.100xadi.com https://cdn.perpetuity.dev',
           'frame-ancestors \'none\'',

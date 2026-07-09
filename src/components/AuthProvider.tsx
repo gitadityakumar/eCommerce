@@ -8,6 +8,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const setUser = useAuthStore(s => s.setUser);
 
   useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    let idleId: number | undefined;
+
     const initAuth = async () => {
       try {
         const user = await getCurrentUser();
@@ -28,7 +31,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
-    initAuth();
+    if ('requestIdleCallback' in window) {
+      idleId = window.requestIdleCallback(() => {
+        initAuth();
+      });
+    }
+    else {
+      timeoutId = setTimeout(initAuth, 1500);
+    }
+
+    return () => {
+      if (idleId !== undefined) {
+        window.cancelIdleCallback(idleId);
+      }
+
+      if (timeoutId !== undefined) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [setUser]);
 
   return <>{children}</>;

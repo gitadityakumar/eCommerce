@@ -267,7 +267,7 @@
     content: '';
     position: fixed;
     inset: 0;
-    z-index: 2147483647;
+    z-index: 0;
     pointer-events: none;
     opacity: 0.035;
     background-image:
@@ -276,12 +276,10 @@
     background-size:
       3px 3px,
       5px 5px;
-    mix-blend-mode: multiply;
   }
 
   .dark body::before {
     opacity: 0.05;
-    mix-blend-mode: screen;
   }
 
   :is(h1, h2, h3, p) {
@@ -319,6 +317,23 @@
   50% {
     background-size: 200% 200%;
     background-position: right center;
+  }
+}
+
+@keyframes hero-scroll-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(20%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-\[hero-scroll-bounce_2s_ease-in-out_infinite\] {
+    animation: none;
   }
 }
 
