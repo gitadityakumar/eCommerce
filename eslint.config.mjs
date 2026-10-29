@@ -13,5 +13,6 @@ export default antfu({
   rules: {
     'style/no-tabs': 'off',
     'node/prefer-global/process': ['off'],
+    'pnpm/yaml-enforce-settings': 'off',
   },
 });
