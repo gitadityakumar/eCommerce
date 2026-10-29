@@ -13,8 +13,8 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -62,6 +62,7 @@ function OrderSuccessPage({
     }
     catch (error) {
       console.error('Failed to generate PDF:', error);
+      toast.error('Failed to generate receipt. Please try again.');
     }
     finally {
       setIsDownloading(false);
