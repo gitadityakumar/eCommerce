@@ -51,6 +51,7 @@ export function DashboardSalesTrendChart({ data }: SalesChartProps) {
         <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
           <BarChart
             data={data}
+            maxBarSize={48}
             margin={{
               left: 12,
               right: 12,
@@ -80,7 +81,12 @@ export function DashboardSalesTrendChart({ data }: SalesChartProps) {
                 />
               )}
             />
-            <Bar dataKey="revenue" fill="var(--color-revenue)" radius={[4, 4, 0, 0]} />
+            <Bar
+              dataKey="revenue"
+              fill="var(--color-revenue)"
+              radius={[4, 4, 0, 0]}
+              maxBarSize={48}
+            />
           </BarChart>
         </ChartContainer>
       </CardContent>
