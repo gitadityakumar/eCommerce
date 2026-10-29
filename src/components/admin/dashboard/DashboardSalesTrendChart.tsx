@@ -9,6 +9,7 @@ import {
   BarChart,
   CartesianGrid,
   XAxis,
+  YAxis,
 } from 'recharts';
 import {
   Card,
@@ -30,6 +31,17 @@ const chartConfig = {
     color: 'hsl(var(--chart-1))',
   },
 } satisfies ChartConfig;
+
+const yAxisNumberFormat = new Intl.NumberFormat('en-IN', {
+  style: 'currency',
+  currency: 'INR',
+  maximumFractionDigits: 1,
+  notation: 'compact',
+});
+
+function formatYAxisPrice(value: number) {
+  return yAxisNumberFormat.format(value);
+}
 
 interface SalesChartProps {
   data: {
@@ -53,11 +65,13 @@ export function DashboardSalesTrendChart({ data }: SalesChartProps) {
             data={data}
             maxBarSize={48}
             margin={{
-              left: 12,
+              top: 12,
+              left: 0,
               right: 12,
+              bottom: 4,
             }}
           >
-            <CartesianGrid vertical={false} />
+            <CartesianGrid vertical={false} strokeDasharray="3 3" />
             <XAxis
               dataKey="date"
               tickLine={false}
@@ -65,17 +79,25 @@ export function DashboardSalesTrendChart({ data }: SalesChartProps) {
               tickMargin={8}
               minTickGap={32}
               tickFormatter={(value) => {
-                const date = new Date(value);
+                const date = new Date(`${value}T00:00:00`);
                 return format(date, 'MMM dd');
               }}
+            />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              width={55}
+              domain={[0, 'auto']}
+              allowDecimals={false}
+              tickFormatter={formatYAxisPrice}
             />
             <ChartTooltip
               content={(
                 <ChartTooltipContent
                   className="w-[150px]"
-                  nameKey="views"
                   labelFormatter={(value) => {
-                    return format(new Date(value), 'MMM dd, yyyy');
+                    return format(new Date(`${value}T00:00:00`), 'MMM dd, yyyy');
                   }}
                   formatter={value => formatINR(Number(value))}
                 />
