@@ -203,7 +203,8 @@ function formatINR(amount: number) {
   }).format(amount)}`;
 }
 
-export function ReceiptDocument({ order, settings }: { order: OrderData; settings: StoreSettings }) {
+// fallow-ignore-next-line unused-export
+export default function ReceiptDocument({ order, settings }: { order: OrderData; settings: StoreSettings }) {
   const { extra, subtotal, total } = getOrderAmounts(order);
 
   // Tax calculation (flat 18% GST)

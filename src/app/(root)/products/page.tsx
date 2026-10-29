@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Card } from '@/components';
+import Card from '@/components/Card';
 import Filters from '@/components/Filters';
 import Sort from '@/components/Sort';
 import { getAllProducts } from '@/lib/actions/product';

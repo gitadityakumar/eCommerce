@@ -86,6 +86,9 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   devIndicators: false,
+  experimental: {
+    optimizePackageImports: ['@tabler/icons-react', 'lucide-react', 'date-fns', 'recharts'],
+  },
   turbopack: {
 
     root: process.cwd(),

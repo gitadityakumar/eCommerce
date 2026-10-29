@@ -2,7 +2,7 @@
   "name": "e-commerce",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "pnpm@10.33.2",
+  "packageManager": "pnpm@12.14.0",
   "scripts": {
     "dev": "rm -rf .next && next dev",
     "sdev": "next dev --inspect",
@@ -17,13 +17,14 @@
     "fallow:health": "fallow health --score",
     "fallow:flags": "fallow flags",
     "type:check": "tsc --noEmit",
+    "type-check": "tsrs --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx src/lib/db/seed.ts",
     "db:seed:admin": "tsx src/lib/db/seed-admin.ts",
-    "prepare": "husky"
+    "prepare": "node -e 'if (!process.env.CI) try { require(\"husky\").install() } catch (e) {}'"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.984.0",
@@ -45,7 +46,7 @@
     "drizzle-orm": "^0.45.2",
     "framer-motion": "^12.23.24",
     "lucide-react": "^0.475.0",
-    "next": "^16.3.0",
+    "next": "16.4.3",
     "next-themes": "^0.4.6",
     "query-string": "^9.1.1",
     "react": "^19.2.0",
@@ -63,13 +64,12 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "8.2.0",
-    "@next/eslint-plugin-next": "^16.3.0",
+    "@next/eslint-plugin-next": "16.4.3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@types/ws": "^8.18.1",
-    "@typescript/native-preview": "^7.0.0-dev.20260112.1",
     "babel-plugin-react-compiler": "^1.0.0",
     "drizzle-kit": "^0.31.8",
     "eslint": "^9.39.2",
@@ -79,30 +79,10 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "tailwindcss": "^4",
+    "tsrs": "0.18.0-ts7.1.0-dev.20260929",
     "tsx": "^4.19.2",
     "tw-animate-css": "^1.4.0",
-    "typescript": "^7.0.2"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "fallow",
-      "sharp",
-      "unrs-resolver"
-    ],
-    "overrides": {
-      "brace-expansion": ">=5.0.9",
-      "defu": ">=6.1.7",
-      "esbuild": ">=0.25.0",
-      "flatted": ">=3.4.2",
-      "js-yaml": ">=4.3.0",
-      "kysely": ">=0.28.17",
-      "lodash": ">=4.18.1",
-      "minimatch": ">=9.0.7",
-      "picomatch": ">=4.0.4",
-      "postcss": ">=8.5.23",
-      "yaml": ">=2.8.3"
-    }
+    "typescript": "^7.1.0-dev.20261019.1"
   },
   "lint-staged": {
     "*": "pnpm run lint"

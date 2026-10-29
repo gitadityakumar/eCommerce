@@ -26,7 +26,6 @@ import { normalizeImageUrl } from '@/lib/images';
 import { cn } from '@/lib/utils';
 
 import { getOrderAmounts } from './order-amounts';
-import { ReceiptDocument } from './receipt-document';
 
 type OrderData = NonNullable<Awaited<ReturnType<typeof getOrderById>>>;
 type StoreSettings = Awaited<ReturnType<typeof getStoreSettings>>;
@@ -47,7 +46,10 @@ function OrderSuccessPage({
   const handleDownload = async () => {
     try {
       setIsDownloading(true);
-      const { pdf } = await import('@react-pdf/renderer');
+      const [{ pdf }, { default: ReceiptDocument }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('./receipt-document'),
+      ]);
       const blob = await pdf(<ReceiptDocument order={order} settings={settings} />).toBlob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
