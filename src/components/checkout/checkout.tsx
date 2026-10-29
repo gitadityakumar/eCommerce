@@ -1,14 +1,13 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
 import { Check, CheckCircle2, Lock, MapPin, Phone, Tag, X } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { initiatePayment } from '@/actions/payment';
 import { checkShippingServiceability } from '@/actions/shipping';
-import { AddressForm } from '@/app/(root)/profile/addresses/AddressForm';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -23,6 +22,13 @@ import { formatINR } from '@/lib/currency';
 import { normalizeImageUrl } from '@/lib/images';
 import { cn } from '@/lib/utils';
 import { useCartStore } from '@/store/cart';
+
+const AddressForm = dynamic(
+  () => import('@/app/(root)/profile/addresses/AddressForm').then(m => m.AddressForm),
+  {
+    loading: () => <Skeleton className="h-64 w-full rounded-2xl" />,
+  },
+);
 
 interface Courier {
   id: string;
@@ -522,20 +528,14 @@ export default function Checkout({ initialAddresses, storeSettings, user, server
                     {isApplying ? '...' : 'Apply'}
                   </Button>
                 </div>
-                <AnimatePresence>
-                  {appliedCoupon && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-[10px] font-medium text-green-600 flex items-center gap-1.5 px-1 uppercase tracking-wider"
-                    >
-                      <CheckCircle2 size={12} />
-                      Benefit Active:
-                      {' '}
-                      {appliedCoupon.code}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
+                {appliedCoupon && (
+                  <p className="text-[10px] font-medium text-green-600 flex items-center gap-1.5 px-1 uppercase tracking-wider animate-in fade-in slide-in-from-top-1 duration-200">
+                    <CheckCircle2 size={12} />
+                    Benefit Active:
+                    {' '}
+                    {appliedCoupon.code}
+                  </p>
+                )}
               </div>
 
               {/* Value Totals */}

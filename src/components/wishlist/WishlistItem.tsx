@@ -3,7 +3,7 @@
 import { IconTrash } from '@tabler/icons-react';
 import { useTransition } from 'react';
 import { toast } from 'sonner';
-import { Card } from '@/components';
+import Card from '@/components/Card';
 import { Button } from '@/components/ui/button';
 import { removeFromWishlistAction } from '@/lib/actions/wishlist';
 import { useWishlistStore } from '@/store/wishlist';

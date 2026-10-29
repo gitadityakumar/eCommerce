@@ -1,6 +1,5 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, CheckCircle2, Lock, Tag, Truck, X } from 'lucide-react';
 
 import Link from 'next/link';
@@ -103,20 +102,14 @@ export function OrderSummary({ items }: OrderSummaryProps) {
             {isApplying ? '...' : 'Apply'}
           </button>
         </div>
-        <AnimatePresence>
-          {appliedCoupon && (
-            <motion.p
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-[10px] font-medium text-green-600 flex items-center gap-1.5 uppercase tracking-wider"
-            >
-              <CheckCircle2 size={12} />
-              Applied:
-              {' '}
-              {appliedCoupon.code}
-            </motion.p>
-          )}
-        </AnimatePresence>
+        {appliedCoupon && (
+          <p className="text-[10px] font-medium text-green-600 flex items-center gap-1.5 uppercase tracking-wider animate-in fade-in slide-in-from-top-1 duration-200">
+            <CheckCircle2 size={12} />
+            Applied:
+            {' '}
+            {appliedCoupon.code}
+          </p>
+        )}
       </div>
 
       <div className="h-px bg-border-subtle" />
@@ -127,15 +120,13 @@ export function OrderSummary({ items }: OrderSummaryProps) {
       </div>
 
       <Link href="/checkout">
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="w-full bg-accent text-white py-4 md:py-5 px-6 rounded-full text-xs md:text-sm font-bold tracking-[0.2em] uppercase transition-all shadow-soft shadow-accent/20 hover:shadow-accent/40 flex items-center justify-center gap-3 active:scale-95"
+        <button
+          className="w-full bg-accent text-white py-4 md:py-5 px-6 rounded-full text-xs md:text-sm font-bold tracking-[0.2em] uppercase transition-all shadow-soft shadow-accent/20 hover:shadow-accent/40 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
         >
           <Lock className="h-4 w-4" />
           Checkout
           <ArrowRight className="h-4 w-4" />
-        </motion.button>
+        </button>
       </Link>
 
       {isFreeShipping && (
