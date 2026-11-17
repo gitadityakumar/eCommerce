@@ -208,6 +208,11 @@
   --sidebar-accent-foreground: oklch(0.6 0.2 25);
   --sidebar-border: oklch(0.9 0.01 80);
   --sidebar-ring: oklch(0.6 0.2 25);
+
+  /* Scrollbar theme tokens (Light Mode) */
+  --scrollbar-track: transparent;
+  --scrollbar-thumb: oklch(0.55 0.02 65 / 40%);
+  --scrollbar-thumb-hover: oklch(0.56 0.12 24 / 80%);
 }
 
 .dark {
@@ -247,6 +252,11 @@
   --sidebar-accent-foreground: oklch(0.92 0.01 80);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.55 0.18 20);
+
+  /* Scrollbar theme tokens (Dark Mode) */
+  --scrollbar-track: transparent;
+  --scrollbar-thumb: oklch(0.65 0.015 70 / 38%);
+  --scrollbar-thumb-hover: oklch(0.62 0.12 24 / 85%);
 }
 
 @layer base {
@@ -256,6 +266,41 @@
 
   * {
     @apply border-border outline-ring/50;
+  }
+
+  /* Standard CSS Scrollbars for engines without WebKit scrollbar support (e.g. Firefox) */
+  @supports not selector(::-webkit-scrollbar) {
+    html,
+    * {
+      scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      scrollbar-width: thin;
+    }
+  }
+
+  /* Custom WebKit/Blink scrollbars for desktop & laptop browsers (Chrome, Edge, Safari, Brave) */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    transition: background-color 0.2s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
   }
 
   body {

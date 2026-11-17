@@ -17,10 +17,17 @@ export default function HeroSection() {
           muted
           playsInline
           preload="auto"
+          poster="https://cdn.100xadi.com/videos/hero/hero-poster.webp"
           className="absolute inset-0 h-full w-full object-cover object-[30%_30%] md:object-center"
         >
+          {/* WebM (VP9) for Chrome, Firefox, Edge, Android */}
           <source
-            src="https://ik.imagekit.io/nq9atqhjb/woman_looks_left_and_right_in_5s.mp4"
+            src="https://cdn.100xadi.com/videos/hero/hero-vp9.webm"
+            type="video/webm"
+          />
+          {/* MP4 (H.265 / HEVC) for Safari, iOS, macOS */}
+          <source
+            src="https://cdn.100xadi.com/videos/hero/hero-h265.mp4"
             type="video/mp4"
           />
         </video>
@@ -33,7 +40,7 @@ export default function HeroSection() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center w-full max-w-7xl px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20 text-center">
+      <div className="relative z-10 flex flex-col items-center w-full max-w-7xl px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20 text-center pt-16">
         <p
           className="mb-5 font-(--font-montserrat) text-[0.68rem] font-semibold uppercase tracking-[0.36em] text-white/75"
         >

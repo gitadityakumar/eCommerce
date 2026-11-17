@@ -63,3 +63,8 @@ next-env.d.ts
 Thumbs.db
 .DS_Store
 !.gitignore
+
+# Video processing artifacts & scratch uploads
+/r2-upload
+/public/videos
+

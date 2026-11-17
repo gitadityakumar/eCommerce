@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,7 +28,7 @@ import { Switch } from '@/components/ui/switch';
 import { signOut } from '@/lib/auth/actions';
 import { useAuthStore } from '@/store/auth';
 
-export function ProfileDropdown() {
+export function ProfileDropdown({ isTransparent = false }: { isTransparent?: boolean } = {}) {
   const { user, isAuthenticated, logout } = useAuthStore();
   const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -54,9 +55,15 @@ export function ProfileDropdown() {
 
   if (!mounted) {
     return (
-      <button className="relative h-10 w-10 rounded-full flex items-center justify-center hover:bg-accent/5 transition-all duration-300">
+      <button className={cn(
+        "relative h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300",
+        isTransparent ? "hover:bg-white/10" : "hover:bg-accent/5"
+      )}>
         <Avatar className="h-10 w-10">
-          <AvatarFallback className="bg-transparent! text-text-primary text-xs font-bold tracking-widest">
+          <AvatarFallback className={cn(
+            "bg-transparent! text-xs font-bold tracking-widest",
+            isTransparent ? "text-white" : "text-text-primary"
+          )}>
             GU
           </AvatarFallback>
         </Avatar>
@@ -67,10 +74,16 @@ export function ProfileDropdown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="relative h-10 w-10 rounded-full flex items-center justify-center hover:bg-accent/5 transition-all duration-300 outline-none focus:outline-none ring-0 focus:ring-0">
+        <button className={cn(
+          "relative h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300 outline-none focus:outline-none ring-0 focus:ring-0",
+          isTransparent ? "hover:bg-white/10" : "hover:bg-accent/5"
+        )}>
           <Avatar className="h-10 w-10">
             <AvatarImage src={user?.image ?? undefined} alt={user?.name ?? 'Avatar'} />
-            <AvatarFallback className="bg-transparent! text-text-primary text-xs font-bold tracking-widest">
+            <AvatarFallback className={cn(
+              "bg-transparent! text-xs font-bold tracking-widest",
+              isTransparent ? "text-white" : "text-text-primary"
+            )}>
               {userInitials}
             </AvatarFallback>
           </Avatar>

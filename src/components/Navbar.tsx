@@ -39,6 +39,19 @@ export default function Navbar() {
 
   const cartItemCount = isAuthenticated ? userItemCount : guestItemCount;
 
+  const [isScrolled, setIsScrolled] = useState(false);
+  const isHomePage = pathname === '/';
+  const isTransparent = isHomePage && !isScrolled;
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 40);
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   useEffect(() => {
     setMounted(true);
     if (isAuthenticated) {
@@ -78,7 +91,15 @@ export default function Navbar() {
   };
 
   return (
-    <div className="sticky top-0 z-50 flex h-15 w-full items-center justify-center border-b border-border-subtle bg-background/82 backdrop-blur-md transition-all duration-300">
+    <div
+      className={cn(
+        'z-50 flex h-15 w-full items-center justify-center transition-all duration-300',
+        isHomePage ? 'fixed top-0 left-0 right-0' : 'sticky top-0',
+        isTransparent
+          ? 'border-b border-white/10 bg-gradient-to-b from-black/55 via-black/25 to-transparent backdrop-blur-[2px]'
+          : 'border-b border-border-subtle bg-background/85 backdrop-blur-md shadow-xs',
+      )}
+    >
       <Menu setActive={setActive} className="border-none shadow-none bg-transparent dark:bg-transparent px-4 py-0 w-full justify-between z-50">
         {/* Logo - Always visible */}
         <Link href="/" aria-label="PreetyTwist Home" className="flex items-center shrink-0">
@@ -88,7 +109,10 @@ export default function Navbar() {
             width={418}
             height={347}
             priority
-            className="h-5 w-6 dark:invert"
+            className={cn(
+              'h-5 w-6 transition-all duration-300',
+              isTransparent ? 'brightness-125 filter drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]' : 'dark:invert',
+            )}
           />
         </Link>
 
@@ -104,8 +128,16 @@ export default function Navbar() {
                   href={l.href}
                   aria-current={active ? 'page' : undefined}
                   className={cn(
-                    'relative text-sm font-medium text-text-primary transition-colors after:absolute after:-bottom-2 after:left-0 after:h-px after:w-full after:origin-left after:bg-accent after:transition-transform after:duration-300 hover:text-accent',
-                    active ? 'text-accent after:scale-x-100' : 'after:scale-x-0',
+                    'relative text-sm font-medium transition-colors after:absolute after:-bottom-2 after:left-0 after:h-px after:w-full after:origin-left after:transition-transform after:duration-300',
+                    isTransparent
+                      ? cn(
+                          'text-white/90 drop-shadow-sm hover:text-white',
+                          active ? 'text-white font-semibold after:scale-x-100 after:bg-white' : 'after:scale-x-0 after:bg-white/80',
+                        )
+                      : cn(
+                          'text-text-primary hover:text-accent',
+                          active ? 'text-accent after:scale-x-100 after:bg-accent' : 'after:scale-x-0 after:bg-accent',
+                        ),
                   )}
                 >
                   {l.label}
@@ -121,7 +153,10 @@ export default function Navbar() {
           <div className="relative flex items-center h-10 min-w-[40px] justify-end">
             <div
               className={cn(
-                'absolute right-0 flex h-9 w-[180px] origin-right items-center overflow-hidden rounded-full border border-border-subtle bg-background/88 shadow-soft transition-[opacity,transform] duration-200 ease-out lg:w-[260px]',
+                'absolute right-0 flex h-9 w-[180px] origin-right items-center overflow-hidden rounded-full border shadow-soft transition-[opacity,transform] duration-200 ease-out lg:w-[260px]',
+                isTransparent
+                  ? 'border-white/20 bg-black/60 backdrop-blur-md text-white'
+                  : 'border-border-subtle bg-background/88 text-text-primary',
                 isSearchOpen ? 'scale-x-100 opacity-100' : 'pointer-events-none scale-x-0 opacity-0',
               )}
             >
@@ -141,7 +176,10 @@ export default function Navbar() {
                     if (!searchQuery)
                       setIsSearchOpen(false);
                   }}
-                  className="ml-10 w-full appearance-none border-none! bg-transparent pr-4 text-xs text-text-primary outline-none! ring-0! ring-offset-0! placeholder:text-text-secondary/60"
+                  className={cn(
+                    'ml-10 w-full appearance-none border-none! bg-transparent pr-4 text-xs outline-none! ring-0! ring-offset-0!',
+                    isTransparent ? 'text-white placeholder:text-white/60' : 'text-text-primary placeholder:text-text-secondary/60',
+                  )}
                 />
               )}
             </div>
@@ -155,8 +193,11 @@ export default function Navbar() {
                 }
               }}
               className={cn(
-                'z-10 flex h-10 w-10 items-center justify-center rounded-full p-2 transition-all duration-300 hover:bg-accent/8 hover:text-accent active:scale-95',
-                isSearchOpen ? 'absolute left-0 text-accent' : 'text-text-primary hover:bg-accent/8',
+                'z-10 flex h-10 w-10 items-center justify-center rounded-full p-2 transition-all duration-300 active:scale-95',
+                isTransparent
+                  ? 'text-white hover:bg-white/15'
+                  : 'text-text-primary hover:bg-accent/8 hover:text-accent',
+                isSearchOpen && (isTransparent ? 'absolute left-0 text-white' : 'absolute left-0 text-accent'),
               )}
               aria-label="Search"
             >
@@ -167,18 +208,26 @@ export default function Navbar() {
           {/* Cart Icon */}
           <Link
             href="/cart"
-            className="relative flex h-10 w-10 items-center justify-center rounded-full text-text-primary transition-all duration-300 hover:bg-accent/8 hover:text-accent active:scale-95"
+            className={cn(
+              'relative flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 active:scale-95',
+              isTransparent
+                ? 'text-white hover:bg-white/15'
+                : 'text-text-primary hover:bg-accent/8 hover:text-accent',
+            )}
             aria-label="Cart"
           >
             <IconShoppingCart size={20} />
             {mounted && cartItemCount > 0 && (
-              <span className="absolute top-1 right-1 transform translate-x-1/2 -translate-y-1/2 text-[9px] font-bold bg-accent text-white px-1.5 rounded-full h-4 min-w-4 flex items-center justify-center border-2 border-background shadow-soft group-hover:scale-110 transition-transform">
+              <span className={cn(
+                'absolute top-1 right-1 transform translate-x-1/2 -translate-y-1/2 text-[9px] font-bold bg-accent text-white px-1.5 rounded-full h-4 min-w-4 flex items-center justify-center border-2 shadow-soft group-hover:scale-110 transition-transform',
+                isTransparent ? 'border-black/40' : 'border-background',
+              )}>
                 {cartItemCount}
               </span>
             )}
           </Link>
 
-          {mounted && <ProfileDropdown />}
+          {mounted && <ProfileDropdown isTransparent={isTransparent} />}
         </div>
       </Menu>
     </div>
