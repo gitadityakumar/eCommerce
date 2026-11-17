@@ -40,7 +40,7 @@ export default function HeroSection() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center w-full max-w-7xl px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20 text-center">
+      <div className="relative z-10 flex flex-col items-center w-full max-w-7xl px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20 text-center pt-16">
         <p
           className="mb-5 font-(--font-montserrat) text-[0.68rem] font-semibold uppercase tracking-[0.36em] text-white/75"
         >
