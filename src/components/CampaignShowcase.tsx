@@ -56,25 +56,26 @@ export default function CampaignShowcase() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="md:col-span-6 md:row-span-1 relative group cursor-pointer overflow-hidden shadow-soft"
+            className="md:col-span-6 md:row-span-1 relative group cursor-pointer overflow-hidden shadow-soft rounded-sm"
           >
             <Link href="/collections">
-              <div className="relative w-full h-full">
+              <div className="relative w-full h-[22rem] md:h-full min-h-[18rem]">
                 <Image
-                  src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/4734259a-bad7-422f-981e-ce01e79184f2_1600w.jpg"
-                  className="object-cover hover:scale-110 transition-transform duration-1000 opacity-90 dark:opacity-80"
-                  alt="Texture Detail"
+                  src="/editorial/velvet-texture-detail.jpg"
+                  className="object-cover group-hover:scale-105 transition-transform duration-1000 opacity-95 dark:opacity-85"
+                  alt="Silver Thread & Seed Pearl Hand-stitched Texture Detail"
                   fill
                   sizes="(min-width: 768px) 50vw, 100vw"
                 />
-                <div className="absolute inset-0 bg-linear-to-b from-transparent to-black/60 z-10 flex items-end justify-center pb-8"></div>
-                <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500"></div>
-                <div className="absolute top-6 right-6">
-                  <span className="bg-surface text-text-primary text-[10px] font-bold px-3 py-1 uppercase tracking-widest shadow-soft">New cut</span>
+                <div className="absolute inset-0 bg-linear-to-b from-transparent via-black/20 to-black/70 z-10 flex items-end justify-center pb-8" />
+                <div className="absolute top-6 right-6 z-20">
+                  <span className="bg-surface/90 backdrop-blur-md text-text-primary text-[10px] font-bold px-3 py-1 uppercase tracking-widest shadow-soft border border-border-subtle">
+                    New cut
+                  </span>
                 </div>
-                <div className="absolute bottom-6 left-6">
-                  <h4 className="text-white text-xl font-light">Silver Thread</h4>
-                  <p className="text-neutral-300 text-xs tracking-widest uppercase mt-1">Details</p>
+                <div className="absolute bottom-6 left-6 z-20">
+                  <h4 className="text-white text-xl font-light font-(--font-playfair)">Silver Thread & Seed Pearl</h4>
+                  <p className="text-neutral-300 text-xs tracking-widest uppercase mt-1">Artisanal Details</p>
                 </div>
               </div>
             </Link>
@@ -86,9 +87,9 @@ export default function CampaignShowcase() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3 }}
-            className="md:col-span-3 md:row-span-1 relative group cursor-pointer bg-surface shadow-soft transition-all duration-500"
+            className="md:col-span-3 md:row-span-1 relative group cursor-pointer bg-surface shadow-soft transition-all duration-500 rounded-sm"
           >
-            <Link href="/products">
+            <Link href="/products" className="block h-full">
               <div className="p-8 flex flex-col justify-between h-full border border-border-subtle hover:border-accent/40 transition-colors">
                 <div className="flex justify-between items-start">
                   <span className="text-text-secondary text-xs">01.</span>
@@ -97,7 +98,7 @@ export default function CampaignShowcase() {
                 <Image
                   src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/917d6f93-fb36-439a-8c48-884b67b35381_1600w.jpg"
                   className="w-32 h-32 object-cover mx-auto my-4 rounded-full shadow-soft group-hover:scale-105 transition-transform duration-500"
-                  alt="Accessory"
+                  alt="Petite Noir Bow"
                   width={128}
                   height={128}
                 />
@@ -114,20 +115,18 @@ export default function CampaignShowcase() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.4 }}
-            className="md:col-span-3 md:row-span-1 relative group cursor-pointer bg-bg-secondary flex items-center justify-center shadow-soft"
+            className="md:col-span-3 md:row-span-1 relative group bg-bg-secondary flex items-center justify-center shadow-soft rounded-sm p-8"
           >
-            <div className="text-center p-6">
-              <h4 className="text-2xl font-serif italic text-text-primary mb-4">Custom Atelier</h4>
-              <p className="text-text-secondary text-sm font-light leading-relaxed mb-6">
+            <div className="text-center p-2">
+              <h4 className="text-2xl font-(--font-playfair) italic text-text-primary mb-3">Custom Atelier</h4>
+              <p className="text-text-secondary text-xs font-light leading-relaxed mb-6">
                 Bespoke commissions for weddings and galas.
               </p>
-              <Link href="/contact" className="inline-block">
-                <motion.button
-                  whileHover={{ scale: 1.05, backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
-                  className="text-text-primary border border-border-subtle px-6 py-3 text-xs uppercase tracking-widest transition-all hover:border-text-primary"
-                >
-                  Inquire
-                </motion.button>
+              <Link
+                href="/contact"
+                className="inline-block border border-border-subtle bg-surface/80 px-7 py-3 text-xs uppercase tracking-widest text-text-primary transition-all duration-300 hover:border-text-primary hover:bg-text-primary hover:text-background hover:scale-105 active:scale-95 shadow-soft rounded-full"
+              >
+                Inquire
               </Link>
             </div>
           </motion.div>

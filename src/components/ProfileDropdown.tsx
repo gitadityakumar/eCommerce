@@ -108,12 +108,6 @@ export function ProfileDropdown() {
         {isAuthenticated && (
           <>
             <DropdownMenuSeparator className="bg-border-subtle opacity-50" />
-          </>
-        )}
-
-        {isAuthenticated && (
-          <>
-            <DropdownMenuSeparator className="bg-border-subtle opacity-50" />
 
             {/* Menu Actions */}
             <DropdownMenuGroup className="p-2">

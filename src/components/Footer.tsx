@@ -148,10 +148,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-border-subtle">
           <div className="flex gap-6 mb-4 md:mb-0">
             <span className="text-text-secondary text-xs">
-              ©
-              {currentYear}
-              {' '}
-              Preety Twist
+              {`© ${currentYear} Preety Twist`}
             </span>
           </div>
           <div className="flex gap-6">

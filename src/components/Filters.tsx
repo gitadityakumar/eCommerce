@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { getArrayParam, getStringParam, removeParams, setParam, toggleArrayParam } from '@/lib/utils/query';
 
-const PRICE_MAX = 500; // Adjusted based on current range, can be dynamic
+const PRICE_MAX = 2500; // Raised to comfortably accommodate store catalog pricing
 
 type GroupKey = 'gender' | 'size' | 'color' | 'price';
 
@@ -208,7 +208,7 @@ export default function Filters({ genders, sizes, colors }: FiltersProps) {
               defaultValue={[0, PRICE_MAX]}
               value={priceRange}
               max={PRICE_MAX}
-              step={10}
+              step={25}
               onValueChange={v => setPriceRange(v as [number, number])}
               onValueCommit={v => updatePriceParams(v as [number, number])}
               className="mb-6"
@@ -238,9 +238,18 @@ export default function Filters({ genders, sizes, colors }: FiltersProps) {
           <div className="absolute inset-y-0 left-0 w-80 max-w-[85%] overflow-auto bg-surface p-8 shadow-2xl transition-all duration-300">
             <div className="mb-8 flex items-center justify-between border-b border-border-subtle pb-6">
               <h3 className="text-2xl font-light tracking-tight text-text-primary">Filters</h3>
-              <button className="text-xs text-text-secondary underline hover:text-accent transition-colors" onClick={clearAll}>
-                Clear all
-              </button>
+              <div className="flex items-center gap-4">
+                <button className="text-xs text-text-secondary underline hover:text-accent transition-colors" onClick={clearAll}>
+                  Clear all
+                </button>
+                <button
+                  onClick={() => setOpen(false)}
+                  className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-accent/10 text-text-secondary hover:text-text-primary transition-colors text-base"
+                  aria-label="Close filters"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
             <div className="md:hidden">
               <Group title="Gender" k="gender">
@@ -302,7 +311,7 @@ export default function Filters({ genders, sizes, colors }: FiltersProps) {
                     defaultValue={[0, PRICE_MAX]}
                     value={priceRange}
                     max={PRICE_MAX}
-                    step={10}
+                    step={25}
                     onValueChange={v => setPriceRange(v as [number, number])}
                     className="mb-8"
                   />
