@@ -151,6 +151,7 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --color-surface: var(--surface);
   --color-surface-variant: var(--surface-variant);
+  --color-bg-primary: var(--bg-primary);
   --color-bg-secondary: var(--bg-secondary);
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
@@ -185,6 +186,7 @@
   --ring: oklch(0.56 0.12 24);
   --surface: oklch(0.99 0.009 78 / 82%);
   --surface-variant: oklch(0.925 0.018 74);
+  --bg-primary: var(--background);
   --bg-secondary: oklch(0.94 0.016 75);
   --text-primary: var(--foreground);
   --text-secondary: oklch(0.46 0.018 62);
@@ -229,6 +231,7 @@
   --ring: oklch(0.62 0.12 24);
   --surface: oklch(0.2 0.018 62 / 76%);
   --surface-variant: oklch(0.25 0.018 62);
+  --bg-primary: var(--background);
   --bg-secondary: oklch(0.18 0.018 62);
   --text-primary: var(--foreground);
   --text-secondary: oklch(0.74 0.014 78);

@@ -5,6 +5,8 @@ import { getStoreSettings } from '@/lib/actions/settings';
 import { getCartAction } from '@/lib/actions/storefront-cart';
 import { getCurrentUser } from '@/lib/auth/actions';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Page() {
   const user = await getCurrentUser();
 

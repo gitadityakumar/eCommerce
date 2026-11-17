@@ -3,6 +3,8 @@ import { Suspense } from 'react';
 import OrderManagement from '@/components/my-orders/my-orders';
 import { getCurrentUser } from '@/lib/auth/actions';
 
+export const dynamic = 'force-dynamic';
+
 async function MyOrdersContent() {
   const user = await getCurrentUser();
 
