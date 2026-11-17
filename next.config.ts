@@ -88,6 +88,7 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   devIndicators: false,
   experimental: {
+    agentUpgrade: 'security',
     optimizePackageImports: ['@tabler/icons-react', 'lucide-react', 'date-fns', 'recharts'],
   },
   turbopack: {
