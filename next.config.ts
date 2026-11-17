@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ['127.0.0.1', 'localhost'],
+  allowedDevOrigins: ['127.0.0.1', 'localhost', '192.168.29.59'],
   async headers() {
     const securityHeaders = [
       {
@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
           'script-src \'self\' \'unsafe-inline\' \'unsafe-eval\' blob:',
           'style-src \'self\' \'unsafe-inline\' https://fonts.googleapis.com',
           'img-src \'self\' data: blob: https://cdn.100xadi.com https://cdn.perpetuity.dev https://hoirqrkdgbmvpwutwuwj.supabase.co https://images.unsplash.com https://ik.imagekit.io',
-          'media-src \'self\' data: blob: https://ik.imagekit.io',
+          'media-src \'self\' data: blob: https://cdn.100xadi.com https://ik.imagekit.io',
           'font-src \'self\' data: https://fonts.gstatic.com',
           'connect-src \'self\' data: blob: https://api-preprod.phonepe.com https://api.phonepe.com https://apiv2.shiprocket.in https://*.r2.cloudflarestorage.com https://cdn.100xadi.com https://cdn.perpetuity.dev',
           'worker-src \'self\' blob:',
